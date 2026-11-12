@@ -81,28 +81,6 @@ dotnet run
 
 ---
 
-## 📁 Estructura del repo
-
-```
-src/
-├── PokeStream.Api/          # ASP.NET Core API + SignalR Hubs
-├── PokeStream.Overlay/      # .NET MAUI Desktop App (Overlay)
-├── PokeStream.Web/          # Blazor WASM PWA (Viewer App)
-├── PokeStream.Bots/         # Librería compartida bots Twitch/YT/Kick
-├── PokeStream.Core/         # Domain, DTOs, Interfaces
-└── PokeStream.Infrastructure/ # EF Core, Repos, Services
-```
-
----
-
-## 🤝 Contribuir
-
-1. Fork & branch (`feat/nueva-funcionalidad`)
-2. Commit convencional (`feat: add shiny detection`)
-3. PR con descripción y capturas si hay UI
-
----
-
 ## 📄 Licencia
 
-MIT — úsalo libremente en tus streams.
+MIT
