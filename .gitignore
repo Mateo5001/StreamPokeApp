@@ -1,0 +1,47 @@
+# Build outputs
+bin/
+obj/
+
+# IDE/Editor
+.vs/
+.idea/
+*.suo
+*.user
+*.sln.docstates
+
+# OS
+.DS_Store
+Thumbs.db
+
+# NuGet
+packages/
+*.nupkg
+
+# Test results
+TestResults/
+*.trx
+
+# Logs
+*.log
+
+# Docker
+.docker/
+
+# Environment
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
+!appsettings.Example.json
+
+# Certificates
+*.pfx
+*.p12
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Misc
+*.tmp
+*.temp

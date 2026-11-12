@@ -30,18 +30,31 @@ Interactive overlay for streamers (Blazor + .NET MAUI) showing Pokémon on strea
 
 | Layer | Technology |
 |-------|------------|
-| Overlay Desktop | .NET MAUI (Windows/macOS) |
-| Web Viewers | Blazor WebAssembly (PWA) |
-| Backend | ASP.NET Core 8, SignalR, EF Core |
-| Auth | ASP.NET Core Identity + OAuth (Twitch/Google/Discord) |
-| Database | PostgreSQL (prod) / SQLite (dev) |
-| Bots | TwitchLib, YouTube LiveChat, Kick API |
-| Deploy | Docker Compose / Azure Container Apps |
+| Overlay Desktop | .NET MAUI (Windows/macOS) - *planned* |
+| Web Viewers | Blazor WebAssembly (PWA) - *planned* |
+| Backend | ASP.NET Core 10, SignalR, EF Core - *API exists* |
+| Auth | ASP.NET Core Identity + OAuth (Twitch/Google/Discord) - *planned* |
+| Database | PostgreSQL (prod) / SQLite (dev) - *planned* |
+| Bots | TwitchLib, YouTube LiveChat, Kick API - *planned* |
+| Deploy | Docker Compose / Azure Container Apps - *planned* |
+| API Docs | Swagger/OpenAPI (Swashbuckle.AspNetCore 6.6.2) - *configured* |
 
-## Project Structure (src/)
+## Project Structure (Solution/PokeStream/)
 ```
-src/
-├── PokeStream.Api/              # ASP.NET Core API + SignalR Hubs
+Solution/PokeStream/
+├── PokeStream.slnx              # Solution file
+└── PokeStream.API/              # ASP.NET Core API (EXISTS)
+    ├── Controllers/
+    │   └── WeatherForecastController.cs   # Default controller
+    ├── Properties/
+    ├── bin/ / obj/
+    ├── Program.cs               # Minimal API with OpenAPI
+    ├── WeatherForecast.cs       # Default model
+    ├── appsettings.json
+    ├── appsettings.Development.json
+    └── PokeStream.API.csproj    # Target: net10.0, OpenAPI pkg
+
+PLANNED (not created):
 ├── PokeStream.Overlay/          # .NET MAUI Desktop App (Overlay)
 ├── PokeStream.Web/              # Blazor WASM PWA (Viewer App)
 ├── PokeStream.Bots/             # Shared library for Twitch/YT/Kick bots
@@ -52,26 +65,21 @@ src/
 ## Development Commands
 
 ```bash
-# Backend
-cd src/PokeStream.Api
-dotnet restore
-dotnet ef database update
-dotnet run
-
-# Overlay MAUI (Windows)
-cd ../PokeStream.Overlay
-dotnet build -f net8.0-windows10.0.19041
-
-# Web Viewers (Blazor WASM)
-cd ../PokeStream.Web
+# Backend API (EXISTS - Swagger configured)
+cd Solution/PokeStream/PokeStream.API
 dotnet restore
 dotnet run
+# Swagger UI: http://localhost:5000/swagger
+# OpenAPI JSON: http://localhost:5000/swagger/v1/swagger.json
+
+# Planned projects - commands TBD after creation
 ```
 
 ## Key Requirements
-- .NET 8 SDK
+- .NET 10 SDK (API targets net10.0)
 - Configure `appsettings.json` with Twitch/YouTube/Kick credentials and database connection
 - PostgreSQL for production, SQLite for development
+- Solution root: `Solution/PokeStream/`
 
 ## Coding Guidelines
 - Use conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`

@@ -1,0 +1,6 @@
+@PokeStream.API_HostAddress = http://localhost:5130
+
+GET {{PokeStream.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
