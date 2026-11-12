@@ -1,1 +1,6 @@
-<Solution />
+<Solution>
+  <Projects>
+    <Project Path="PokeStream.API\PokeStream.API.csproj" />
+    <Project Path="PokeStream.EntityData\PokeStream.EntityData.csproj" />
+  </Projects>
+</Solution>

@@ -33,6 +33,9 @@ appsettings.*.json
 !appsettings.json
 !appsettings.Example.json
 
+# AI/Assistant context
+CLAUDE.md
+
 # Certificates
 *.pfx
 *.p12
