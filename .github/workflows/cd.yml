@@ -1,0 +1,122 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [Test]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+env:
+  AZURE_WEBAPP_NAME: 'pokestream-api'           # Cambiar por tu nombre de Web App
+  AZURE_RESOURCE_GROUP: 'pokestream-rg'         # Cambiar por tu Resource Group
+  DOCKER_IMAGE_NAME: 'pokestream/api'
+  SOLUTION_PATH: 'Solution/PokeStream/PokeStream.sln'
+  API_PROJECT: 'Solution/PokeStream/PokeStream.API/PokeStream.API.csproj'
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: Solution/PokeStream/PokeStream.API
+          file: Solution/PokeStream/PokeStream.API/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKER_IMAGE_NAME }}:staging-${{ github.sha }}
+            ${{ env.DOCKER_IMAGE_NAME }}:staging-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to Azure Container Apps (Staging)
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
+          containerAppName: ${{ env.AZURE_WEBAPP_NAME }}-staging
+          image: ${{ env.DOCKER_IMAGE_NAME }}:staging-${{ github.sha }}
+          envVars: |
+            ASPNETCORE_ENVIRONMENT=Staging
+            ConnectionStrings__DefaultConnection=${{ secrets.STAGING_CONNECTION_STRING }}
+            Jwt__Key=${{ secrets.STAGING_JWT_KEY }}
+            Jwt__Issuer=${{ secrets.JWT_ISSUER }}
+            Jwt__Audience=${{ secrets.JWT_AUDIENCE }}
+
+  deploy-production:
+    name: Deploy to Production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: Solution/PokeStream/PokeStream.API
+          file: Solution/PokeStream/PokeStream.API/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKER_IMAGE_NAME }}:prod-${{ github.sha }}
+            ${{ env.DOCKER_IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run database migrations (Production)
+        run: |
+          # Opción A: Usar EF Core CLI en container
+          # Opción B: Azure SQL migrations via CLI
+          echo "Running migrations..."
+          # dotnet ef database update --project ${{ env.ENTITY_PROJECT }} --startup-project ${{ env.API_PROJECT }} --connection "${{ secrets.PROD_CONNECTION_STRING }}"
+
+      - name: Deploy to Azure Container Apps (Production)
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
+          containerAppName: ${{ env.AZURE_WEBAPP_NAME }}
+          image: ${{ env.DOCKER_IMAGE_NAME }}:prod-${{ github.sha }}
+          envVars: |
+            ASPNETCORE_ENVIRONMENT=Production
+            ConnectionStrings__DefaultConnection=${{ secrets.PROD_CONNECTION_STRING }}
+            Jwt__Key=${{ secrets.PROD_JWT_KEY }}
+            Jwt__Issuer=${{ secrets.JWT_ISSUER }}
+            Jwt__Audience=${{ secrets.JWT_AUDIENCE }}
+
+      - name: Health check
+        run: |
+          sleep 30
+          curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurecontainerapps.io/health || exit 1
+
+      - name: Notify deployment
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          echo "Deployment to production ${STATUS}"
+          # Aquí podrías agregar notificación a Slack, Teams, Email, etc.

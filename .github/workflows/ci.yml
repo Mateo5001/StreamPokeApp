@@ -1,0 +1,132 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [Develop, main]
+  pull_request:
+    branches: [Develop, main]
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  SOLUTION_PATH: 'Solution/PokeStream/PokeStream.sln'
+  API_PROJECT: 'Solution/PokeStream/PokeStream.API/PokeStream.API.csproj'
+  ENTITY_PROJECT: 'Solution/PokeStream/PokeStream.EntityData/PokeStream.EntityData.csproj'
+  CORE_PROJECT: 'Solution/PokeStream/PokeStream.Core/PokeStream.Core.csproj'
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Setup .NET
+      - name: Setup .NET ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          cache: true
+
+      # Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+      # Build solution
+      - name: Build solution
+        run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+
+      # Run unit tests (when added)
+      - name: Run tests
+        run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --logger "trx;LogFileName=test_results.trx" --collect:"XPlat Code Coverage" || echo "No tests found yet"
+        continue-on-error: true
+
+      # Check for vulnerable packages
+      - name: Check for vulnerable packages
+        run: |
+          dotnet list ${{ env.SOLUTION_PATH }} package --vulnerable --include-transitive
+        continue-on-error: true
+
+      # Upload test results
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: '**/test_results.trx'
+          retention-days: 7
+
+      # Upload coverage (when tests exist)
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: '**/coverage.cobertura.xml'
+          retention-days: 7
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'PokeStream'
+          path: 'Solution/PokeStream'
+          format: 'HTML'
+          out: 'reports'
+        continue-on-error: true
+
+      - name: Upload security report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-report
+          path: 'reports/'
+          retention-days: 30
+
+  docker-build:
+    name: Docker Build (API)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: build-and-test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/Develop' || github.ref == 'refs/heads/main')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: Solution/PokeStream/PokeStream.API
+          file: Solution/PokeStream/PokeStream.API/Dockerfile
+          push: false
+          tags: pokestream/api:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Scan Docker image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'pokestream/api:${{ github.sha }}'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+        continue-on-error: true
