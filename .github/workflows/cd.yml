@@ -16,7 +16,7 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: 'pokestream-api'           # Cambiar por tu nombre de Web App
-  AZURE_RESOURCE_GROUP: 'pokestream-rg'         # Cambiar por tu Resource Group
+  AZURE_RESOURCE_GROUP: 'StreamsPokeApp'         # Cambiar por tu Resource Group
   DOCKER_IMAGE_NAME: 'pokestream/api'
   SOLUTION_PATH: 'Solution/PokeStream/PokeStream.sln'
   API_PROJECT: 'Solution/PokeStream/PokeStream.API/PokeStream.API.csproj'
@@ -64,7 +64,7 @@ jobs:
 
   deploy-production:
     name: Deploy to Production
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/Production'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production

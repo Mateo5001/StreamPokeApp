@@ -2,9 +2,9 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [Develop, main]
+    branches: [Test, Productio]
   pull_request:
-    branches: [Develop, main]
+    branches: [Test, Productio]
 
 env:
   DOTNET_VERSION: '10.0.x'
@@ -104,7 +104,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: build-and-test
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/Develop' || github.ref == 'refs/heads/main')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/Test' || github.ref == 'refs/heads/Production')
 
     steps:
       - name: Checkout repository
