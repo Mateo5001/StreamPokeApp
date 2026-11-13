@@ -33,7 +33,7 @@ jobs:
 
       # Restore dependencies
       - name: Restore dependencies
-        run: dotnet restore ${{ env.SOLUTION_PATH }}
+        run: dotnet restore ${{ env.SOLUTION_PATH }} --use-lock-file
 
       # Build solution
       - name: Build solution
