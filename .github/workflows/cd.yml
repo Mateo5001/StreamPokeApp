@@ -40,7 +40,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: Solution/PokeStream/PokeStream.API
+          context: .
           file: Solution/PokeStream/PokeStream.API/Dockerfile
           push: true
           tags: |
@@ -80,7 +80,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: Solution/PokeStream/PokeStream.API
+          context: .
           file: Solution/PokeStream/PokeStream.API/Dockerfile
           push: true
           tags: |

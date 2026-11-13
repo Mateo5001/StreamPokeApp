@@ -116,7 +116,7 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
-          context: Solution/PokeStream/PokeStream.API
+          context: .
           file: Solution/PokeStream/PokeStream.API/Dockerfile
           push: false
           tags: pokestream/api:${{ github.sha }}
