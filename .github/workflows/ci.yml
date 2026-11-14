@@ -104,7 +104,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: build-and-test
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/Test' || github.ref == 'refs/heads/Productionn')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/Test' || github.ref == 'refs/heads/Production')
 
     steps:
       - name: Checkout repository
@@ -116,9 +116,10 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
-          context: Solution/PokeStream/PokeStream.API
+          context: .
           file: Solution/PokeStream/PokeStream.API/Dockerfile
           push: false
+          load: true
           tags: pokestream/api:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
