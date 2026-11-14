@@ -8,8 +8,8 @@ COPY ["Solution/PokeStream/PokeStream.Core/PokeStream.Core.csproj", "Solution/Po
 COPY ["Solution/PokeStream/PokeStream.EntityData/PokeStream.EntityData.csproj", "Solution/PokeStream/PokeStream.EntityData/"]
 COPY ["Solution/PokeStream/PokeStream.API/PokeStream.API.csproj", "Solution/PokeStream/PokeStream.API/"]
 
-# Restore dependencies
-RUN dotnet restore "Solution/PokeStream/PokeStream.sln"
+# Restore dependencies with lock file for reproducible builds
+RUN dotnet restore "Solution/PokeStream/PokeStream.sln" --use-lock-file
 
 # Copy all source code
 COPY . .
