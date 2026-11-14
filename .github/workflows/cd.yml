@@ -2,32 +2,39 @@ name: Continuous Deployment
 
 on:
   push:
-    branches: [Test]
+    branches: [Test, Production]
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Target environment'
+        description: 'Target environment (run staging from Test or production from Production)'
         required: true
-        default: 'production'
+        default: staging
         type: choice
         options:
-          - production
           - staging
+          - production
+
+permissions:
+  contents: read
 
 env:
-  AZURE_WEBAPP_NAME: 'pokestream-api'           # Cambiar por tu nombre de Web App
-  AZURE_RESOURCE_GROUP: 'StreamsPokeApp'         # Cambiar por tu Resource Group
-  DOCKER_IMAGE_NAME: 'pokestream/api'
-  SOLUTION_PATH: 'Solution/PokeStream/PokeStream.sln'
-  API_PROJECT: 'Solution/PokeStream/PokeStream.API/PokeStream.API.csproj'
+  AZURE_RESOURCE_GROUP: 'StreamsPokeApp'
+  ACR_NAME: 'pokeimgcontainers'
+  ACR_LOGIN_SERVER: 'pokeimgcontainers.azurecr.io'
+  IMAGE_REPOSITORY: 'pokestream/api'
+  STAGING_WEBAPP_NAME: 'pokestream-api'
+  PRODUCTION_WEBAPP_NAME: 'pokestream-api-prod'
 
 jobs:
   deploy-staging:
     name: Deploy to Staging
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/Test') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging' && github.ref == 'refs/heads/Test')
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     environment: staging
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,37 +44,90 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Configure App Service to pull from ACR with managed identity
+        shell: bash
+        run: |
+          az webapp config set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$STAGING_WEBAPP_NAME" \
+            --generic-configurations '{"acrUseManagedIdentityCreds": true}' \
+            --output none
+
+      - name: Configure App Service settings
+        shell: bash
+        env:
+          CONNECTION_STRING: ${{ secrets.STAGING_CONNECTION_STRING }}
+          JWT_KEY: ${{ secrets.STAGING_JWT_KEY }}
+          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+          JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
+        run: |
+          az webapp config appsettings set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$STAGING_WEBAPP_NAME" \
+            --settings \
+              "ASPNETCORE_ENVIRONMENT=Staging" \
+              "ASPNETCORE_URLS=http://+:8080" \
+              "WEBSITES_PORT=8080" \
+              "ConnectionStrings__DefaultConnection=$CONNECTION_STRING" \
+              "Jwt__Key=$JWT_KEY" \
+              "Jwt__Issuer=$JWT_ISSUER" \
+              "Jwt__Audience=$JWT_AUDIENCE" \
+            --output none
+
+      - name: Log in to Azure Container Registry
+        shell: bash
+        run: az acr login --name "$ACR_NAME"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Solution/PokeStream/PokeStream.API/Dockerfile
+          platforms: linux/amd64
           push: true
           tags: |
-            ${{ env.DOCKER_IMAGE_NAME }}:staging-${{ github.sha }}
-            ${{ env.DOCKER_IMAGE_NAME }}:staging-latest
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:staging-${{ github.sha }}
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:staging-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Deploy to Azure Container Apps (Staging)
-        uses: azure/container-apps-deploy-action@v2
+      - name: Deploy image to Azure App Service
+        uses: azure/webapps-deploy@v3
         with:
-          resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
-          containerAppName: ${{ env.AZURE_WEBAPP_NAME }}-staging
-          image: ${{ env.DOCKER_IMAGE_NAME }}:staging-${{ github.sha }}
-          envVars: |
-            ASPNETCORE_ENVIRONMENT=Staging
-            ConnectionStrings__DefaultConnection=${{ secrets.STAGING_CONNECTION_STRING }}
-            Jwt__Key=${{ secrets.STAGING_JWT_KEY }}
-            Jwt__Issuer=${{ secrets.JWT_ISSUER }}
-            Jwt__Audience=${{ secrets.JWT_AUDIENCE }}
+          app-name: ${{ env.STAGING_WEBAPP_NAME }}
+          images: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:staging-${{ github.sha }}
+
+      - name: Verify staging deployment
+        shell: bash
+        env:
+          WEBAPP_NAME: ${{ env.STAGING_WEBAPP_NAME }}
+        run: |
+          hostname="$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$WEBAPP_NAME" --query defaultHostName --output tsv)"
+          test -n "$hostname"
+
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error --connect-timeout 10 "https://$hostname/health/live"; then
+              exit 0
+            fi
+
+            echo "Health check attempt $attempt/12 failed; retrying in 10 seconds."
+            sleep 10
+          done
+
+          exit 1
 
   deploy-production:
     name: Deploy to Production
-    if: github.event_name == 'push' && github.ref == 'refs/heads/Production'
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/Production') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'production' && github.ref == 'refs/heads/Production')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,46 +137,77 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Configure App Service to pull from ACR with managed identity
+        shell: bash
+        run: |
+          az webapp config set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$PRODUCTION_WEBAPP_NAME" \
+            --generic-configurations '{"acrUseManagedIdentityCreds": true}' \
+            --output none
+
+      - name: Configure App Service settings
+        shell: bash
+        env:
+          CONNECTION_STRING: ${{ secrets.PROD_CONNECTION_STRING }}
+          JWT_KEY: ${{ secrets.PROD_JWT_KEY }}
+          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+          JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
+        run: |
+          az webapp config appsettings set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$PRODUCTION_WEBAPP_NAME" \
+            --settings \
+              "ASPNETCORE_ENVIRONMENT=Production" \
+              "ASPNETCORE_URLS=http://+:8080" \
+              "WEBSITES_PORT=8080" \
+              "ConnectionStrings__DefaultConnection=$CONNECTION_STRING" \
+              "Jwt__Key=$JWT_KEY" \
+              "Jwt__Issuer=$JWT_ISSUER" \
+              "Jwt__Audience=$JWT_AUDIENCE" \
+            --output none
+
+      - name: Log in to Azure Container Registry
+        shell: bash
+        run: az acr login --name "$ACR_NAME"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Solution/PokeStream/PokeStream.API/Dockerfile
+          platforms: linux/amd64
           push: true
           tags: |
-            ${{ env.DOCKER_IMAGE_NAME }}:prod-${{ github.sha }}
-            ${{ env.DOCKER_IMAGE_NAME }}:latest
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:prod-${{ github.sha }}
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run database migrations (Production)
-        run: |
-          # Opción A: Usar EF Core CLI en container
-          # Opción B: Azure SQL migrations via CLI
-          echo "Running migrations..."
-          # dotnet ef database update --project ${{ env.ENTITY_PROJECT }} --startup-project ${{ env.API_PROJECT }} --connection "${{ secrets.PROD_CONNECTION_STRING }}"
-
-      - name: Deploy to Azure Container Apps (Production)
-        uses: azure/container-apps-deploy-action@v2
+      - name: Deploy image to Azure App Service
+        uses: azure/webapps-deploy@v3
         with:
-          resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
-          containerAppName: ${{ env.AZURE_WEBAPP_NAME }}
-          image: ${{ env.DOCKER_IMAGE_NAME }}:prod-${{ github.sha }}
-          envVars: |
-            ASPNETCORE_ENVIRONMENT=Production
-            ConnectionStrings__DefaultConnection=${{ secrets.PROD_CONNECTION_STRING }}
-            Jwt__Key=${{ secrets.PROD_JWT_KEY }}
-            Jwt__Issuer=${{ secrets.JWT_ISSUER }}
-            Jwt__Audience=${{ secrets.JWT_AUDIENCE }}
+          app-name: ${{ env.PRODUCTION_WEBAPP_NAME }}
+          images: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:prod-${{ github.sha }}
 
-      - name: Health check
+      - name: Verify production deployment
+        shell: bash
+        env:
+          WEBAPP_NAME: ${{ env.PRODUCTION_WEBAPP_NAME }}
         run: |
-          sleep 30
-          curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurecontainerapps.io/health || exit 1
+          hostname="$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$WEBAPP_NAME" --query defaultHostName --output tsv)"
+          test -n "$hostname"
 
-      - name: Notify deployment
-        if: always()
-        run: |
-          STATUS="${{ job.status }}"
-          echo "Deployment to production ${STATUS}"
-          # Aquí podrías agregar notificación a Slack, Teams, Email, etc.
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error --connect-timeout 10 "https://$hostname/health/live"; then
+              exit 0
+            fi
+
+            echo "Health check attempt $attempt/12 failed; retrying in 10 seconds."
+            sleep 10
+          done
+
+          exit 1
