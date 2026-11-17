@@ -1,0 +1,48 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<MudLayout>
+    <MudAppBar Elevation="1" Class="mud-theme-primary">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@ToggleDrawer" Color="Color.Inherit" AriaLabel="Open navigation menu" />
+        <MudSpacer />
+        <MudText Typo="Typo.h6" Class="mud-text-primary">PokéStream Collector</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
+                       Color="Color.Inherit"
+                       OnClick="@ToggleTheme"
+                       AriaLabel="@(_isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro")"
+                       Size="Size.Medium" />
+        <LoginDisplay />
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="@_drawerOpen" Variant="DrawerVariant.Mini" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <NavMenu />
+    </MudDrawer>
+
+    <MudMainContent Class="mt-12 pa-4">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+    private bool _isDarkMode = false;
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+
+    private async Task ToggleTheme()
+    {
+        _isDarkMode = !_isDarkMode;
+        await JS.InvokeVoidAsync("mudTheme.setDarkMode", _isDarkMode);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _isDarkMode = await JS.InvokeAsync<bool>("mudTheme.getDarkMode");
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "UI.Web",
+      "url": "http://localhost:5258",
+      "port": 5258
+    }
+  ]
+}

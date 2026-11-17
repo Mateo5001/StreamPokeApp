@@ -47,10 +47,11 @@ Solution/PokeStream/
 ├── PokeStream.API/              # ASP.NET Core API (EXISTS)
 │   ├── Controllers/
 │   │   ├── AuthController.cs    # Auth endpoints (register, login, refresh, logout, me)
+│   │   ├── HealthController.cs  # Health checks (/health/live, /health/ready, /health)
 │   │   └── WeatherForecastController.cs   # Default controller (to remove)
 │   ├── Properties/
 │   ├── bin/ / obj/
-│   ├── Program.cs               # Minimal API with JWT Auth + Swagger
+│   ├── Program.cs               # Minimal API with JWT Auth + Swagger + Health Checks
 │   ├── WeatherForecast.cs       # Default model (to remove)
 │   ├── appsettings.json
 │   ├── appsettings.Development.json
@@ -74,6 +75,24 @@ Solution/PokeStream/
 │   │   ├── 20261112210120_InitialAuthSchema.cs    # Initial Users + UserSessions
 │   │   └── 20261112211730_AddUpdatedAtToUserSession.cs
 │   └── PokeStream.EntityData.csproj  # Target: net10.0, EF Core + SQL Server
+├── PokeStream.UI.Web/           # Blazor Server App (EXISTS - template, NOT in .sln yet)
+│   ├── Components/
+│   │   ├── Pages/
+│   │   │   ├── Home.razor
+│   │   │   ├── Counter.razor
+│   │   │   ├── Weather.razor
+│   │   │   ├── Error.razor
+│   │   │   └── NotFound.razor
+│   │   ├── Layout/
+│   │   │   ├── MainLayout.razor
+│   │   │   ├── NavMenu.razor
+│   │   │   └── ReconnectModal.razor
+│   │   ├── App.razor
+│   │   └── Routes.razor
+│   ├── Program.cs               # Blazor Server (interactive server components)
+│   ├── appsettings.json
+│   ├── appsettings.Development.json
+│   └── PokeStream.UI.Web.csproj # Target: net10.0
 
 PLANNED (not created):
 ├── PokeStream.Overlay/          # .NET MAUI Desktop App (Overlay)
@@ -97,6 +116,7 @@ dotnet restore
 dotnet run
 # Swagger UI: http://localhost:5130/swagger
 # OpenAPI JSON: http://localhost:5130/swagger/v1/swagger.json
+# Health checks: http://localhost:5130/health/live, /health/ready, /health
 
 # EF Core Migrations (from API project)
 dotnet ef migrations add <Name> -o ../PokeStream.EntityData/Data/Migrations --project ../PokeStream.EntityData/PokeStream.EntityData.csproj
@@ -115,6 +135,14 @@ dotnet test
 | POST | `/api/v1/auth/refresh` | Renew access token using refresh token | Public |
 | POST | `/api/v1/auth/logout` | Revoke refresh token | Bearer |
 | GET | `/api/v1/auth/me` | Get current user info | Bearer |
+
+## Current Health API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health/live` | Liveness probe (container orchestration) |
+| GET | `/health/ready` | Readiness probe (DB connectivity check) |
+| GET | `/health` | Detailed health check with DB info |
 
 ## Database Configuration
 
@@ -169,3 +197,5 @@ dotnet test
 - **Retry logic enabled** in EF Core for Azure SQL transient failures (EnableRetryOnFailure)
 - **Password hashing**: BCrypt via ASP.NET Core Identity PasswordHasher
 - **Refresh token rotation**: Old token revoked on each refresh for security
+- **Health checks**: Liveness/Readiness probes implemented for container orchestration
+- **PokeStream.UI.Web** exists as Blazor Server template but is NOT yet added to the solution file

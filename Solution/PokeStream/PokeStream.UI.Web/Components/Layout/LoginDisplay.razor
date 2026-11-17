@@ -1,0 +1,33 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Navigation
+@inject AuthStateService AuthState
+
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <MudAvatar Size="Size.Small" Class="me-2" Style="background-color: var(--mud-palette-primary);">
+                @context.User.Identity?.Name?[0].ToString().ToUpper()
+            </MudAvatar>
+            <MudText Typo="Typo.body2" Class="me-3 d-none d-md-inline">@context.User.Identity?.Name</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@Logout" Size="Size.Small" StartIcon="@Icons.Material.Filled.Logout">
+                Salir
+            </MudButton>
+        </Authorized>
+        <NotAuthorized>
+            <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@(() => Navigation.NavigateTo("/login"))" Size="Size.Small" StartIcon="@Icons.Material.Filled.Login">
+                Iniciar sesión
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => Navigation.NavigateTo("/register"))" Size="Size.Small" StartIcon="@Icons.Material.Filled.PersonAdd">
+                Registrarse
+            </MudButton>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
+@code {
+    private async Task Logout()
+    {
+        await AuthState.LogoutAsync();
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+}

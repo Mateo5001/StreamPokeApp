@@ -48,6 +48,7 @@ Overlay interactivo para streamers (Blazor + .NET MAUI) que muestra Pokémon en 
 | Web Viewers | Blazor WebAssembly (PWA) - *planificado* |
 | **Backend API** | **ASP.NET Core 10, SignalR, EF Core - ✅ IMPLEMENTADO** |
 | **Auth** | **JWT Bearer + Refresh Tokens + BCrypt - ✅ IMPLEMENTADO** |
+| **Health Checks** | **Liveness/Readiness probes - ✅ IMPLEMENTADO** |
 | Database | Azure SQL Server (prod/dev) - ✅ Configurado |
 | Bots | TwitchLib, YouTube LiveChat, Kick API - *planificado* |
 | Deploy | Docker Compose / Azure Container Apps - *planificado* |
@@ -62,8 +63,11 @@ Solution/PokeStream/
 ├── PokeStream.sln                    # Solution file
 ├── PokeStream.API/                   # ASP.NET Core API
 │   ├── Controllers/
-│   │   └── AuthController.cs         # Endpoints: register, login, refresh, logout, me
-│   ├── Program.cs                    # JWT Auth + Swagger + EF Core
+│   │   ├── AuthController.cs         # Endpoints: register, login, refresh, logout, me
+│   │   ├── HealthController.cs       # Health checks: /health/live, /health/ready, /health
+│   │   └── WeatherForecastController.cs  # Por eliminar (template)
+│   ├── Program.cs                    # JWT Auth + Swagger + EF Core + Health Checks
+│   ├── WeatherForecast.cs            # Por eliminar (template)
 │   ├── appsettings.json              # Config producción (placeholders)
 │   └── PokeStream.API.csproj
 ├── PokeStream.Core/                  # Dominio, DTOs, Interfaces, Servicios
@@ -82,11 +86,21 @@ Solution/PokeStream/
 │   ├── Data/
 │   │   └── PokeStreamDbContext.cs    # DbContext Auth
 │   ├── Migrations/
+│   │   ├── 20261112210120_InitialAuthSchema.cs
+│   │   └── 20261112211730_AddUpdatedAtToUserSession.cs
 │   └── PokeStream.EntityData.csproj
+├── PokeStream.UI.Web/                # Blazor Server App (EXISTS - template)
+│   ├── Components/
+│   │   ├── Pages/                    # Home, Counter, Weather, Error, NotFound
+│   │   ├── Layout/                   # MainLayout, NavMenu, ReconnectModal
+│   │   ├── App.razor
+│   │   └── Routes.razor
+│   ├── Program.cs
+│   └── PokeStream.UI.Web.csproj
 
 PROYECTOS PLANIFICADOS:
 ├── PokeStream.Overlay/               # .NET MAUI Desktop App
-├── PokeStream.Web/                   # Blazor WASM PWA
+├── PokeStream.Web/                   # Blazor WASM PWA (Viewer App)
 ├── PokeStream.Bots/                  # Bots Twitch/YouTube/Kick
 └── PokeStream.Infrastructure/        # Repositorios, Servicios extra
 ```
@@ -115,6 +129,7 @@ dotnet restore
 dotnet run
 
 # Swagger UI: http://localhost:5130/swagger
+# Health checks: http://localhost:5130/health/live, /health/ready
 ```
 
 ### Migraciones BD
@@ -140,6 +155,14 @@ dotnet ef database update \
 | POST | `/api/v1/auth/logout` | Revocar refresh token | Bearer |
 | GET | `/api/v1/auth/me` | Info usuario actual | Bearer |
 
+### Endpoints Health disponibles
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/health/live` | Liveness probe (k8s/container) |
+| GET | `/health/ready` | Readiness probe (DB connectivity) |
+| GET | `/health` | Detailed health check with DB info |
+
 ---
 
 ## ⚙️ Configuración
@@ -163,23 +186,26 @@ La configuración sensible (connection strings, JWT keys, passwords) se gestiona
 
 ---
 
-## 📋 Estado actual (2026-11-12)
+## 📋 Estado actual (2026-11-17)
 
 | Componente | Estado | Detalles |
 |------------|--------|----------|
 | Solution (.sln) | ✅ | Formato clásico compatible VS 2022 |
-| PokeStream.API | ✅ | net10.0, JWT Auth, Swagger, Controllers |
+| PokeStream.API | ✅ | net10.0, JWT Auth, Swagger, Health Checks, Controllers |
 | PokeStream.Core | ✅ | net10.0, DTOs, IAuthService, AuthService, JwtSettings |
 | PokeStream.EntityData | ✅ | net10.0, User, UserSession, DbContext, 2 Migraciones |
+| PokeStream.UI.Web | ⚠️ | Blazor Server template (no incluido en .sln aún) |
 | Azure SQL Database | ✅ | Configurado y migraciones aplicadas |
 | Build solution | ✅ | 0 errores, 2 warnings (vulnerabilidades paquetes transitivos) |
 | Auth endpoints probados | ✅ | register, login, refresh funcionando |
+| Health endpoints | ✅ | live, ready, detailed health checks |
 
 ---
 
 ## 🗺 Roadmap próximo
 
 - [ ] Eliminar `WeatherForecastController` y modelo por defecto
+- [ ] Agregar `PokeStream.UI.Web` al solution file
 - [ ] Implementar OAuth (Twitch, YouTube, Kick, Discord)
 - [ ] SignalR Hub para overlay en tiempo real
 - [ ] PokeStream.Bots library

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeStream.EntityData", "Po
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeStream.Core", "PokeStream.Core\PokeStream.Core.csproj", "{BA05D71A-A46E-476C-A0A4-BC91AEF8361D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeStream.UI.Web", "PokeStream.UI.Web\PokeStream.UI.Web.csproj", "{9283E56F-53FC-4792-A969-FACEF370FD5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{BA05D71A-A46E-476C-A0A4-BC91AEF8361D}.Release|x64.Build.0 = Release|Any CPU
 		{BA05D71A-A46E-476C-A0A4-BC91AEF8361D}.Release|x86.ActiveCfg = Release|Any CPU
 		{BA05D71A-A46E-476C-A0A4-BC91AEF8361D}.Release|x86.Build.0 = Release|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|x64.Build.0 = Debug|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|x86.Build.0 = Debug|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|x64.ActiveCfg = Release|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|x64.Build.0 = Release|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|x86.ActiveCfg = Release|Any CPU
+		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

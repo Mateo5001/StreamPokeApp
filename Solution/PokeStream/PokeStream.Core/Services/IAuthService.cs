@@ -12,6 +12,7 @@ public interface IAuthService
     Task<AuthResponse> LoginAsync(LoginRequest request, string ipAddress, string? userAgent);
     Task<AuthResponse> RefreshTokenAsync(RefreshTokenRequest request, string ipAddress, string? userAgent);
     Task<bool> RevokeTokenAsync(string refreshToken, string ipAddress, string? userAgent);
+    Task<bool> LogoutAsync(string? refreshToken, string ipAddress, string? userAgent);
     Task<User?> GetUserByIdAsync(Guid userId);
     Task<User?> GetUserByUsernameOrEmailAsync(string usernameOrEmail);
     Task<bool> ValidatePasswordAsync(User user, string password);

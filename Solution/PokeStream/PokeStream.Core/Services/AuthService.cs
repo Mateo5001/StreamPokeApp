@@ -143,6 +143,14 @@ public class AuthService : IAuthService
         return true;
     }
 
+    public async Task<bool> LogoutAsync(string? refreshToken, string ipAddress, string? userAgent)
+    {
+        if (string.IsNullOrEmpty(refreshToken))
+            return false;
+
+        return await RevokeTokenAsync(refreshToken, ipAddress, userAgent);
+    }
+
     public async Task<User?> GetUserByIdAsync(Guid userId)
     {
         return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
