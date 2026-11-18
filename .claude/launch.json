@@ -3,6 +3,8 @@
   "configurations": [
     {
       "name": "UI.Web",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "Solution/PokeStream/PokeStream.UI.Web/PokeStream.UI.Web.csproj"],
       "url": "http://localhost:5258",
       "port": 5258
     }

@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Add MudBlazor services with custom PokéStream theme
+// Add MudBlazor services
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
@@ -23,8 +23,8 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.ShowTransitionDuration = 200;
 });
 
-// Register custom PokéStream theme
-builder.Services.AddSingleton<MudTheme>(PokestreamTheme.Default);
+// Register PokéStream theme state provider (for ThemeToggle UI)
+builder.Services.AddScoped<PokestreamThemeProvider>();
 
 // Add HttpClient for API calls
 builder.Services.AddScoped(sp => new HttpClient

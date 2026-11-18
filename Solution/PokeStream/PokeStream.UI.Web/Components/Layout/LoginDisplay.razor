@@ -15,14 +15,14 @@
             </MudButton>
         </Authorized>
         <NotAuthorized>
-            <MudButton Variant="Variant.Text" Color="Color.Inherit" Type="ButtonType.Button" Href="/login" Size="Size.Small">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Type="ButtonType.Button" Href="/login" Size="Size.Small">
                 <AppIcon Name="login" Size="20" Class="me-1" Style="vertical-align: middle;" />
                 Iniciar sesión
             </MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Type="ButtonType.Button" Href="/register" Size="Size.Small">
-                <AppIcon Name="person-add" Size="20" Class="me-1" Style="vertical-align: middle;" />
-                Registrarse
-            </MudButton>
+            <MudText Typo="Typo.body2" Class="me-3 d-none d-md-inline align-self-center">
+                ¿No tienes cuenta aún?
+                <MudLink Href="/register" Class="ml-1" Typo="Typo.body2">Regístrate</MudLink>
+            </MudText>
         </NotAuthorized>
     </AuthorizeView>
 </CascadingAuthenticationState>

@@ -8,22 +8,24 @@ namespace PokeStream.UI.Web.Theme;
 /// <summary>
 /// Custom MudBlazor theme implementing the PokéStream design system.
 /// Maps design tokens from DESIGN-TOKENS.md to MudBlazor theme properties.
+/// Theme: Night (default) / Day — Primary: Orange, Secondary: Dark Blue
 /// </summary>
 public static class PokestreamTheme
 {
     /// <summary>
     /// Creates the PokéStream dark theme (default for overlay).
+    /// Night Theme: Primary Orange (#FF8C00), Secondary Dark Blue (#0D1B2A)
     /// </summary>
     public static MudTheme CreateDarkTheme() => new MudTheme()
     {
         PaletteDark = new PaletteDark()
         {
-            // Primary - Electric Yellow
-            Primary = "#FFD700",
+            // Primary - Orange
+            Primary = "#FF8C00",
             PrimaryContrastText = "#000000",
 
-            // Secondary - PokéBall Red
-            Secondary = "#E53E3E",
+            // Secondary - Dark Blue
+            Secondary = "#0D1B2A",
             SecondaryContrastText = "#FFFFFF",
 
             // Tertiary - Grass Green (Success)
@@ -43,49 +45,49 @@ public static class PokestreamTheme
             InfoContrastText = "#FFFFFF",
 
             // Surface & Background
-            Background = "#0D1117",
-            Surface = "#161B22",
+            Background = "#0A0E17",
+            Surface = "#111827",
 
             // AppBar
-            AppbarBackground = "#161B22",
+            AppbarBackground = "#111827",
             AppbarText = "#E6EDF3",
 
             // Drawer
-            DrawerBackground = "#161B22",
+            DrawerBackground = "#111827",
             DrawerText = "#E6EDF3",
 
             // Text
             TextPrimary = "#E6EDF3",
-            TextSecondary = "#8B949E",
+            TextSecondary = "#94A3B8",
 
             // Divider
-            Divider = "#30363D",
+            Divider = "#334155",
 
             // Lines
-            LinesDefault = "#30363D",
-            LinesInputs = "#30363D",
+            LinesDefault = "#334155",
+            LinesInputs = "#334155",
 
             // Gray scale
-            GrayDefault = "#8B949E",
-            GrayLight = "#4A4A6A",
-            GrayLighter = "#30363D",
-            GrayDark = "#161B22",
-            GrayDarker = "#0D1117",
+            GrayDefault = "#94A3B8",
+            GrayLight = "#475569",
+            GrayLighter = "#334155",
+            GrayDark = "#111827",
+            GrayDarker = "#0A0E17",
 
             // Action
-            ActionDefault = "#8B949E",
-            ActionDisabled = "rgba(139, 148, 158, 0.38)",
-            ActionDisabledBackground = "rgba(139, 148, 158, 0.12)",
+            ActionDefault = "#94A3B8",
+            ActionDisabled = "rgba(148, 163, 184, 0.38)",
+            ActionDisabledBackground = "rgba(148, 163, 184, 0.12)",
         },
 
         PaletteLight = new PaletteLight()
         {
-            // Primary - Electric Yellow (darker for light mode)
-            Primary = "#B8860B",
+            // Primary - Vibrant Orange (accessible on light backgrounds, 4.5:1 contrast on white)
+            Primary = "#E86C00",
             PrimaryContrastText = "#FFFFFF",
 
-            // Secondary - PokéBall Red
-            Secondary = "#C62828",
+            // Secondary - Warm Dark Blue
+            Secondary = "#0D1B2A",
             SecondaryContrastText = "#FFFFFF",
 
             // Tertiary - Grass Green
@@ -96,56 +98,56 @@ public static class PokestreamTheme
             Error = "#C62828",
             ErrorContrastText = "#FFFFFF",
 
-            // Warning
+            // Warning - Fire Orange
             Warning = "#E65100",
             WarningContrastText = "#FFFFFF",
 
-            // Info
+            // Info - Water Blue
             Info = "#0366D6",
             InfoContrastText = "#FFFFFF",
 
-            // Surface & Background
-            Background = "#FAFAFA",
+            // Surface & Background - Warm, not sterile
+            Background = "#FFFDF8",
             Surface = "#FFFFFF",
 
-            // AppBar
+            // AppBar - subtle warmth
             AppbarBackground = "#FFFFFF",
-            AppbarText = "#1A1A2E",
+            AppbarText = "#0F172A",
 
             // Drawer
             DrawerBackground = "#FFFFFF",
-            DrawerText = "#1A1A2E",
+            DrawerText = "#0F172A",
 
-            // Text
-            TextPrimary = "#1A1A2E",
-            TextSecondary = "#4A4A6A",
+            // Text - High contrast, warm grays
+            TextPrimary = "#0F172A",
+            TextSecondary = "#475569",
 
             // Divider
-            Divider = "#D0D7DE",
+            Divider = "#E2E8F0",
 
             // Lines
-            LinesDefault = "#D0D7DE",
-            LinesInputs = "#D0D7DE",
+            LinesDefault = "#E2E8F0",
+            LinesInputs = "#CBD5E1",
 
-            // Gray scale
-            GrayDefault = "#4A4A6A",
-            GrayLight = "#D0D7DE",
-            GrayLighter = "#E1E4E8",
-            GrayDark = "#FAFAFA",
-            GrayDarker = "#F3F4F6",
+            // Gray scale - warm grays
+            GrayDefault = "#64748B",
+            GrayLight = "#CBD5E1",
+            GrayLighter = "#E2E8F0",
+            GrayDark = "#FFFDF8",
+            GrayDarker = "#F8F5EE",
 
             // Action
-            ActionDefault = "#4A4A6A",
-            ActionDisabled = "rgba(74, 74, 106, 0.38)",
-            ActionDisabledBackground = "rgba(74, 74, 106, 0.12)",
+            ActionDefault = "#64748B",
+            ActionDisabled = "rgba(100, 116, 139, 0.38)",
+            ActionDisabledBackground = "rgba(100, 116, 139, 0.12)",
         },
 
         LayoutProperties = new LayoutProperties()
         {
-            DefaultBorderRadius = "8px",
+            DefaultBorderRadius = "12px",
             AppbarHeight = "64px",
-            DrawerWidthLeft = "250px",
-            DrawerWidthRight = "300px",
+            DrawerWidthLeft = "280px",
+            DrawerWidthRight = "320px",
             DrawerMiniWidthLeft = "64px",
             DrawerMiniWidthRight = "64px",
         },
@@ -291,18 +293,8 @@ public static class PokestreamTheme
     };
 
     /// <summary>
-    /// Creates the PokéStream light theme.
-    /// </summary>
-    public static MudTheme CreateLightTheme() => new MudTheme()
-    {
-        PaletteLight = CreateDarkTheme().PaletteLight,
-        LayoutProperties = CreateDarkTheme().LayoutProperties,
-        Typography = CreateDarkTheme().Typography,
-        ZIndex = CreateDarkTheme().ZIndex,
-    };
-
-    /// <summary>
     /// Default theme (dark mode as default for overlay).
+    /// Contains both PaletteDark and PaletteLight for automatic switching via data-mud-theme attribute.
     /// </summary>
     public static MudTheme Default => CreateDarkTheme();
 }

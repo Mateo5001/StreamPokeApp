@@ -3,6 +3,7 @@
  */
 
 @import './css/tokens.css';
+@import './css/components.css';
 
 /* ========================================================================
  * CSS RESET & BASE

@@ -5,20 +5,14 @@
 @using MudBlazor
 
 <MudLayout>
+    <PokestreamThemeProvider />
     <MudAppBar Elevation="1" Color="Color.Surface" Class="pokestream-appbar">
-        <AuthorizeView>
-            <Authorized>
-                <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@ToggleDrawer" Class="menu-toggle-button" AriaLabel="Abrir menú de navegación" Type="ButtonType.Button">
-                    <AppIcon Name="menu" Size="24" Style="color: var(--color-on-surface) !important;" />
-                </MudButton>
-            </Authorized>
-        </AuthorizeView>
+        <MudLink Href="/" Class="d-flex align-items-center gap-2 text-decoration-none" Style="color: var(--color-on-surface);">
+            <AppIcon Name="brand-pokestream" Size="28" />
+            <MudText Typo="Typo.h6" Class="pokestream-brand">PokéStream Collector</MudText>
+        </MudLink>
         <MudSpacer />
-        <MudText Typo="Typo.h6" Class="pokestream-brand">PokéStream Collector</MudText>
-        <MudSpacer />
-        <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@ToggleTheme" Class="theme-toggle-button" AriaLabel="@(_isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro")" Type="ButtonType.Button">
-            <AppIcon Name="@(_isDarkMode ? "sun" : "moon")" Size="24" Style="color: var(--color-on-surface) !important;" />
-        </MudButton>
+        <ThemeToggle />
         <LoginDisplay />
     </MudAppBar>
 
@@ -40,23 +34,6 @@
 
 @code {
     private bool _drawerOpen = true;
-    private bool _isDarkMode = true; // Default to dark mode for PokéStream
 
     private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
-
-    private async Task ToggleTheme()
-    {
-        _isDarkMode = !_isDarkMode;
-        await JS.InvokeVoidAsync("mudTheme.setDarkMode", _isDarkMode);
-        StateHasChanged();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _isDarkMode = await JS.InvokeAsync<bool>("mudTheme.getDarkMode");
-            StateHasChanged();
-        }
-    }
 }

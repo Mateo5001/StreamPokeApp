@@ -1,121 +1,115 @@
 ﻿@page "/"
 @inject NavigationManager Navigation
 @inject AuthStateService AuthState
+@inject IJSRuntime JS
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
 @rendermode InteractiveServer
 
 <PageTitle>PokéStream Collector</PageTitle>
 
-<MudContainer Class="mt-12" MaxWidth="MaxWidth.Medium">
-    <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="min-vh-50">
-        <MudItem xs="12" md="10" lg="8">
-            <!-- Hero Section -->
-            <MudCard Elevation="3" Class="pa-6 text-center">
-                <MudCardContent>
-                    <AppIcon Name="pokeball" Size="48" Class="mb-4" Style="color: var(--color-primary);" />
-                    <MudText Typo="Typo.h3" Class="mb-2" Style="font-weight: 700;">PokéStream Collector</MudText>
-                    <MudText Typo="Typo.h6" Color="Color.Secondary" Class="mb-6">
-                        Captura, colecciona e intercambia Pokémon en vivo durante los streams
-                    </MudText>
+<div class="home-page">
+    <!-- Hero Section -->
+    <section class="home-page__hero" aria-labelledby="hero-title">
+        <div class="home-page__hero-content">
+            <div class="home-page__logo" aria-hidden="true">
+                <AppIcon Name="pokeball" Size="48" Style="color: var(--color-on-primary);" />
+            </div>
+            <h1 id="hero-title" class="home-page__title">PokéStream Collector</h1>
+            <p class="home-page__subtitle">
+                Captura, colecciona e intercambia Pokémon en vivo durante los streams.
+                Tu Pokédex persistente, multiplataforma y siempre contigo.
+            </p>
 
-                    <AuthorizeView>
-                        <Authorized>
-                            <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="mt-4">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Type="ButtonType.Button" OnClick="GoToCollection">
-                                    <AppIcon Name="pokeball" Size="20" Class="me-1" Style="vertical-align: middle;" />
-                                    Ver mi Colección
-                                </MudButton>
-                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Large" Type="ButtonType.Button" OnClick="GoToLeaderboard">
-                                    <AppIcon Name="trophy" Size="20" Class="me-1" Style="vertical-align: middle;" />
-                                    Ver Ranking
-                                </MudButton>
-                            </MudStack>
-                        </Authorized>
-                        <NotAuthorized>
-                            <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="mt-4">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Type="ButtonType.Button" OnClick="GoToLogin">
-                                    <AppIcon Name="login" Size="20" Class="me-1" Style="vertical-align: middle;" />
-                                    Iniciar Sesión
-                                </MudButton>
-                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Large" Type="ButtonType.Button" OnClick="GoToRegister">
-                                    <AppIcon Name="person-add" Size="20" Class="me-1" Style="vertical-align: middle;" />
-                                    Registrarse
-                                </MudButton>
-                            </MudStack>
-                        </NotAuthorized>
-                    </AuthorizeView>
-                </MudCardContent>
-            </MudCard>
+            <AuthorizeView>
+                <Authorized>
+                    <div class="home-page__cta-group">
+                        <button class="btn btn--primary btn--large" @onclick="GoToCollection">
+                            <AppIcon Name="pokeball" Size="20" Class="me-1" Style="vertical-align: middle;" />
+                            Ver mi Colección
+                        </button>
+                        <button class="btn btn--outline btn--large" @onclick="GoToLeaderboard">
+                            <AppIcon Name="trophy" Size="20" Class="me-1" Style="vertical-align: middle;" />
+                            Ver Ranking
+                        </button>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <div class="home-page__cta-group">
+                        <button class="btn btn--primary btn--large" @onclick="GoToLogin">
+                            <AppIcon Name="login" Size="20" Class="me-1" Style="vertical-align: middle;" />
+                            Iniciar Sesión
+                        </button>
+                        <button class="btn btn--outline btn--large" @onclick="GoToRegister">
+                            <AppIcon Name="person-add" Size="20" Class="me-1" Style="vertical-align: middle;" />
+                            Registrarse
+                        </button>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </section>
 
-            <!-- Features Section -->
-            <MudGrid Class="mt-8" Justify="Justify.Center">
-                <MudItem xs="12" md="4">
-                    <MudCard Variant="Variant.Outlined" Class="pa-4 text-center h-100">
-                        <MudCardContent>
-                            <AppIcon Name="live-tv" Size="36" Class="mb-3" Style="color: var(--color-secondary);" />
-                            <MudText Typo="Typo.h6" Class="mb-2">Captura en Vivo</MudText>
-                            <MudText Typo="Typo.body2" Color="Color.Secondary">
-                                Los streamers muestran Pokémon en su overlay; los viewers capturan con comandos de chat
-                            </MudText>
-                        </MudCardContent>
-                    </MudCard>
-                </MudItem>
+    <!-- Features Carousel Section -->
+    <section class="home-page__features-section" aria-labelledby="features-title">
+        <header class="home-page__section-header">
+            <h2 id="features-title" class="home-page__section-title">Todo lo que necesitas</h2>
+            <p class="home-page__section-subtitle">
+                Diseñado para streamers y viewers. Capturas en vivo, colección unificada,
+                intercambios sociales y verificación automática.
+            </p>
+        </header>
 
-                <MudItem xs="12" md="4">
-                    <MudCard Variant="Variant.Outlined" Class="pa-4 text-center h-100">
-                        <MudCardContent>
-                            <AppIcon Name="collections" Size="36" Class="mb-3" Style="color: var(--color-secondary);" />
-                            <MudText Typo="Typo.h6" Class="mb-2">Tu Pokédex</MudText>
-                            <MudText Typo="Typo.body2" Color="Color.Secondary">
-                                Colección persistente multiplataforma (Twitch, YouTube, Kick) con historial completo
-                            </MudText>
-                        </MudCardContent>
-                    </MudCard>
-                </MudItem>
+        <FeatureCarousel />
+    </section>
 
-                <MudItem xs="12" md="4">
-                    <MudCard Variant="Variant.Outlined" Class="pa-4 text-center h-100">
-                        <MudCardContent>
-                            <AppIcon Name="swap" Size="36" Class="mb-3" Style="color: var(--color-secondary);" />
-                            <MudText Typo="Typo.h6" Class="mb-2">Intercambios</MudText>
-                            <MudText Typo="Typo.body2" Color="Color.Secondary">
-                                Intercambia Pokémon con otros viewers, completa tu Pokédex y sube en el ranking
-                            </MudText>
-                        </MudCardContent>
-                    </MudCard>
-                </MudItem>
-            </MudGrid>
+    <!-- How It Works Section -->
+    <section class="home-page__how-it-works" aria-labelledby="how-title">
+        <header class="home-page__section-header">
+            <h2 id="how-title" class="home-page__section-title">¿Cómo funciona?</h2>
+            <p class="home-page__section-subtitle">
+                Dos experiencias, una sola plataforma. Elige tu rol y empieza a jugar.
+            </p>
+        </header>
 
-            <!-- How it works -->
-            <MudCard Variant="Variant.Outlined" Class="mt-8 pa-4">
-                <MudCardContent>
-                    <MudText Typo="Typo.h6" Class="mb-4 text-center">¿Cómo funciona?</MudText>
-                    <MudGrid>
-                        <MudItem xs="12" md="6">
-                            <MudText Typo="Typo.subtitle1" Class="mb-1">
-                                <AppIcon Name="stream" Size="20" Class="me-1" Style="color: var(--color-primary); vertical-align: middle;" />
-                                Para Streamers
-                            </MudText>
-                            <MudText Typo="Typo.body2" Color="Color.Secondary">
-                                Ejecuta la app de overlay (MAUI), conéctala a OBS/Streamlabs y muestra Pokémon aleatorios en tu stream
-                            </MudText>
-                        </MudItem>
-                        <MudItem xs="12" md="6">
-                            <MudText Typo="Typo.subtitle1" Class="mb-1">
-                                <AppIcon Name="chat" Size="20" Class="me-1" Style="color: var(--color-primary); vertical-align: middle;" />
-                                Para Viewers
-                            </MudText>
-                            <MudText Typo="Typo.body2" Color="Color.Secondary">
-                                Escribe <code>!catch</code> en el chat para capturar el Pokémon mostrado. ¡Gestiona tu colección en la web!
-                            </MudText>
-                        </MudItem>
-                    </MudGrid>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+        <div class="home-page__how-card">
+            <article class="home-page__how-item">
+                <div class="home-page__how-icon">
+                    <AppIcon Name="stream" Size="24" />
+                </div>
+                <h3 class="home-page__how-title">Para Streamers</h3>
+                <p class="home-page__how-description">
+                    Ejecuta la app de overlay (MAUI), conéctala a OBS o Streamlabs
+                    y muestra Pokémon aleatorios en tu stream con un solo clic.
+                </p>
+            </article>
+
+            <article class="home-page__how-item">
+                <div class="home-page__how-icon">
+                    <AppIcon Name="chat" Size="24" />
+                </div>
+                <h3 class="home-page__how-title">Para Viewers</h3>
+                <p class="home-page__how-description">
+                    Escribe <code class="text-code-inline">!catch</code> en el chat para capturar
+                    el Pokémon mostrado. Gestiona tu colección completa en la web app.
+                </p>
+            </article>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="home-page__footer" role="contentinfo">
+        <p class="home-page__footer-text">
+            PokéStream Collector &mdash; Hecho con ❤️ para la comunidad de Pokémon y streamers
+        </p>
+        <nav class="home-page__footer-links" aria-label="Enlaces legales">
+            <a href="/privacy" class="home-page__footer-link">Privacidad</a>
+            <a href="/terms" class="home-page__footer-link">Términos</a>
+            <a href="/contact" class="home-page__footer-link">Contacto</a>
+            <a href="https://github.com/Mateo5001/StreamPokeApp" class="home-page__footer-link" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+    </footer>
+</div>
 
 @code {
     private bool _isAuthenticated = false;

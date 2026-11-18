@@ -21,23 +21,10 @@
     <ReconnectModal />
     <MudSnackbar />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
-    <script>
-        window.mudTheme = {
-            setDarkMode: function (isDark) {
-                document.documentElement.setAttribute('data-mud-theme', isDark ? 'dark' : 'light');
-                localStorage.setItem('mudTheme', isDark ? 'dark' : 'light');
-            },
-            getDarkMode: function () {
-                const saved = localStorage.getItem('mudTheme');
-                if (saved) return saved === 'dark';
-                return window.matchMedia('(prefers-color-scheme: dark)').matches;
-            }
-        };
-        // Initialize theme on load
-        document.documentElement.setAttribute('data-mud-theme', window.mudTheme.getDarkMode() ? 'dark' : 'light');
-    </script>
+    <script src="@Assets["js/pokestream-theme.js"]"></script>
 </body>
 
 </html>
 
+@using MudBlazor
 @using PokeStream.UI.Web.Theme
