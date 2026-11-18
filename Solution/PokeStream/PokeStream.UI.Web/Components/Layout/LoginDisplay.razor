@@ -5,19 +5,22 @@
 <CascadingAuthenticationState>
     <AuthorizeView>
         <Authorized>
-            <MudAvatar Size="Size.Small" Class="me-2" Style="background-color: var(--mud-palette-primary);">
+            <MudAvatar Size="Size.Small" Class="me-2" Style="background-color: var(--color-primary);">
                 @context.User.Identity?.Name?[0].ToString().ToUpper()
             </MudAvatar>
             <MudText Typo="Typo.body2" Class="me-3 d-none d-md-inline">@context.User.Identity?.Name</MudText>
-            <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@Logout" Size="Size.Small" StartIcon="@Icons.Material.Filled.Logout">
+            <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@Logout" Size="Size.Small" Type="ButtonType.Button">
+                <AppIcon Name="logout" Size="20" Class="me-1" Style="vertical-align: middle;" />
                 Salir
             </MudButton>
         </Authorized>
         <NotAuthorized>
-            <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@(() => Navigation.NavigateTo("/login"))" Size="Size.Small" StartIcon="@Icons.Material.Filled.Login">
+            <MudButton Variant="Variant.Text" Color="Color.Inherit" Type="ButtonType.Button" Href="/login" Size="Size.Small">
+                <AppIcon Name="login" Size="20" Class="me-1" Style="vertical-align: middle;" />
                 Iniciar sesión
             </MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => Navigation.NavigateTo("/register"))" Size="Size.Small" StartIcon="@Icons.Material.Filled.PersonAdd">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Type="ButtonType.Button" Href="/register" Size="Size.Small">
+                <AppIcon Name="person-add" Size="20" Class="me-1" Style="vertical-align: middle;" />
                 Registrarse
             </MudButton>
         </NotAuthorized>

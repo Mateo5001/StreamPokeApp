@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PokeStream.Core.Services;
+using PokeStream.Core.Services.AuthServices;
 using PokeStream.Core.Settings;
 using PokeStream.EntityData.Data;
 using System.Text;

@@ -1,27 +1,36 @@
-﻿<MudNavMenu Dense="true">
-    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">
+﻿@* NavMenu.razor - Main navigation with custom PokéStream icons *@
+@* Uses NavIcon component (Components/Shared/NavIcon.razor) *@
+
+<MudNavMenu Dense="true">
+    <MudNavLink Href="/" Match="NavLinkMatch.All">
+        <NavIcon Name="home" Class="me-2" />
         Inicio
     </MudNavLink>
 
-    <MudNavLink Href="/collection" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.CatchingPokemon">
+    <MudNavLink Href="/collection" Match="NavLinkMatch.Prefix">
+        <NavIcon Name="collection" Class="me-2" />
         Mi Colección
     </MudNavLink>
 
-    <MudNavLink Href="/trade" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SwapHoriz">
+    <MudNavLink Href="/trade" Match="NavLinkMatch.Prefix">
+        <NavIcon Name="trade" Class="me-2" />
         Intercambios
     </MudNavLink>
 
-    <MudNavLink Href="/leaderboard" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Leaderboard">
+    <MudNavLink Href="/leaderboard" Match="NavLinkMatch.Prefix">
+        <NavIcon Name="leaderboard" Class="me-2" />
         Ranking
     </MudNavLink>
 
     <MudDivider Class="my-2" />
 
-    <MudNavLink Href="/profile" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">
+    <MudNavLink Href="/profile" Match="NavLinkMatch.Prefix">
+        <NavIcon Name="profile" Class="me-2" />
         Perfil
     </MudNavLink>
 
-    <MudNavLink Href="/settings" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Settings">
+    <MudNavLink Href="/settings" Match="NavLinkMatch.Prefix">
+        <NavIcon Name="settings" Class="me-2" />
         Configuración
     </MudNavLink>
 </MudNavMenu>

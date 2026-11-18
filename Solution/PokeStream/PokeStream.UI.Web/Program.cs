@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using MudBlazor.Services;
+using PokeStream.Core.Services.AuthServices;
 using PokeStream.UI.Web.Components;
-using PokeStream.UI.Web.Services;
+using PokeStream.UI.Web.Theme;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Add MudBlazor services
+// Add MudBlazor services with custom PokéStream theme
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
@@ -21,6 +22,9 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.HideTransitionDuration = 200;
     config.SnackbarConfiguration.ShowTransitionDuration = 200;
 });
+
+// Register custom PokéStream theme
+builder.Services.AddSingleton<MudTheme>(PokestreamTheme.Default);
 
 // Add HttpClient for API calls
 builder.Services.AddScoped(sp => new HttpClient

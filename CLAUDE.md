@@ -187,6 +187,17 @@ dotnet test
 - Shared DTOs in `PokeStream.Core` for API contracts
 - Clean Architecture: Core (domain) → EntityData (infrastructure) → API (presentation)
 
+## Icon Guidelines
+- **Source of truth**: All icons originate in `docs/assets/icons/` (SVG format, 24x24, stroke-based, currentColor)
+- **Naming**: `nav-{name}.svg` for navigation, `{feature}-{name}.svg` for features
+- **Style**: 2px stroke, rounded caps/joins, no fill (except semantic accents), `currentColor` for theming
+- **Usage**: Copy to `wwwroot/icons/` for web, reference via `AppIcon` component (`Name="icon-name"`)
+- **Adding new icons**: 
+  1. Create SVG in `docs/assets/icons/` following style guide
+  2. Copy to `wwwroot/icons/`
+  3. Use via `<AppIcon Name="icon-name" Size="24" />`
+- **DO NOT** use MudBlazor Material Icons directly in new components — use `AppIcon` with custom SVGs
+
 ## Important Notes
 - The MAUI overlay runs on the streamer's machine as an always-on-top transparent window
 - Bots connect to multiple platforms simultaneously via shared backend

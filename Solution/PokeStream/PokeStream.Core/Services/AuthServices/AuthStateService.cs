@@ -3,9 +3,10 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
-using PokeStream.Core.DTOs;
+using PokeStream.Core.DTOs.Auth;
+using PokeStream.Core.DTOs.User;
 
-namespace PokeStream.UI.Web.Services;
+namespace PokeStream.Core.Services.AuthServices;
 
 /// <summary>
 /// Servicio de autenticación para la aplicación Blazor (maneja tokens en localStorage)

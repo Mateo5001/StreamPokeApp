@@ -6,12 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using PokeStream.Core.DTOs;
+using PokeStream.Core.DTOs.Auth;
+using PokeStream.Core.DTOs.User;
 using PokeStream.Core.Settings;
 using PokeStream.EntityData.Data;
 using PokeStream.EntityData.Models;
 
-namespace PokeStream.Core.Services;
+namespace PokeStream.Core.Services.AuthServices;
 
 /// <summary>
 /// Servicio de autenticación con JWT y Refresh Tokens

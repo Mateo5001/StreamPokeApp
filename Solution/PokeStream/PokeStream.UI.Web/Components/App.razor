@@ -16,8 +16,8 @@
 </head>
 
 <body>
-    <MudThemeProvider />
-    <Routes />
+    <MudThemeProvider Theme="@PokestreamTheme.Default" />
+    <Routes @rendermode="InteractiveServer" />
     <ReconnectModal />
     <MudSnackbar />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
@@ -39,3 +39,5 @@
 </body>
 
 </html>
+
+@using PokeStream.UI.Web.Theme

@@ -1,10 +1,12 @@
+/* ReconnectModal — PokéStream Design System */
+
 .components-reconnect-first-attempt-visible,
 .components-reconnect-repeated-attempt-visible,
 .components-reconnect-failed-visible,
 .components-pause-visible,
 .components-resume-failed-visible,
 .components-rejoining-animation {
-    display: none;
+  display: none;
 }
 
 #components-reconnect-modal.components-reconnect-show .components-reconnect-first-attempt-visible,
@@ -16,142 +18,268 @@
 #components-reconnect-modal.components-reconnect-retrying .components-rejoining-animation,
 #components-reconnect-modal.components-reconnect-failed,
 #components-reconnect-modal.components-reconnect-failed .components-reconnect-failed-visible {
-    display: block;
+  display: block;
 }
-
 
 #components-reconnect-modal {
-    background-color: white;
-    width: 20rem;
-    margin: 20vh auto;
-    padding: 2rem;
-    border: 0;
-    border-radius: 0.5rem;
-    box-shadow: 0 3px 6px 2px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    transition: display 0.5s allow-discrete, overlay 0.5s allow-discrete;
-    animation: components-reconnect-modal-fadeOutOpacity 0.5s both;
-    &[open]
-
-{
-    animation: components-reconnect-modal-slideUp 1.5s cubic-bezier(.05, .89, .25, 1.02) 0.3s, components-reconnect-modal-fadeInOpacity 0.5s ease-in-out 0.3s;
-    animation-fill-mode: both;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  width: 100%;
+  max-width: 320px;
+  margin: auto;
+  padding: var(--space-6);
+  border: 1px solid var(--color-outline);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-standard),
+              transform var(--duration-normal) var(--ease-standard);
+  animation: components-reconnect-modal-fadeOutOpacity var(--duration-normal) both;
 }
 
+#components-reconnect-modal[open] {
+  animation: components-reconnect-modal-slideUp var(--duration-slower) var(--ease-spring) var(--duration-fast),
+             components-reconnect-modal-fadeInOpacity var(--duration-normal) var(--ease-standard) var(--duration-fast);
+  animation-fill-mode: both;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 #components-reconnect-modal::backdrop {
-    background-color: rgba(0, 0, 0, 0.4);
-    animation: components-reconnect-modal-fadeInOpacity 0.5s ease-in-out;
-    opacity: 1;
+  background-color: rgba(13, 17, 23, 0.8);
+  backdrop-filter: blur(4px);
+  animation: components-reconnect-modal-fadeInOpacity var(--duration-normal) var(--ease-standard);
 }
 
 @keyframes components-reconnect-modal-slideUp {
-    0% {
-        transform: translateY(30px) scale(0.95);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
+  0% {
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes components-reconnect-modal-fadeInOpacity {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
-    }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 @keyframes components-reconnect-modal-fadeOutOpacity {
-    0% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-    }
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .components-reconnect-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
 }
 
 #components-reconnect-modal p {
-    margin: 0;
-    text-align: center;
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--text-body-md);
+  line-height: var(--leading-relaxed);
+  color: var(--color-on-surface);
+}
+
+#components-reconnect-modal .reconnect-title {
+  font-family: var(--font-family-display);
+  font-size: var(--text-heading-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+#components-reconnect-modal .reconnect-message {
+  color: var(--color-on-surface-variant);
+  font-size: var(--text-body-md);
+}
+
+#components-reconnect-modal .reconnect-attempt {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-body-sm);
+  color: var(--color-primary);
+  background: var(--color-primary-container);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
 }
 
 #components-reconnect-modal button {
-    border: 0;
-    background-color: #6b9ed2;
-    color: white;
-    padding: 4px 24px;
-    border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-family-base);
+  font-size: var(--text-body-md);
+  font-weight: var(--weight-medium);
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+  min-width: 160px;
 }
 
-    #components-reconnect-modal button:hover {
-        background-color: #3b6ea2;
-    }
+#components-reconnect-modal button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
 
-    #components-reconnect-modal button:active {
-        background-color: #6b9ed2;
-    }
+#components-reconnect-modal button:active:not(:disabled) {
+  background: var(--color-primary-container);
+  transform: scale(0.98);
+}
 
+#components-reconnect-modal button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+#components-reconnect-modal button:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  transform: none;
+}
+
+#components-reconnect-modal button.secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+#components-reconnect-modal button.secondary:hover:not(:disabled) {
+  background: var(--color-primary-container);
+}
+
+#components-reconnect-modal button.secondary:active:not(:disabled) {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/* Rejoining Animation — PokéBall style */
 .components-rejoining-animation {
-    position: relative;
-    width: 80px;
-    height: 80px;
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: var(--space-2) 0;
 }
 
-    .components-rejoining-animation div {
-        position: absolute;
-        border: 3px solid #0087ff;
-        opacity: 1;
-        border-radius: 50%;
-        animation: components-rejoining-animation 1.5s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-    }
+.components-rejoining-animation div {
+  position: absolute;
+  border: 3px solid var(--color-primary);
+  opacity: 1;
+  border-radius: 50%;
+  animation: components-rejoining-animation 1.5s var(--ease-standard) infinite;
+}
 
-        .components-rejoining-animation div:nth-child(2) {
-            animation-delay: -0.5s;
-        }
+.components-rejoining-animation div:nth-child(2) {
+  animation-delay: -0.5s;
+}
 
 @keyframes components-rejoining-animation {
-    0% {
-        top: 40px;
-        left: 40px;
-        width: 0;
-        height: 0;
-        opacity: 0;
-    }
+  0% {
+    top: 40px;
+    left: 40px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  4.9% {
+    top: 40px;
+    left: 40px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  5% {
+    top: 40px;
+    left: 40px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 80px;
+    opacity: 0;
+  }
+}
 
-    4.9% {
-        top: 40px;
-        left: 40px;
-        width: 0;
-        height: 0;
-        opacity: 0;
-    }
+/* Pulse glow for the modal border when reconnecting */
+#components-reconnect-modal.components-reconnect-retrying {
+  animation: modal-pulse-glow 2s ease-in-out infinite;
+}
 
-    5% {
-        top: 40px;
-        left: 40px;
-        width: 0;
-        height: 0;
-        opacity: 1;
-    }
+@keyframes modal-pulse-glow {
+  0%, 100% {
+    box-shadow: var(--shadow-xl), var(--shadow-glow);
+    border-color: var(--color-primary);
+  }
+  50% {
+    box-shadow: var(--shadow-xl), var(--shadow-glow-strong);
+    border-color: var(--color-primary-hover);
+  }
+}
 
-    100% {
-        top: 0px;
-        left: 0px;
-        width: 80px;
-        height: 80px;
-        opacity: 0;
-    }
+/* Failed state styling */
+#components-reconnect-modal.components-reconnect-failed {
+  border-color: var(--color-error);
+  box-shadow: var(--shadow-xl), 0 0 24px rgba(248, 81, 73, 0.3);
+}
+
+#components-reconnect-modal.components-reconnect-failed .reconnect-title {
+  color: var(--color-error);
+}
+
+#components-reconnect-modal.components-reconnect-failed .reconnect-attempt {
+  color: var(--color-error);
+  background: var(--color-error-container);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  #components-reconnect-modal,
+  #components-reconnect-modal::backdrop,
+  #components-reconnect-modal[open],
+  .components-rejoining-animation div,
+  #components-reconnect-modal.components-reconnect-retrying {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  #components-reconnect-modal[open] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .components-rejoining-animation {
+    display: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  #components-reconnect-modal {
+    border-width: 2px;
+  }
+
+  #components-reconnect-modal button {
+    border: 2px solid currentColor;
+  }
+
+  #components-reconnect-modal button.secondary {
+    border-color: currentColor;
+  }
 }

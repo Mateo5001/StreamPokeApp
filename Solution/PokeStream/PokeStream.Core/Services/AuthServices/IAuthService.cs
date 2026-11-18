@@ -1,7 +1,7 @@
-using PokeStream.Core.DTOs;
+using PokeStream.Core.DTOs.Auth;
 using PokeStream.EntityData.Models;
 
-namespace PokeStream.Core.Services;
+namespace PokeStream.Core.Services.AuthServices;
 
 /// <summary>
 /// Interfaz del servicio de autenticación

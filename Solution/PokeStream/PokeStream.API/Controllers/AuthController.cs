@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PokeStream.Core.DTOs;
-using PokeStream.Core.Services;
+using PokeStream.Core.DTOs.Auth;
+using PokeStream.Core.DTOs.Common;
+using PokeStream.Core.DTOs.User;
+using PokeStream.Core.Services.AuthServices;
 
 namespace PokeStream.API.Controllers;
 

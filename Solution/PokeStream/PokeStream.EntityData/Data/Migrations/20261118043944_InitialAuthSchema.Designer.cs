@@ -12,8 +12,8 @@ using PokeStream.EntityData.Data;
 namespace PokeStream.EntityData.Data.Migrations
 {
     [DbContext(typeof(PokeStreamDbContext))]
-    [Migration("20261112211730_AddUpdatedAtToUserSession")]
-    partial class AddUpdatedAtToUserSession
+    [Migration("20261118043944_InitialAuthSchema")]
+    partial class InitialAuthSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

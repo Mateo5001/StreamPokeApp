@@ -1,6 +1,9 @@
 ﻿@page "/"
 @inject NavigationManager Navigation
 @inject AuthStateService AuthState
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@rendermode InteractiveServer
 
 <PageTitle>PokéStream Collector</PageTitle>
 
@@ -10,7 +13,7 @@
             <!-- Hero Section -->
             <MudCard Elevation="3" Class="pa-6 text-center">
                 <MudCardContent>
-                    <MudIcon Icon="@Icons.Material.Filled.CatchingPokemon" Size="Size.Large" Color="Color.Primary" Class="mb-4" />
+                    <AppIcon Name="pokeball" Size="48" Class="mb-4" Style="color: var(--color-primary);" />
                     <MudText Typo="Typo.h3" Class="mb-2" Style="font-weight: 700;">PokéStream Collector</MudText>
                     <MudText Typo="Typo.h6" Color="Color.Secondary" Class="mb-6">
                         Captura, colecciona e intercambia Pokémon en vivo durante los streams
@@ -19,20 +22,24 @@
                     <AuthorizeView>
                         <Authorized>
                             <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="mt-4">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Href="/collection" StartIcon="@Icons.Material.Filled.CatchingPokemon">
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Type="ButtonType.Button" OnClick="GoToCollection">
+                                    <AppIcon Name="pokeball" Size="20" Class="me-1" Style="vertical-align: middle;" />
                                     Ver mi Colección
                                 </MudButton>
-                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Large" Href="/leaderboard" StartIcon="@Icons.Material.Filled.Leaderboard">
+                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Large" Type="ButtonType.Button" OnClick="GoToLeaderboard">
+                                    <AppIcon Name="trophy" Size="20" Class="me-1" Style="vertical-align: middle;" />
                                     Ver Ranking
                                 </MudButton>
                             </MudStack>
                         </Authorized>
                         <NotAuthorized>
                             <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="mt-4">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="@(() => Navigation.NavigateTo("/login"))" StartIcon="@Icons.Material.Filled.Login">
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Type="ButtonType.Button" OnClick="GoToLogin">
+                                    <AppIcon Name="login" Size="20" Class="me-1" Style="vertical-align: middle;" />
                                     Iniciar Sesión
                                 </MudButton>
-                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Large" OnClick="@(() => Navigation.NavigateTo("/register"))" StartIcon="@Icons.Material.Filled.PersonAdd">
+                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Large" Type="ButtonType.Button" OnClick="GoToRegister">
+                                    <AppIcon Name="person-add" Size="20" Class="me-1" Style="vertical-align: middle;" />
                                     Registrarse
                                 </MudButton>
                             </MudStack>
@@ -46,7 +53,7 @@
                 <MudItem xs="12" md="4">
                     <MudCard Variant="Variant.Outlined" Class="pa-4 text-center h-100">
                         <MudCardContent>
-                            <MudIcon Icon="@Icons.Material.Filled.LiveTv" Size="Size.Large" Color="Color.Secondary" Class="mb-3" />
+                            <AppIcon Name="live-tv" Size="36" Class="mb-3" Style="color: var(--color-secondary);" />
                             <MudText Typo="Typo.h6" Class="mb-2">Captura en Vivo</MudText>
                             <MudText Typo="Typo.body2" Color="Color.Secondary">
                                 Los streamers muestran Pokémon en su overlay; los viewers capturan con comandos de chat
@@ -58,7 +65,7 @@
                 <MudItem xs="12" md="4">
                     <MudCard Variant="Variant.Outlined" Class="pa-4 text-center h-100">
                         <MudCardContent>
-                            <MudIcon Icon="@Icons.Material.Filled.CollectionsBookmark" Size="Size.Large" Color="Color.Secondary" Class="mb-3" />
+                            <AppIcon Name="collections" Size="36" Class="mb-3" Style="color: var(--color-secondary);" />
                             <MudText Typo="Typo.h6" Class="mb-2">Tu Pokédex</MudText>
                             <MudText Typo="Typo.body2" Color="Color.Secondary">
                                 Colección persistente multiplataforma (Twitch, YouTube, Kick) con historial completo
@@ -70,7 +77,7 @@
                 <MudItem xs="12" md="4">
                     <MudCard Variant="Variant.Outlined" Class="pa-4 text-center h-100">
                         <MudCardContent>
-                            <MudIcon Icon="@Icons.Material.Filled.SwapHoriz" Size="Size.Large" Color="Color.Secondary" Class="mb-3" />
+                            <AppIcon Name="swap" Size="36" Class="mb-3" Style="color: var(--color-secondary);" />
                             <MudText Typo="Typo.h6" Class="mb-2">Intercambios</MudText>
                             <MudText Typo="Typo.body2" Color="Color.Secondary">
                                 Intercambia Pokémon con otros viewers, completa tu Pokédex y sube en el ranking
@@ -86,13 +93,19 @@
                     <MudText Typo="Typo.h6" Class="mb-4 text-center">¿Cómo funciona?</MudText>
                     <MudGrid>
                         <MudItem xs="12" md="6">
-                            <MudText Typo="Typo.subtitle1" Class="mb-1"><MudIcon Icon="@Icons.Material.Filled.Stream" Size="Size.Small" Class="me-1" Color="Color.Primary" /> Para Streamers</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="mb-1">
+                                <AppIcon Name="stream" Size="20" Class="me-1" Style="color: var(--color-primary); vertical-align: middle;" />
+                                Para Streamers
+                            </MudText>
                             <MudText Typo="Typo.body2" Color="Color.Secondary">
                                 Ejecuta la app de overlay (MAUI), conéctala a OBS/Streamlabs y muestra Pokémon aleatorios en tu stream
                             </MudText>
                         </MudItem>
                         <MudItem xs="12" md="6">
-                            <MudText Typo="Typo.subtitle1" Class="mb-1"><MudIcon Icon="@Icons.Material.Filled.Chat" Size="Size.Small" Class="me-1" Color="Color.Primary" /> Para Viewers</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="mb-1">
+                                <AppIcon Name="chat" Size="20" Class="me-1" Style="color: var(--color-primary); vertical-align: middle;" />
+                                Para Viewers
+                            </MudText>
                             <MudText Typo="Typo.body2" Color="Color.Secondary">
                                 Escribe <code>!catch</code> en el chat para capturar el Pokémon mostrado. ¡Gestiona tu colección en la web!
                             </MudText>
@@ -103,3 +116,37 @@
         </MudItem>
     </MudGrid>
 </MudContainer>
+
+@code {
+    private bool _isAuthenticated = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        _isAuthenticated = authState.User?.Identity?.IsAuthenticated ?? false;
+    }
+
+    private async Task GoToLogin()
+    {
+        Console.WriteLine("GoToLogin clicked - server method executing");
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
+
+    private async Task GoToRegister()
+    {
+        Console.WriteLine("GoToRegister clicked - server method executing");
+        Navigation.NavigateTo("/register", forceLoad: true);
+    }
+
+    private async Task GoToCollection()
+    {
+        Console.WriteLine("GoToCollection clicked - server method executing");
+        Navigation.NavigateTo("/collection", forceLoad: true);
+    }
+
+    private async Task GoToLeaderboard()
+    {
+        Console.WriteLine("GoToLeaderboard clicked - server method executing");
+        Navigation.NavigateTo("/leaderboard", forceLoad: true);
+    }
+}

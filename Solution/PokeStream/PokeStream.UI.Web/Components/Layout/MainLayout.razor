@@ -1,24 +1,37 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@using Microsoft.AspNetCore.Components.Authorization
+@using MudBlazor
 
 <MudLayout>
-    <MudAppBar Elevation="1" Class="mud-theme-primary">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@ToggleDrawer" Color="Color.Inherit" AriaLabel="Open navigation menu" />
+    <MudAppBar Elevation="1" Color="Color.Surface" Class="pokestream-appbar">
+        <AuthorizeView>
+            <Authorized>
+                <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@ToggleDrawer" Class="menu-toggle-button" AriaLabel="Abrir menú de navegación" Type="ButtonType.Button">
+                    <AppIcon Name="menu" Size="24" Style="color: var(--color-on-surface) !important;" />
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
         <MudSpacer />
-        <MudText Typo="Typo.h6" Class="mud-text-primary">PokéStream Collector</MudText>
+        <MudText Typo="Typo.h6" Class="pokestream-brand">PokéStream Collector</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
-                       Color="Color.Inherit"
-                       OnClick="@ToggleTheme"
-                       AriaLabel="@(_isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro")"
-                       Size="Size.Medium" />
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@ToggleTheme" Class="theme-toggle-button" AriaLabel="@(_isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro")" Type="ButtonType.Button">
+            <AppIcon Name="@(_isDarkMode ? "sun" : "moon")" Size="24" Style="color: var(--color-on-surface) !important;" />
+        </MudButton>
         <LoginDisplay />
     </MudAppBar>
 
-    <MudDrawer @bind-Open="@_drawerOpen" Variant="DrawerVariant.Mini" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu />
-    </MudDrawer>
+    <AuthorizeView>
+        <Authorized>
+            <MudDrawer @bind-Open="@_drawerOpen" Variant="DrawerVariant.Mini" ClipMode="DrawerClipMode.Always" Elevation="2" Class="pokestream-drawer">
+                <NavMenu />
+            </MudDrawer>
+        </Authorized>
+        <NotAuthorized>
+            <!-- Empty space when not authenticated - no drawer -->
+        </NotAuthorized>
+    </AuthorizeView>
 
     <MudMainContent Class="mt-12 pa-4">
         @Body
@@ -27,7 +40,7 @@
 
 @code {
     private bool _drawerOpen = true;
-    private bool _isDarkMode = false;
+    private bool _isDarkMode = true; // Default to dark mode for PokéStream
 
     private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
 
@@ -35,6 +48,7 @@
     {
         _isDarkMode = !_isDarkMode;
         await JS.InvokeVoidAsync("mudTheme.setDarkMode", _isDarkMode);
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
