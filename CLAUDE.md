@@ -149,21 +149,21 @@ dotnet test
 **Production (Azure SQL Server):**
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=tcp:<server>.database.windows.net,1433;Initial Catalog=PokeStream;Persist Security Info=False;User ID=<user>;Password=<password>;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  "DefaultConnection": "Server=tcp:<YOUR_SERVER>.database.windows.net,1433;Initial Catalog=<YOUR_DB>;Persist Security Info=False;User ID=<YOUR_USER>;Password=<YOUR_PASSWORD>;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 }
 ```
 
 **Development (Azure SQL Server - separate DB):**
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=tcp:pokeconectserver.database.windows.net,1433;Initial Catalog=PokeApp_dev;Persist Security Info=False;User ID=AdminServerPoke;Password=DevTest@2026;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  "DefaultConnection": "Server=tcp:<YOUR_DEV_SERVER>.database.windows.net,1433;Initial Catalog=<YOUR_DEV_DB>;Persist Security Info=False;User ID=<YOUR_DEV_USER>;Password=<YOUR_DEV_PASSWORD>;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 }
 ```
 
 **JWT Settings (Development):**
 ```json
 "Jwt": {
-  "Key": "PokeStream-Super-Secret-Key-For-Development-Only-Change-In-Production-2026!",
+  "Key": "<YOUR_JWT_SECRET_KEY_MIN_32_CHARS>",
   "Issuer": "PokeStreamAPI",
   "Audience": "PokeStreamClient",
   "AccessTokenExpiryMinutes": 15,
@@ -204,7 +204,7 @@ dotnet test
 - Viewer collections persist across platforms (same user on Twitch/YouTube/Kick shares one Pokédex)
 - Auto-verification system uses codes/cooldowns to validate captures without manual intervention
 - Blazor WASM runs as PWA for offline-capable viewer experience
-- **Current Azure SQL**: `pokeconectserver.database.windows.net` with database `PokeApp_dev`
+- **Azure SQL**: Configure your server/database in `appsettings.json` (see Database Configuration above)
 - **Retry logic enabled** in EF Core for Azure SQL transient failures (EnableRetryOnFailure)
 - **Password hashing**: BCrypt via ASP.NET Core Identity PasswordHasher
 - **Refresh token rotation**: Old token revoked on each refresh for security
