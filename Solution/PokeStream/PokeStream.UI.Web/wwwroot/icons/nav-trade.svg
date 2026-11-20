@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon nav-icon--trade">
-  <path d="M7 16l9-9"/>
-  <path d="M16 7l-9 9"/>
-  <circle cx="7" cy="16" r="3"/>
-  <circle cx="17" cy="6" r="3"/>
-</svg>

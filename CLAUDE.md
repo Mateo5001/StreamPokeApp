@@ -39,93 +39,6 @@ Interactive overlay for streamers (Blazor + .NET MAUI) showing Pokémon on strea
 | Deploy | Docker Compose / Azure Container Apps - *planned* |
 | API Docs | Swagger/OpenAPI (Swashbuckle.AspNetCore 6.6.2) - *configured* |
 
-## Project Structure (Solution/PokeStream/)
-
-```
-Solution/PokeStream/
-├── PokeStream.sln               # Solution file (classic .sln format)
-├── PokeStream.API/              # ASP.NET Core API (EXISTS)
-│   ├── Controllers/
-│   │   ├── AuthController.cs    # Auth endpoints (register, login, refresh, logout, me)
-│   │   ├── HealthController.cs  # Health checks (/health/live, /health/ready, /health)
-│   │   └── WeatherForecastController.cs   # Default controller (to remove)
-│   ├── Properties/
-│   ├── bin/ / obj/
-│   ├── Program.cs               # Minimal API with JWT Auth + Swagger + Health Checks
-│   ├── WeatherForecast.cs       # Default model (to remove)
-│   ├── appsettings.json
-│   ├── appsettings.Development.json
-│   └── PokeStream.API.csproj    # Target: net10.0, references Core + EntityData
-├── PokeStream.Core/             # Domain, DTOs, Interfaces, Services (EXISTS)
-│   ├── DTOs/
-│   │   └── AuthDtos.cs          # RegisterRequest, LoginRequest, AuthResponse, UserInfoDto, ErrorResponse, RefreshTokenRequest
-│   ├── Services/
-│   │   ├── IAuthService.cs      # Auth interface
-│   │   └── AuthService.cs       # JWT + Refresh Tokens + BCrypt implementation
-│   ├── Settings/
-│   │   └── JwtSettings.cs       # JWT configuration from appsettings
-│   └── PokeStream.Core.csproj   # Target: net10.0, references EntityData
-├── PokeStream.EntityData/       # EF Core, Models, DbContext, Migrations (EXISTS)
-│   ├── Models/
-│   │   ├── User.cs              # User with OAuth fields + PasswordHash
-│   │   └── UserSession.cs       # Refresh token sessions with device/IP tracking
-│   ├── Data/
-│   │   └── PokeStreamDbContext.cs  # DbContext with Auth schema config
-│   ├── Migrations/
-│   │   ├── 20261112210120_InitialAuthSchema.cs    # Initial Users + UserSessions
-│   │   └── 20261112211730_AddUpdatedAtToUserSession.cs
-│   └── PokeStream.EntityData.csproj  # Target: net10.0, EF Core + SQL Server
-├── PokeStream.UI.Web/           # Blazor Server App (EXISTS - template, NOT in .sln yet)
-│   ├── Components/
-│   │   ├── Pages/
-│   │   │   ├── Home.razor
-│   │   │   ├── Counter.razor
-│   │   │   ├── Weather.razor
-│   │   │   ├── Error.razor
-│   │   │   └── NotFound.razor
-│   │   ├── Layout/
-│   │   │   ├── MainLayout.razor
-│   │   │   ├── NavMenu.razor
-│   │   │   └── ReconnectModal.razor
-│   │   ├── App.razor
-│   │   └── Routes.razor
-│   ├── Program.cs               # Blazor Server (interactive server components)
-│   ├── appsettings.json
-│   ├── appsettings.Development.json
-│   └── PokeStream.UI.Web.csproj # Target: net10.0
-
-PLANNED (not created):
-├── PokeStream.Overlay/          # .NET MAUI Desktop App (Overlay)
-├── PokeStream.Web/              # Blazor WASM PWA (Viewer App)
-├── PokeStream.Bots/             # Shared library for Twitch/YT/Kick bots
-└── PokeStream.Infrastructure/   # Additional EF Core, Repositories, Services
-```
-
-## Development Commands
-
-```bash
-# Solution root
-cd Solution/PokeStream
-
-# Build entire solution
-dotnet build PokeStream.sln
-
-# Backend API (with JWT Auth + Swagger)
-cd PokeStream.API
-dotnet restore
-dotnet run
-# Swagger UI: http://localhost:5130/swagger
-# OpenAPI JSON: http://localhost:5130/swagger/v1/swagger.json
-# Health checks: http://localhost:5130/health/live, /health/ready, /health
-
-# EF Core Migrations (from API project)
-dotnet ef migrations add <Name> -o ../PokeStream.EntityData/Data/Migrations --project ../PokeStream.EntityData/PokeStream.EntityData.csproj
-dotnet ef database update --project ../PokeStream.EntityData/PokeStream.EntityData.csproj
-
-# Run tests (when added)
-dotnet test
-```
-
 ## Current Auth API Endpoints
 
 | Method | Endpoint | Description | Auth |
@@ -188,15 +101,8 @@ dotnet test
 - Clean Architecture: Core (domain) → EntityData (infrastructure) → API (presentation)
 
 ## Icon Guidelines
-- **Source of truth**: All icons originate in `docs/assets/icons/` (SVG format, 24x24, stroke-based, currentColor)
-- **Naming**: `nav-{name}.svg` for navigation, `{feature}-{name}.svg` for features
-- **Style**: 2px stroke, rounded caps/joins, no fill (except semantic accents), `currentColor` for theming
-- **Usage**: Copy to `wwwroot/icons/` for web, reference via `AppIcon` component (`Name="icon-name"`)
-- **Adding new icons**: 
-  1. Create SVG in `docs/assets/icons/` following style guide
-  2. Copy to `wwwroot/icons/`
-  3. Use via `<AppIcon Name="icon-name" Size="24" />`
-- **DO NOT** use MudBlazor Material Icons directly in new components — use `AppIcon` with custom SVGs
+
+- **DO NOT** use MudBlazor Material Icons directly in new components 
 
 ## Important Notes
 - The MAUI overlay runs on the streamer's machine as an always-on-top transparent window
@@ -209,4 +115,3 @@ dotnet test
 - **Password hashing**: BCrypt via ASP.NET Core Identity PasswordHasher
 - **Refresh token rotation**: Old token revoked on each refresh for security
 - **Health checks**: Liveness/Readiness probes implemented for container orchestration
-- **PokeStream.UI.Web** exists as Blazor Server template but is NOT yet added to the solution file
