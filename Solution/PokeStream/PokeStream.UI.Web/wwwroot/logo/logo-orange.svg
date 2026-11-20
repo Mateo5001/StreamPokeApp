@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="PokéStream">
+  <defs>
+    <mask id="play">
+      <path d="M68 46 L68 154 L156 100 Z" fill="#fff" stroke="#fff" stroke-width="10" stroke-linejoin="round"/>
+    </mask>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0A1432" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <circle cx="100" cy="100" r="86" fill="#2E6BFF"/>
+    <circle cx="100" cy="100" r="75" fill="#FF7A1A"/>
+    <rect x="14" y="94.5" width="172" height="11" fill="#2E6BFF"/>
+    <path d="M68 46 L68 154 L156 100 Z" fill="#2E6BFF" stroke="#2E6BFF" stroke-width="10" stroke-linejoin="round"/>
+    <rect x="14" y="94.5" width="172" height="11" fill="#FF7A1A" mask="url(#play)"/>
+    <circle cx="100" cy="100" r="20" fill="#2E6BFF" stroke="#FF7A1A" stroke-width="11"/>
+  </g>
+</svg>

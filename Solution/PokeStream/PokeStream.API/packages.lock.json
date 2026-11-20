@@ -296,6 +296,11 @@
           "System.CodeDom": "6.0.0"
         }
       },
+      "MudBlazor": {
+        "type": "Transitive",
+        "resolved": "9.14.0",
+        "contentHash": "VmMM/u4upqpc0lJoXmo30Zj1d/Zq3BjdS11+q/eB/+p20pV1WXbLS0C17WbV4xqLM1i9Kpco6emt6M4s2R/BUA=="
+      },
       "Swashbuckle.AspNetCore.Swagger": {
         "type": "Transitive",
         "resolved": "6.6.2",
@@ -443,6 +448,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[9.0.0, )",
           "Microsoft.EntityFrameworkCore": "[9.0.0, )",
+          "MudBlazor": "[9.14.0, )",
           "PokeStream.EntityData": "[1.0.0, )",
           "System.IdentityModel.Tokens.Jwt": "[8.0.1, )"
         }

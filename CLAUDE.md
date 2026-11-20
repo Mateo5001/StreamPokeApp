@@ -102,7 +102,10 @@ Interactive overlay for streamers (Blazor + .NET MAUI) showing Pokémon on strea
 
 ## Icon Guidelines
 
-- **DO NOT** use MudBlazor Material Icons directly in new components 
+- **DO NOT** use MudBlazor Material Icons directly in new components (`Icons.Material.*`, `Icons.Custom.*`)
+- **ALL** icons in `PokeStream.UI.Web` MUST come from `Solution/PokeStream/PokeStream.Core/Services/Utilidades/AppIcon.cs` (static class `AppIcon`, namespace `PokeStream.Core.Services.Utilidades`, already imported in `_Imports.razor`)
+- Usage: `<MudIcon Icon="@AppIcon.Pokeball" />` / `<MudIconButton Icon="@AppIcon.Menu" />` — any MudBlazor `Icon` parameter, never a raw SVG string or MudBlazor constant inline
+- To add an icon: add a `public const string Name = "<path d=\"...\"/>";` (PascalCase, SVG inner markup) to `AppIcon`; do not create icons anywhere else
 
 ## Important Notes
 - The MAUI overlay runs on the streamer's machine as an always-on-top transparent window

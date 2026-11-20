@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.33422.456
+# Visual Studio Version 18
+VisualStudioVersion = 18.12.12405.243 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeStream.API", "PokeStream.API\PokeStream.API.csproj", "{8B1A3C2D-4E5F-6A7B-8C9D-0E1F2A3B4C5D}"
 EndProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeStream.EntityData", "Po
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeStream.Core", "PokeStream.Core\PokeStream.Core.csproj", "{BA05D71A-A46E-476C-A0A4-BC91AEF8361D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeStream.UI.Web", "PokeStream.UI.Web\PokeStream.UI.Web.csproj", "{9283E56F-53FC-4792-A969-FACEF370FD5A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeStream.UI.Web", "PokeStream.UI.Web\PokeStream.UI.Web.csproj", "{4213F97C-14A9-4772-BBCE-8032E63067FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,18 +57,18 @@ Global
 		{BA05D71A-A46E-476C-A0A4-BC91AEF8361D}.Release|x64.Build.0 = Release|Any CPU
 		{BA05D71A-A46E-476C-A0A4-BC91AEF8361D}.Release|x86.ActiveCfg = Release|Any CPU
 		{BA05D71A-A46E-476C-A0A4-BC91AEF8361D}.Release|x86.Build.0 = Release|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|x64.Build.0 = Debug|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Debug|x86.Build.0 = Debug|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|x64.ActiveCfg = Release|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|x64.Build.0 = Release|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|x86.ActiveCfg = Release|Any CPU
-		{9283E56F-53FC-4792-A969-FACEF370FD5A}.Release|x86.Build.0 = Release|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Debug|x64.Build.0 = Debug|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Debug|x86.Build.0 = Debug|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Release|x64.ActiveCfg = Release|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Release|x64.Build.0 = Release|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Release|x86.ActiveCfg = Release|Any CPU
+		{4213F97C-14A9-4772-BBCE-8032E63067FD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
