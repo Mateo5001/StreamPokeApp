@@ -4,6 +4,8 @@ using PokeStream.Core.DTOs.Auth;
 using PokeStream.Core.DTOs.Common;
 using PokeStream.Core.DTOs.User;
 using PokeStream.Core.Services.AuthServices;
+using PokeStream.Resources.Auth;
+using PokeStream.Resources.Common;
 
 namespace PokeStream.API.Controllers;
 
@@ -39,7 +41,7 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new ErrorResponse
             {
-                Message = "Datos de registro inválidos",
+                Message = AuthErrorResource.RegisterInvalidData,
                 Errors = ModelState.Where(e => e.Value?.Errors.Count > 0)
                     .ToDictionary(e => e.Key, e => e.Value!.Errors.Select(err => err.ErrorMessage).ToArray())
             });
@@ -62,7 +64,7 @@ public class AuthController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error inesperado en registro");
-            return StatusCode(500, new ErrorResponse { Message = "Error interno del servidor" });
+            return StatusCode(500, new ErrorResponse { Message = CommonResource.InternalServerError });
         }
     }
 
@@ -81,7 +83,7 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new ErrorResponse
             {
-                Message = "Datos de login inválidos",
+                Message = AuthErrorResource.LoginInvalidData,
                 Errors = ModelState.Where(e => e.Value?.Errors.Count > 0)
                     .ToDictionary(e => e.Key, e => e.Value!.Errors.Select(err => err.ErrorMessage).ToArray())
             });
@@ -104,7 +106,7 @@ public class AuthController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error inesperado en login");
-            return StatusCode(500, new ErrorResponse { Message = "Error interno del servidor" });
+            return StatusCode(500, new ErrorResponse { Message = CommonResource.InternalServerError });
         }
     }
 
@@ -123,7 +125,7 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new ErrorResponse
             {
-                Message = "Refresh token requerido",
+                Message = AuthErrorResource.RefreshTokenRequired,
                 Errors = ModelState.Where(e => e.Value?.Errors.Count > 0)
                     .ToDictionary(e => e.Key, e => e.Value!.Errors.Select(err => err.ErrorMessage).ToArray())
             });
@@ -146,7 +148,7 @@ public class AuthController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error inesperado en refresh token");
-            return StatusCode(500, new ErrorResponse { Message = "Error interno del servidor" });
+            return StatusCode(500, new ErrorResponse { Message = CommonResource.InternalServerError });
         }
     }
 
@@ -166,7 +168,7 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new ErrorResponse
             {
-                Message = "Refresh token requerido",
+                Message = AuthErrorResource.RefreshTokenRequired,
                 Errors = ModelState.Where(e => e.Value?.Errors.Count > 0)
                     .ToDictionary(e => e.Key, e => e.Value!.Errors.Select(err => err.ErrorMessage).ToArray())
             });
@@ -181,15 +183,15 @@ public class AuthController : ControllerBase
 
             if (!revoked)
             {
-                return NotFound(new ErrorResponse { Message = "Sesión no encontrada" });
+                return NotFound(new ErrorResponse { Message = AuthErrorResource.SessionNotFound });
             }
 
-            return Ok(new { Message = "Sesión cerrada correctamente" });
+            return Ok(new { Message = AuthErrorResource.LogoutSuccess });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error inesperado en logout");
-            return StatusCode(500, new ErrorResponse { Message = "Error interno del servidor" });
+            return StatusCode(500, new ErrorResponse { Message = CommonResource.InternalServerError });
         }
     }
 
@@ -208,14 +210,14 @@ public class AuthController : ControllerBase
 
         if (!Guid.TryParse(userIdClaim, out var userId))
         {
-            return Unauthorized(new ErrorResponse { Message = "Token inválido" });
+            return Unauthorized(new ErrorResponse { Message = AuthErrorResource.InvalidToken });
         }
 
         var user = await _authService.GetUserByIdAsync(userId);
 
         if (user == null)
         {
-            return NotFound(new ErrorResponse { Message = "Usuario no encontrado" });
+            return NotFound(new ErrorResponse { Message = AuthErrorResource.UserNotFound });
         }
 
         return Ok(new UserInfoDto
@@ -229,8 +231,7 @@ public class AuthController : ControllerBase
             HasPassword = !string.IsNullOrEmpty(user.PasswordHash),
             HasTwitchLinked = !string.IsNullOrEmpty(user.TwitchUserId),
             HasYouTubeLinked = !string.IsNullOrEmpty(user.YouTubeChannelId),
-            HasKickLinked = !string.IsNullOrEmpty(user.KickUserId),
-            HasDiscordLinked = !string.IsNullOrEmpty(user.DiscordUserId)
+            HasKickLinked = !string.IsNullOrEmpty(user.KickUserId)
         });
     }
 

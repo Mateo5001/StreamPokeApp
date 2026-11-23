@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using PokeStream.Resources.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PokeStream.Core.DTOs.Auth;
@@ -42,8 +43,8 @@ public class AuthService : IAuthService
         if (existingUser != null)
         {
             throw new InvalidOperationException(existingUser.Username == request.Username
-                ? "El nombre de usuario ya está en uso"
-                : "El email ya está registrado");
+                ? AuthErrorResource.UsernameInUse
+                : AuthErrorResource.EmailInUse);
         }
 
         // Crear usuario
@@ -82,12 +83,12 @@ public class AuthService : IAuthService
         if (user == null || !await ValidatePasswordAsync(user, request.Password))
         {
             _logger.LogWarning("Intento de login fallido para: {UsernameOrEmail}", request.UsernameOrEmail);
-            throw new UnauthorizedAccessException("Credenciales inválidas");
+            throw new UnauthorizedAccessException(AuthErrorResource.InvalidCredentials);
         }
 
         if (!user.IsActive)
         {
-            throw new UnauthorizedAccessException("La cuenta está desactivada");
+            throw new UnauthorizedAccessException(AuthErrorResource.AccountDisabled);
         }
 
         // Actualizar última actividad
@@ -108,7 +109,7 @@ public class AuthService : IAuthService
 
         if (session == null || !session.IsActive || session.ExpiresAt < DateTime.UtcNow)
         {
-            throw new UnauthorizedAccessException("Refresh token inválido o expirado");
+            throw new UnauthorizedAccessException(AuthErrorResource.RefreshTokenInvalidOrExpired);
         }
 
         // Revocar el token actual (rotación de refresh tokens)
@@ -211,8 +212,7 @@ public class AuthService : IAuthService
                 HasPassword = !string.IsNullOrEmpty(user.PasswordHash),
                 HasTwitchLinked = !string.IsNullOrEmpty(user.TwitchUserId),
                 HasYouTubeLinked = !string.IsNullOrEmpty(user.YouTubeChannelId),
-                HasKickLinked = !string.IsNullOrEmpty(user.KickUserId),
-                HasDiscordLinked = !string.IsNullOrEmpty(user.DiscordUserId)
+                HasKickLinked = !string.IsNullOrEmpty(user.KickUserId)
             }
         };
     }

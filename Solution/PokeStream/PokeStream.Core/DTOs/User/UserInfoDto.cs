@@ -15,5 +15,4 @@ public class UserInfoDto
     public bool HasTwitchLinked { get; set; }
     public bool HasYouTubeLinked { get; set; }
     public bool HasKickLinked { get; set; }
-    public bool HasDiscordLinked { get; set; }
 }

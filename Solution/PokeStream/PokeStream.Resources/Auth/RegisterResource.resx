@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Username" xml:space="preserve"><value>Usuario</value></data>
+  <data name="Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Password" xml:space="preserve"><value>Contraseña</value></data>
+  <data name="DisplayName" xml:space="preserve"><value>Nombre a mostrar</value></data>
+  <data name="UsernameRequired" xml:space="preserve"><value>Ingresa un nombre de usuario</value></data>
+  <data name="UsernameMinLength" xml:space="preserve"><value>El usuario debe tener al menos 3 caracteres</value></data>
+  <data name="UsernameMaxLength" xml:space="preserve"><value>El usuario no puede superar los 100 caracteres</value></data>
+  <data name="EmailRequired" xml:space="preserve"><value>Ingresa tu email</value></data>
+  <data name="EmailInvalid" xml:space="preserve"><value>Ingresa un email válido</value></data>
+  <data name="EmailMaxLength" xml:space="preserve"><value>El email no puede superar los 320 caracteres</value></data>
+  <data name="PasswordRequired" xml:space="preserve"><value>Ingresa una contraseña</value></data>
+  <data name="PasswordMinLength" xml:space="preserve"><value>La contraseña debe tener al menos 8 caracteres</value></data>
+  <data name="PasswordMaxLength" xml:space="preserve"><value>La contraseña no puede superar los 100 caracteres</value></data>
+  <data name="DisplayNameMaxLength" xml:space="preserve"><value>El nombre a mostrar no puede superar los 200 caracteres</value></data>
+  <data name="TwitchUserIdMaxLength" xml:space="preserve"><value>El ID de usuario de Twitch no puede superar los 100 caracteres</value></data>
+  <data name="TwitchUsernameMaxLength" xml:space="preserve"><value>El usuario de Twitch no puede superar los 100 caracteres</value></data>
+  <data name="YouTubeChannelIdMaxLength" xml:space="preserve"><value>El ID de canal de YouTube no puede superar los 100 caracteres</value></data>
+  <data name="YouTubeUsernameMaxLength" xml:space="preserve"><value>El usuario de YouTube no puede superar los 100 caracteres</value></data>
+  <data name="KickUserIdMaxLength" xml:space="preserve"><value>El ID de usuario de Kick no puede superar los 100 caracteres</value></data>
+  <data name="KickUsernameMaxLength" xml:space="preserve"><value>El usuario de Kick no puede superar los 100 caracteres</value></data>
+  <data name="DiscordUserIdMaxLength" xml:space="preserve"><value>El ID de usuario de Discord no puede superar los 100 caracteres</value></data>
+  <data name="DiscordUsernameMaxLength" xml:space="preserve"><value>El usuario de Discord no puede superar los 100 caracteres</value></data>
+</root>

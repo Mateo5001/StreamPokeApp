@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PokeStream.Core\PokeStream.Core.csproj" />
+    <ProjectReference Include="..\PokeStream.Resources\PokeStream.Resources.csproj" />
   </ItemGroup>
 
 </Project>

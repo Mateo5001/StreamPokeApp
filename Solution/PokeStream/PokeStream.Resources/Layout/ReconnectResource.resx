@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Rejoining" xml:space="preserve"><value>Reconectando con el servidor...</value></data>
+  <data name="RepeatedAttemptPrefix" xml:space="preserve"><value>Falló la reconexión... reintentando en </value></data>
+  <data name="RepeatedAttemptSuffix" xml:space="preserve"><value> segundos.</value></data>
+  <data name="RejoinFailed" xml:space="preserve"><value>No se pudo reconectar.</value></data>
+  <data name="RetryOrReload" xml:space="preserve"><value>Reintenta o recarga la página.</value></data>
+  <data name="Retry" xml:space="preserve"><value>Reintentar</value></data>
+  <data name="Paused" xml:space="preserve"><value>El servidor pausó la sesión.</value></data>
+  <data name="ResumeFailed" xml:space="preserve"><value>No se pudo reanudar la sesión.</value></data>
+  <data name="Resume" xml:space="preserve"><value>Reanudar</value></data>
+</root>

@@ -5,28 +5,75 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using PokeStream.Core.DTOs.Auth;
 using PokeStream.Core.DTOs.User;
+using PokeStream.Core.Services.Cookies;
+using PokeStream.Core.Services.Http;
 
 namespace PokeStream.Core.Services.AuthServices;
 
 /// <summary>
-/// Servicio de autenticación para la aplicación Blazor (maneja tokens en localStorage)
+/// Servicio de autenticación para la aplicación Blazor. Los tokens viven en una cookie HttpOnly
+/// (<see cref="CookieKeys.Session"/>) y se mantienen en memoria durante el circuito.
+/// Flujo: la carga inicial lee la cookie (HttpContext) → <see cref="PersistentComponentState"/> la pasa al circuito
+/// interactivo (donde no hay HttpContext) → los cambios se escriben de vuelta a la cookie vía <see cref="ICookieService"/>.
 /// </summary>
-public class AuthStateService : AuthenticationStateProvider
+public class AuthStateService : AuthenticationStateProvider, IDisposable
 {
-    private readonly HttpClient _httpClient;
-    private readonly IJSRuntime _jsRuntime;
+    private sealed record StoredSession(string AccessToken, string RefreshToken);
+
+    private const string SessionStateKey = "ps_session_state";
+
+    private readonly IHttpClient _httpClient;
+    private readonly ICookieService _cookies;
+    private readonly PersistentComponentState _componentState;
     private readonly NavigationManager _navigation;
+    private readonly PersistingComponentStateSubscription _persisting;
     private AuthenticationState? _cachedState;
 
-    private const string AccessTokenKey = "pokestream_access_token";
-    private const string RefreshTokenKey = "pokestream_refresh_token";
-    private const string UserKey = "pokestream_user";
+    private StoredSession? _session;
+    private bool _sessionLoaded;
+    private bool _fromHttpRequest; // true while running in the prerender pass: no JS, so cookies cannot be written
 
-    public AuthStateService(HttpClient httpClient, IJSRuntime jsRuntime, NavigationManager navigation)
+    public AuthStateService(IHttpClient httpClient, ICookieService cookies, PersistentComponentState componentState, NavigationManager navigation)
     {
         _httpClient = httpClient;
-        _jsRuntime = jsRuntime;
+        _cookies = cookies;
+        _componentState = componentState;
         _navigation = navigation;
+        _persisting = componentState.RegisterOnPersisting(() =>
+        {
+            if (_session != null)
+                _componentState.PersistAsJson(SessionStateKey, _session);
+            return Task.CompletedTask;
+        });
+    }
+
+    public void Dispose() => _persisting.Dispose();
+
+    private StoredSession? LoadSession()
+    {
+        if (_sessionLoaded)
+            return _session;
+        _sessionLoaded = true;
+
+        // Interactive circuit: the prerender pass handed the session over.
+        if (_componentState.TryTakeFromJson<StoredSession>(SessionStateKey, out var restored) && restored != null)
+            return _session = restored;
+
+        // Initial HTTP request (prerender): read the HttpOnly cookie.
+        var raw = _cookies.GetSecure();
+        if (!string.IsNullOrEmpty(raw))
+        {
+            try
+            {
+                _session = JsonSerializer.Deserialize<StoredSession>(raw);
+                _fromHttpRequest = _session != null;
+            }
+            catch (JsonException)
+            {
+                // Corrupted cookie: treat as signed out
+            }
+        }
+        return _session;
     }
 
     private static AuthenticationState Anonymous() =>
@@ -37,20 +84,23 @@ public class AuthStateService : AuthenticationStateProvider
         if (_cachedState != null)
             return _cachedState;
 
-        // During prerendering GetAccessTokenAsync returns null -> unauthenticated; resolved after interactive render
-        var token = await GetAccessTokenAsync();
+        var token = LoadSession()?.AccessToken;
         if (string.IsNullOrEmpty(token))
             return _cachedState = Anonymous();
 
         if (!TryParseClaims(token, out var claims, out var expiresAt))
         {
-            // Corrupted token in localStorage: discard it so the app does not get stuck
+            // Corrupted token in the cookie: discard it so the app does not get stuck
             await TryClearTokensAsync();
             return _cachedState = Anonymous();
         }
 
         if (expiresAt <= DateTimeOffset.UtcNow)
         {
+            // Prerender pass cannot write cookies, and refresh rotates the token: leave it for the interactive circuit.
+            if (_fromHttpRequest)
+                return Anonymous();
+
             // Expired access token: try to renew it. On network failure do not cache, so it is retried later.
             return await RefreshCoreAsync() ? _cachedState! : Anonymous();
         }
@@ -190,44 +240,27 @@ public class AuthStateService : AuthenticationStateProvider
         return request;
     }
 
-    public async Task<string?> GetAccessTokenAsync()
-    {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<string>("localStorage.getItem", AccessTokenKey);
-        }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("prerendering") || ex.Message.Contains("statically rendered"))
-        {
-            return null; // During prerendering, return null - will be resolved after interactive render
-        }
-    }
+    public Task<string?> GetAccessTokenAsync() => Task.FromResult(LoadSession()?.AccessToken);
 
-    public async Task<string?> GetRefreshTokenAsync()
-    {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<string>("localStorage.getItem", RefreshTokenKey);
-        }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("prerendering") || ex.Message.Contains("statically rendered"))
-        {
-            return null; // During prerendering, return null - will be resolved after interactive render
-        }
-    }
+    public Task<string?> GetRefreshTokenAsync() => Task.FromResult(LoadSession()?.RefreshToken);
 
     private async Task StoreTokensAsync(AuthResponse authResponse)
     {
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", AccessTokenKey, authResponse.AccessToken);
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", RefreshTokenKey, authResponse.RefreshToken);
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", UserKey, JsonSerializer.Serialize(authResponse.User));
+        _session = new StoredSession(authResponse.AccessToken, authResponse.RefreshToken);
+        _sessionLoaded = true;
+        _fromHttpRequest = false;
+
+        var days = Math.Max(1, (int)Math.Ceiling((authResponse.RefreshTokenExpiresAt - DateTime.UtcNow).TotalDays));
+        await _cookies.SetSecureAsync(JsonSerializer.Serialize(_session), days);
     }
 
     private async Task TryClearTokensAsync()
     {
+        _session = null;
+        _sessionLoaded = true;
         try
         {
-            await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", AccessTokenKey);
-            await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", RefreshTokenKey);
-            await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", UserKey);
+            await _cookies.RemoveSecureAsync();
         }
         catch (Exception ex) when (ex is InvalidOperationException or JSException or JSDisconnectedException)
         {
