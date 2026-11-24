@@ -11,6 +11,7 @@
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
+<RouteGuard />
 
 <MudLayout>
     <MudAppBar Elevation="3" Dense="true">
@@ -25,7 +26,7 @@
         <MudLink Href="/">
             <MudImage Src="@logoName" Alt="PokéStream" Width="220" />
         </MudLink>
-        <MudSpacer/>
+        <MudSpacer />
         <MudToggleIconButton Toggled="_isDarkMode"
                              ToggledChanged="OnThemeToggled"
                              Icon="@AppIcon.DarkMode"
@@ -34,13 +35,13 @@
                              title="@LayoutResource.ToggleTheme" />
         <MudMenu Icon="@accountIcon" Color="Color.Inherit" Dense="true">
             <AuthorizeView>
-                    <Authorized>
-                            <MudMenuItem Href="/account">@LayoutResource.MyAccount</MudMenuItem>
-                            <MudMenuItem Href="/logout">@LayoutResource.SignOut</MudMenuItem>
-                    </Authorized>
-                    <NotAuthorized>
-                        <LoginEmbedded></LoginEmbedded>
-                    </NotAuthorized>
+                <Authorized>
+                    <MudMenuItem Href="/account">@LayoutResource.MyAccount</MudMenuItem>
+                    <MudMenuItem Href="/logout">@LayoutResource.SignOut</MudMenuItem>
+                </Authorized>
+                <NotAuthorized>
+                    <LoginEmbedded></LoginEmbedded>
+                </NotAuthorized>
             </AuthorizeView>
         </MudMenu>
     </MudAppBar>
@@ -54,16 +55,11 @@
                     </MudDrawerHeader>
                     <NavMenu />
                 </MudDrawer>
-                <MudContainer MaxWidth="MaxWidth.Large" Class="my-6">
-                    @Body
-                </MudContainer>
             </Authorized>
-            <NotAuthorized>
-                <MudContainer MaxWidth="MaxWidth.Large" Class="my-6">
-                    <Home></Home>
-                </MudContainer>
-            </NotAuthorized>
         </AuthorizeView>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-6">
+            <CascadingValue Value="_isDarkMode" Name="IsDarkMode">@Body</CascadingValue>
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
 

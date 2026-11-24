@@ -48,10 +48,4 @@ public class RegisterRequest
 
     [MaxLength(100, ErrorMessageResourceType = typeof(RegisterResource), ErrorMessageResourceName = nameof(RegisterResource.KickUsernameMaxLength))]
     public string? KickUsername { get; set; }
-
-    [MaxLength(100, ErrorMessageResourceType = typeof(RegisterResource), ErrorMessageResourceName = nameof(RegisterResource.DiscordUserIdMaxLength))]
-    public string? DiscordUserId { get; set; }
-
-    [MaxLength(100, ErrorMessageResourceType = typeof(RegisterResource), ErrorMessageResourceName = nameof(RegisterResource.DiscordUsernameMaxLength))]
-    public string? DiscordUsername { get; set; }
 }

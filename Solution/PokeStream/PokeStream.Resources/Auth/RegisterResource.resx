@@ -4,6 +4,20 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>Crear cuenta</value></data>
+  <data name="Subtitle" xml:space="preserve"><value>Únete y empieza a atrapar Pokémon en los streams</value></data>
+  <data name="ConfirmPassword" xml:space="preserve"><value>Confirmar contraseña</value></data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve"><value>Las contraseñas no coinciden</value></data>
+  <data name="ShowHidePassword" xml:space="preserve"><value>Mostrar u ocultar contraseña</value></data>
+  <data name="PlatformsTitle" xml:space="preserve"><value>Vincular plataformas (opcional)</value></data>
+  <data name="PlatformsHint" xml:space="preserve"><value>Conecta tus cuentas para compartir un solo Pokédex entre plataformas</value></data>
+  <data name="TwitchUsername" xml:space="preserve"><value>Usuario de Twitch</value></data>
+  <data name="YouTubeUsername" xml:space="preserve"><value>Usuario de YouTube</value></data>
+  <data name="KickUsername" xml:space="preserve"><value>Usuario de Kick</value></data>
+  <data name="SubmitButton" xml:space="preserve"><value>Crear cuenta</value></data>
+  <data name="RegisterFailed" xml:space="preserve"><value>No se pudo crear la cuenta. Revisa los datos e inténtalo de nuevo</value></data>
+  <data name="HaveAccount" xml:space="preserve"><value>¿Ya tienes cuenta?</value></data>
+  <data name="SignIn" xml:space="preserve"><value>Iniciar sesión</value></data>
   <data name="Username" xml:space="preserve"><value>Usuario</value></data>
   <data name="Email" xml:space="preserve"><value>Email</value></data>
   <data name="Password" xml:space="preserve"><value>Contraseña</value></data>

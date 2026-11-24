@@ -3,5 +3,89 @@
 
 <PageTitle>@HomeResource.PageTitle</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">PokéStream Collector</MudText>
-<MudText>@HomeResource.Welcome</MudText>
+<MudStack Spacing="8">
+
+    @* Hero *@
+    <MudPaper Elevation="0" Outlined="true" Class="pa-8 pa-md-12 rounded-lg" Style="border-top: 4px solid var(--mud-palette-primary);">
+        <MudStack Spacing="3" AlignItems="AlignItems.Center">
+            <MudImage Src="@(IsDarkMode ? AppIcon.Images.WordmarkCollectorDark : AppIcon.Images.WordmarkCollectorLight)"
+                      Alt="@HomeResource.SiteName" Style="width: 100%; max-width: 380px;" />
+            <MudText Typo="Typo.h6" Align="Align.Center">@HomeResource.Tagline</MudText>
+            <MudText Typo="Typo.body1" Align="Align.Center">@HomeResource.Welcome</MudText>
+            <MudStack Row="true" Spacing="2" Justify="Justify.Center" Class="mt-2">
+                <MudButton Href="/register" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large">
+                    @HomeResource.CreateAccount
+                </MudButton>
+                <MudButton Href="#features" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Large">
+                    @HomeResource.SeeFeatures
+                </MudButton>
+            </MudStack>
+        </MudStack>
+    </MudPaper>
+
+    @* Carousel *@
+    <MudCarousel TData="object" Class="rounded-lg" Style="height: 260px;border-top: 4px solid var(--mud-palette-primary);" AutoCycle="true"
+                 AutoCycleTime="@TimeSpan.FromSeconds(5)" ShowArrows="true" ShowBullets="true">
+        @foreach (var f in _features)
+        {
+            <MudCarouselItem>
+                <MudPaper Elevation="2" Class="d-flex flex-column align-center justify-center pa-6 mud-height-full">
+                    <MudIcon Icon="@f.Icon" Color="Color.Primary" Style="font-size: 64px;" />
+                    <MudText Typo="Typo.h5" Class="mt-2" Align="Align.Center">@f.Title</MudText>
+                    <MudText Typo="Typo.body1" Align="Align.Center" Class="mt-1">@f.Text</MudText>
+                </MudPaper>
+            </MudCarouselItem>
+        }
+    </MudCarousel>
+
+    @* Feature cards *@
+    <MudStack Spacing="3" id="features">
+        <MudText Typo="Typo.h4" Align="Align.Center">@HomeResource.FeaturesTitle</MudText>
+        <MudGrid Spacing="3">
+            @foreach (var f in _features)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="2" Class="mud-height-full">
+                        <MudCardHeader>
+                            <CardHeaderAvatar>
+                                <MudAvatar Color="Color.Primary">
+                                    <MudIcon Icon="@f.Icon" />
+                                </MudAvatar>
+                            </CardHeaderAvatar>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@f.Title</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body2">@f.Text</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudStack>
+
+    <MudDivider />
+
+    @* Footer *@
+    <MudStack Row="true" Justify="Justify.Center" Class="pb-4">
+        <MudLink Href="/terms" Typo="Typo.body2">@HomeResource.Terms</MudLink>
+    </MudStack>
+
+</MudStack>
+
+@code {
+    [CascadingParameter(Name = "IsDarkMode")] private bool IsDarkMode { get; set; }
+
+    private record Feature(string Icon, string Title, string Text);
+
+    private readonly Feature[] _features =
+    [
+        new(AppIcon.Pokeball, HomeResource.CaptureTitle, HomeResource.CaptureText),
+        new(AppIcon.Chat, HomeResource.ChatTitle, HomeResource.ChatText),
+        new(AppIcon.Collection, HomeResource.CollectionTitle, HomeResource.CollectionText),
+        new(AppIcon.Sync, HomeResource.SyncTitle, HomeResource.SyncText),
+        new(AppIcon.Verified, HomeResource.VerifiedTitle, HomeResource.VerifiedText),
+        new(AppIcon.Trophy, HomeResource.RankingsTitle, HomeResource.RankingsText),
+    ];
+}

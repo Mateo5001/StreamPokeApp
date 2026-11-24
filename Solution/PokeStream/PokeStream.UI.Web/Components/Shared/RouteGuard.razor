@@ -1,0 +1,41 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@implements IDisposable
+@inject NavigationManager Navigation
+
+@code {
+    /// <summary>Routes reachable without authentication (relative paths, no leading slash; "" is home).</summary>
+    [Parameter]
+    public IReadOnlyCollection<string> PublicRoutes { get; set; } = ["", "login", "register", "terms"];
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
+
+    protected override void OnInitialized() => Navigation.LocationChanged += OnLocationChanged;
+
+    // Runs on first load and whenever the authentication state changes
+    protected override async Task OnParametersSetAsync() => await GuardAsync();
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        await InvokeAsync(GuardAsync);
+    }
+
+    private async Task GuardAsync()
+    {
+        if (AuthState is null) return;
+
+        var user = (await AuthState).User;
+        if (user.Identity?.IsAuthenticated == true) return;
+        if (IsPublic(Navigation.ToBaseRelativePath(Navigation.Uri))) return;
+
+        Navigation.NavigateTo("/", replace: true);
+    }
+
+    private bool IsPublic(string relativePath)
+    {
+        var path = relativePath.Split('?', '#')[0].Trim('/');
+        return PublicRoutes.Contains(path, StringComparer.OrdinalIgnoreCase);
+    }
+
+    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+}

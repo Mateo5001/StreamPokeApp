@@ -25,6 +25,12 @@ public static class AppIcon
         public const string WordmarkOnOrange = "logo/wordmark-on-orange.svg";
 
         /// <summary>Account avatar for light mode: orange disc, blue ring, navy trainer silhouette.</summary>
+        /// <summary>Wordmark + "COLLECTOR" for light surfaces.</summary>
+        public const string WordmarkCollectorLight = "logo/wordmark-collector-light.svg";
+
+        /// <summary>Wordmark + "COLLECTOR" for dark surfaces.</summary>
+        public const string WordmarkCollectorDark = "logo/wordmark-collector-dark.svg";
+
         public const string AccountLight = "logo/account-light.svg";
 
         /// <summary>Account avatar for dark mode: navy disc, orange ring and silhouette.</summary>
@@ -60,6 +66,24 @@ public static class AppIcon
 
     /// <summary>Crossed-out eye (hide password).</summary>
     public const string VisibilityOff = "<path d=\"M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z\"/>";
+
+    /// <summary>Pokéball (capture).</summary>
+    public const string Pokeball = "<path d=\"M12 2C7.03 2 2.93 5.66 2.25 10h5.62a4.002 4.002 0 0 1 8.26 0h5.62C21.07 5.66 16.97 2 12 2z\"/><path d=\"M12 22c4.97 0 9.07-3.66 9.75-8h-5.62a4.002 4.002 0 0 1-8.26 0H2.25C2.93 18.34 7.03 22 12 22z\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/>";
+
+    /// <summary>Chat bubble (chat commands).</summary>
+    public const string Chat = "<path d=\"M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z\"/>";
+
+    /// <summary>Grid of squares (collection / Pokédex).</summary>
+    public const string Collection = "<path d=\"M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z\"/>";
+
+    /// <summary>Circular arrows (sync across platforms).</summary>
+    public const string Sync = "<path d=\"M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z\"/>";
+
+    /// <summary>Check in a circle (verified).</summary>
+    public const string Verified = "<path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/>";
+
+    /// <summary>Trophy (rankings).</summary>
+    public const string Trophy = "<path d=\"M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z\"/>";
 
     public const string DarkMode ="<path d=\"M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z\"/>";
 

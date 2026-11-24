@@ -60,8 +60,6 @@ public class AuthService : IAuthService
             YouTubeUsername = request.YouTubeUsername,
             KickUserId = request.KickUserId,
             KickUsername = request.KickUsername,
-            DiscordUserId = request.DiscordUserId,
-            DiscordUsername = request.DiscordUsername,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             IsActive = true

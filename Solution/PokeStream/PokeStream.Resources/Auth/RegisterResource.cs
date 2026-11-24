@@ -7,7 +7,21 @@ namespace PokeStream.Resources.Auth;
 public static class RegisterResource
 {
     private static readonly ResourceManager Manager = new("PokeStream.Resources.Auth.RegisterResource", typeof(RegisterResource).Assembly);
-    public static string Username => Manager.GetString(nameof(Username), CultureInfo.CurrentUICulture) ?? nameof(Username);
+    public static string Title => Manager.GetString(nameof(Title), CultureInfo.CurrentUICulture) ?? nameof(Title);
+    public static string Subtitle => Manager.GetString(nameof(Subtitle), CultureInfo.CurrentUICulture) ?? nameof(Subtitle);
+    public static string ConfirmPassword => Manager.GetString(nameof(ConfirmPassword), CultureInfo.CurrentUICulture) ?? nameof(ConfirmPassword);
+    public static string PasswordsDoNotMatch => Manager.GetString(nameof(PasswordsDoNotMatch), CultureInfo.CurrentUICulture) ?? nameof(PasswordsDoNotMatch);
+    public static string ShowHidePassword => Manager.GetString(nameof(ShowHidePassword), CultureInfo.CurrentUICulture) ?? nameof(ShowHidePassword);
+    public static string PlatformsTitle => Manager.GetString(nameof(PlatformsTitle), CultureInfo.CurrentUICulture) ?? nameof(PlatformsTitle);
+    public static string PlatformsHint => Manager.GetString(nameof(PlatformsHint), CultureInfo.CurrentUICulture) ?? nameof(PlatformsHint);
+    public static string TwitchUsername => Manager.GetString(nameof(TwitchUsername), CultureInfo.CurrentUICulture) ?? nameof(TwitchUsername);
+    public static string YouTubeUsername => Manager.GetString(nameof(YouTubeUsername), CultureInfo.CurrentUICulture) ?? nameof(YouTubeUsername);
+    public static string KickUsername => Manager.GetString(nameof(KickUsername), CultureInfo.CurrentUICulture) ?? nameof(KickUsername);
+    public static string SubmitButton => Manager.GetString(nameof(SubmitButton), CultureInfo.CurrentUICulture) ?? nameof(SubmitButton);
+    public static string RegisterFailed => Manager.GetString(nameof(RegisterFailed), CultureInfo.CurrentUICulture) ?? nameof(RegisterFailed);
+    public static string HaveAccount => Manager.GetString(nameof(HaveAccount), CultureInfo.CurrentUICulture) ?? nameof(HaveAccount);
+    public static string SignIn => Manager.GetString(nameof(SignIn), CultureInfo.CurrentUICulture) ?? nameof(SignIn);
+    public static string Username =>Manager.GetString(nameof(Username), CultureInfo.CurrentUICulture) ?? nameof(Username);
     public static string Email => Manager.GetString(nameof(Email), CultureInfo.CurrentUICulture) ?? nameof(Email);
     public static string Password => Manager.GetString(nameof(Password), CultureInfo.CurrentUICulture) ?? nameof(Password);
     public static string DisplayName => Manager.GetString(nameof(DisplayName), CultureInfo.CurrentUICulture) ?? nameof(DisplayName);
