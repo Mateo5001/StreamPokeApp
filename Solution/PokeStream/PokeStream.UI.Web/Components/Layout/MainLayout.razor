@@ -48,10 +48,9 @@
     <MudMainContent>
         <AuthorizeView>
             <Authorized>
-                <MudDrawer @bind-Open="_drawerOpen" Overlay="false" Elevation="2" BreakPoint="Breakpoint.Lg">
+                <MudDrawer @bind-Open="_drawerOpen" Elevation="2" Breakpoint="@Breakpoint.Xl" Variant=" @DrawerVariant.Temporary">
                     <MudDrawerHeader>
-                        <MudIcon Icon="@logoIcon" Style="font-size: 48px;" />
-                        <MudImage Src="@logoName" Alt="PokéStream" Width="220" />
+                        <MudImage Src="@logoName" Alt="PokéStream" Width="200" />
                     </MudDrawerHeader>
                     <NavMenu />
                 </MudDrawer>

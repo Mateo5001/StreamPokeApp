@@ -24,7 +24,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICookieService, CookieService>();
 
 // PokeAPI wrapper (PokeApiNet): one shared instance, it caches responses in memory.
-builder.Services.AddSingleton<PokeApiNet.PokeApiClient>();
+// Built with its own HttpClient: the scoped HttpClient registered above can't be injected into a singleton.
+builder.Services.AddSingleton(_ => new PokeApiNet.PokeApiClient());
 
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
