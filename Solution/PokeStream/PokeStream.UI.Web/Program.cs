@@ -23,6 +23,9 @@ builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredServ
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICookieService, CookieService>();
 
+// PokeAPI wrapper (PokeApiNet): one shared instance, it caches responses in memory.
+builder.Services.AddSingleton<PokeApiNet.PokeApiClient>();
+
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
 

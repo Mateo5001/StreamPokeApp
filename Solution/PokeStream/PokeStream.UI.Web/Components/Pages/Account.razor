@@ -1,0 +1,84 @@
+@page "/account"
+@using Microsoft.AspNetCore.Components.Authorization
+@using PokeStream.Resources.Account
+
+<PageTitle>@AccountResource.PageTitle</PageTitle>
+
+<MudStack Spacing="4">
+
+    @* User card *@
+    <MudPaper Elevation="2" Class="pa-6">
+        <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+            <MudAvatar Size="Size.Large" Color="Color.Primary" Style="width: 96px; height: 96px;">
+                <MudIcon Icon="@AppIcon.Account" Style="font-size: 64px;" />
+            </MudAvatar>
+            <MudStack Spacing="0">
+                <MudText Typo="Typo.h5">@_username</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">@_email</MudText>
+            </MudStack>
+        </MudStack>
+    </MudPaper>
+
+    @* Main team *@
+    <MudStack Spacing="1">
+        <MudText Typo="Typo.h5">@AccountResource.TeamTitle</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">@AccountResource.TeamHint</MudText>
+    </MudStack>
+
+    <MudGrid Spacing="3">
+        @for (var i = 0; i < TeamSize; i++)
+        {
+            var member = i < _team.Length ? _team[i] : null;
+            <MudItem xs="6" sm="4" md="2">
+                <MudCard Elevation="2" Class="mud-height-full">
+                    <MudCardContent Class="d-flex flex-column align-center">
+                        <MudAvatar Color="@(member is null ? Color.Default : Color.Primary)" Size="Size.Large">
+                            <MudIcon Icon="@AppIcon.Pokeball" />
+                        </MudAvatar>
+                        @if (member is null)
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-2">@AccountResource.EmptySlot</MudText>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.subtitle1" Class="mt-2">@member.Name</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@AccountResource.LevelPrefix @member.Level</MudText>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+    <MudAlert Severity="Severity.Info" Dense="true">@AccountResource.ExampleNotice</MudAlert>
+</MudStack>
+
+@code {
+    private const int TeamSize = 6;
+
+    [CascadingParameter] private Task<AuthenticationState>? AuthState { get; set; }
+
+    private string _username = string.Empty;
+    private string _email = string.Empty;
+
+    private record TeamMember(string Name, int Level);
+
+    // Sample data until the real team endpoint exists
+    private readonly TeamMember[] _team =
+    [
+        new("Pikachu", 42),
+        new("Charizard", 55),
+        new("Gengar", 38),
+    ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthState is null) return;
+        var user = (await AuthState).User;
+        _username = FirstClaim(user, "unique_name", "name", System.Security.Claims.ClaimTypes.Name);
+        _email = FirstClaim(user, "email", System.Security.Claims.ClaimTypes.Email);
+    }
+
+    private static string FirstClaim(System.Security.Claims.ClaimsPrincipal user, params string[] types) =>
+        types.Select(t => user.FindFirst(t)?.Value).FirstOrDefault(v => !string.IsNullOrEmpty(v)) ?? string.Empty;
+}

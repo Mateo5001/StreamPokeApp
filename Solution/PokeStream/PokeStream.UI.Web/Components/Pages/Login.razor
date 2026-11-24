@@ -128,7 +128,7 @@
                 await Cookies.RemoveAsync(CookieKeys.RememberedUser);
 
             _request.Password = string.Empty;
-            Navigation.NavigateTo("/");
+            Navigation.NavigateTo("/account");
         }
         catch (HttpRequestException)
         {

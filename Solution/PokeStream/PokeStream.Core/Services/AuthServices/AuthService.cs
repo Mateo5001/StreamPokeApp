@@ -226,6 +226,7 @@ public class AuthService : IAuthService
             new(ClaimTypes.Name, user.Username),
             new(ClaimTypes.Email, user.Email ?? string.Empty),
             new("displayName", user.DisplayName ?? user.Username),
+            new(ClaimTypes.Role, user.IsStreamer ? "Streamer" : "User"),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
         };

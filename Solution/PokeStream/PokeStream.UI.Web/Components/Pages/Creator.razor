@@ -1,0 +1,63 @@
+@page "/creator"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Streamer")]
+@using PokeStream.Resources.Creator
+
+<PageTitle>@CreatorResource.PageTitle</PageTitle>
+
+<MudStack Spacing="4">
+    <MudStack Spacing="1">
+        <MudText Typo="Typo.h4">@CreatorResource.Title</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">@CreatorResource.Subtitle</MudText>
+    </MudStack>
+
+    @* Twitch connection (required) *@
+    <MudPaper Elevation="2" Class="pa-6">
+        <MudStack Spacing="3">
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                <MudIcon Icon="@AppIcon.Twitch" Style="color: #9146FF;" />
+                <MudText Typo="Typo.h6">@CreatorResource.TwitchTitle</MudText>
+                <MudSpacer />
+                <MudChip T="string" Size="Size.Small" Color="@(_twitchConnected ? Color.Success : Color.Warning)">
+                    @(_twitchConnected ? "Twitch" : CreatorResource.TwitchNotConnected)
+                </MudChip>
+            </MudStack>
+            @if (!_twitchConnected)
+            {
+                <MudAlert Severity="Severity.Warning" Dense="true">@CreatorResource.TwitchRequired</MudAlert>
+                <MudButton Variant="Variant.Filled" StartIcon="@AppIcon.Twitch"
+                           Style="background-color: #9146FF; color: #FFFFFF; align-self: flex-start;">
+                    @CreatorResource.TwitchConnect
+                </MudButton>
+            }
+        </MudStack>
+    </MudPaper>
+
+    @* Overlay (locked until Twitch is connected) *@
+    <MudPaper Elevation="2" Class="pa-6">
+        <MudStack Spacing="3">
+            <MudText Typo="Typo.h6">@CreatorResource.OverlayTitle</MudText>
+            <MudTextField T="string" Value="@_overlayUrl" Label="@CreatorResource.OverlayUrl"
+                          Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true" Disabled="@(!_twitchConnected)"
+                          HelperText="@(_twitchConnected ? CreatorResource.OverlayHint : CreatorResource.OverlayLocked)"
+                          Adornment="Adornment.End" AdornmentIcon="@AppIcon.Copy"
+                          AdornmentAriaLabel="@CreatorResource.Copy" />
+
+            <MudText Typo="Typo.subtitle1">@CreatorResource.OptionsTitle</MudText>
+            <MudSwitch T="bool" @bind-Value="_showSpawns" Color="Color.Primary" Disabled="@(!_twitchConnected)" Label="@CreatorResource.ShowSpawns" />
+            <MudSwitch T="bool" @bind-Value="_playSounds" Color="Color.Primary" Disabled="@(!_twitchConnected)" Label="@CreatorResource.PlaySounds" />
+            <MudText Typo="Typo.body2">@CreatorResource.SpawnRate</MudText>
+            <MudSlider T="int" @bind-Value="_spawnRate" Min="1" Max="10" Color="Color.Primary" Disabled="@(!_twitchConnected)" />
+        </MudStack>
+    </MudPaper>
+
+    <MudAlert Severity="Severity.Info" Dense="true">@CreatorResource.ExampleNotice</MudAlert>
+</MudStack>
+
+@code {
+    // Placeholder state until the Twitch connection and the overlay token exist
+    private readonly bool _twitchConnected = false;
+    private readonly string _overlayUrl = "https://…/overlay/{token}";
+    private bool _showSpawns = true;
+    private bool _playSounds = true;
+    private int _spawnRate = 5;
+}

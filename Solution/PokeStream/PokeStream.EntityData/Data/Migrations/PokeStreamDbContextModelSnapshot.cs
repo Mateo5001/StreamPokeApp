@@ -22,6 +22,191 @@ namespace PokeStream.EntityData.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("PokeStream.EntityData.Models.PartySlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("PokemonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte>("Slot")
+                        .HasColumnType("tinyint");
+
+                    b.Property<Guid>("TrainerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PokemonId")
+                        .IsUnique();
+
+                    b.HasIndex("TrainerId", "Slot")
+                        .IsUnique();
+
+                    b.ToTable("PartySlots", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_PartySlots_Slot", "[Slot] BETWEEN 1 AND 6");
+                        });
+                });
+
+            modelBuilder.Entity("PokeStream.EntityData.Models.Pokemon", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AbilityName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("CapturedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CapturedFrom")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<byte>("EvAttack")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("EvDefense")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("EvHp")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("EvSpecialAttack")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("EvSpecialDefense")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("EvSpeed")
+                        .HasColumnType("tinyint");
+
+                    b.Property<int>("Experience")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("IsHiddenAbility")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsShiny")
+                        .HasColumnType("bit");
+
+                    b.Property<byte>("IvAttack")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("IvDefense")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("IvHp")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("IvSpecialAttack")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("IvSpecialDefense")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("IvSpeed")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("Level")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("Nature")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Nickname")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid?>("OriginStreamerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTime>("SpawnedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SpeciesId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TrainerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SpeciesId");
+
+                    b.HasIndex("TrainerId");
+
+                    b.HasIndex("OriginStreamerId", "ExpiresAt");
+
+                    b.HasIndex("TrainerId", "SpeciesId");
+
+                    b.ToTable("Pokemons", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Pokemons_Evs", "[EvHp] <= 252 AND [EvAttack] <= 252 AND [EvDefense] <= 252 AND [EvSpecialAttack] <= 252 AND [EvSpecialDefense] <= 252 AND [EvSpeed] <= 252 AND [EvHp] + [EvAttack] + [EvDefense] + [EvSpecialAttack] + [EvSpecialDefense] + [EvSpeed] <= 510");
+
+                            t.HasCheckConstraint("CK_Pokemons_Ivs", "[IvHp] <= 31 AND [IvAttack] <= 31 AND [IvDefense] <= 31 AND [IvSpecialAttack] <= 31 AND [IvSpecialDefense] <= 31 AND [IvSpeed] <= 31");
+
+                            t.HasCheckConstraint("CK_Pokemons_Level", "[Level] BETWEEN 1 AND 100");
+                        });
+                });
+
+            modelBuilder.Entity("PokeStream.EntityData.Models.PokemonMove", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("MoveName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("PokemonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte>("Slot")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PokemonId", "MoveName")
+                        .IsUnique();
+
+                    b.HasIndex("PokemonId", "Slot")
+                        .IsUnique();
+
+                    b.ToTable("PokemonMoves", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_PokemonMoves_Slot", "[Slot] BETWEEN 1 AND 4");
+                        });
+                });
+
             modelBuilder.Entity("PokeStream.EntityData.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -52,6 +237,9 @@ namespace PokeStream.EntityData.Data.Migrations
                         .HasColumnType("nvarchar(320)");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsStreamer")
                         .HasColumnType("bit");
 
                     b.Property<string>("KickAccessToken")
@@ -215,6 +403,53 @@ namespace PokeStream.EntityData.Data.Migrations
                     b.ToTable("UserSessions", (string)null);
                 });
 
+            modelBuilder.Entity("PokeStream.EntityData.Models.PartySlot", b =>
+                {
+                    b.HasOne("PokeStream.EntityData.Models.Pokemon", "Pokemon")
+                        .WithMany()
+                        .HasForeignKey("PokemonId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PokeStream.EntityData.Models.User", "Trainer")
+                        .WithMany("Party")
+                        .HasForeignKey("TrainerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pokemon");
+
+                    b.Navigation("Trainer");
+                });
+
+            modelBuilder.Entity("PokeStream.EntityData.Models.Pokemon", b =>
+                {
+                    b.HasOne("PokeStream.EntityData.Models.User", "OriginStreamer")
+                        .WithMany()
+                        .HasForeignKey("OriginStreamerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PokeStream.EntityData.Models.User", "Trainer")
+                        .WithMany("Pokemons")
+                        .HasForeignKey("TrainerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("OriginStreamer");
+
+                    b.Navigation("Trainer");
+                });
+
+            modelBuilder.Entity("PokeStream.EntityData.Models.PokemonMove", b =>
+                {
+                    b.HasOne("PokeStream.EntityData.Models.Pokemon", "Pokemon")
+                        .WithMany("Moves")
+                        .HasForeignKey("PokemonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pokemon");
+                });
+
             modelBuilder.Entity("PokeStream.EntityData.Models.UserSession", b =>
                 {
                     b.HasOne("PokeStream.EntityData.Models.User", "User")
@@ -226,8 +461,17 @@ namespace PokeStream.EntityData.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PokeStream.EntityData.Models.Pokemon", b =>
+                {
+                    b.Navigation("Moves");
+                });
+
             modelBuilder.Entity("PokeStream.EntityData.Models.User", b =>
                 {
+                    b.Navigation("Party");
+
+                    b.Navigation("Pokemons");
+
                     b.Navigation("Sessions");
                 });
 #pragma warning restore 612, 618

@@ -1,0 +1,59 @@
+@page "/pokedex"
+@using PokeStream.Resources.Pokedex
+
+<PageTitle>@PokedexResource.PageTitle</PageTitle>
+
+<MudStack Spacing="4">
+    <MudText Typo="Typo.h4">@PokedexResource.Title</MudText>
+
+    @* Overall progress *@
+    <MudPaper Elevation="2" Class="pa-6">
+        <MudStack Spacing="2">
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Baseline">
+                <MudText Typo="Typo.h6">@PokedexResource.Overall</MudText>
+                <MudText Typo="Typo.h6">@_gens.Sum(g => g.Caught) / @_gens.Sum(g => g.Total)</MudText>
+            </MudStack>
+            <MudProgressLinear Value="@Percent(_gens.Sum(g => g.Caught), _gens.Sum(g => g.Total))" Color="Color.Primary" Size="Size.Large" Rounded="true" />
+        </MudStack>
+    </MudPaper>
+
+    @* By generation *@
+    <MudGrid Spacing="3">
+        @foreach (var g in _gens)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="2" Class="mud-height-full">
+                    <MudCardContent>
+                        <MudStack Spacing="2">
+                            <MudText Typo="Typo.subtitle1">@g.Name</MudText>
+                            <MudProgressLinear Value="@Percent(g.Caught, g.Total)" Color="Color.Secondary" Rounded="true" />
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@g.Caught / @g.Total @PokedexResource.Caught</MudText>
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+    <MudAlert Severity="Severity.Info" Dense="true">@PokedexResource.ExampleNotice</MudAlert>
+</MudStack>
+
+@code {
+    private record Gen(string Name, int Total, int Caught);
+
+    // Totals per generation; "Caught" is sample data until the real collection endpoint exists
+    private readonly Gen[] _gens =
+    [
+        new(PokedexResource.Gen1, 151, 87),
+        new(PokedexResource.Gen2, 100, 34),
+        new(PokedexResource.Gen3, 135, 21),
+        new(PokedexResource.Gen4, 107, 12),
+        new(PokedexResource.Gen5, 156, 5),
+        new(PokedexResource.Gen6, 72, 0),
+        new(PokedexResource.Gen7, 88, 0),
+        new(PokedexResource.Gen8, 96, 0),
+        new(PokedexResource.Gen9, 120, 0),
+    ];
+
+    private static double Percent(int part, int total) => total == 0 ? 0 : part * 100.0 / total;
+}

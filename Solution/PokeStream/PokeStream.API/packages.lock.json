@@ -301,6 +301,11 @@
         "resolved": "9.14.0",
         "contentHash": "VmMM/u4upqpc0lJoXmo30Zj1d/Zq3BjdS11+q/eB/+p20pV1WXbLS0C17WbV4xqLM1i9Kpco6emt6M4s2R/BUA=="
       },
+      "PokeApiNet": {
+        "type": "Transitive",
+        "resolved": "4.1.0",
+        "contentHash": "3eU/WIW2N00CikDATuntV8gScbVwqPSJ2rT3zQAvH5hS8yIQuSCp5Xyt4l+bonUYA4Mb0j5EZvX5c8Wdwp3FiA=="
+      },
       "Swashbuckle.AspNetCore.Swagger": {
         "type": "Transitive",
         "resolved": "6.6.2",
@@ -470,6 +475,7 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[9.0.0, )",
           "Microsoft.EntityFrameworkCore": "[9.0.0, )",
           "MudBlazor": "[9.14.0, )",
+          "PokeApiNet": "[4.1.0, )",
           "PokeStream.EntityData": "[1.0.0, )",
           "PokeStream.Resources": "[1.0.0, )",
           "System.IdentityModel.Tokens.Jwt": "[8.0.1, )",
