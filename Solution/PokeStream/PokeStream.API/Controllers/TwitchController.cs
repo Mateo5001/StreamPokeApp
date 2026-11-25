@@ -1,3 +1,4 @@
+using System.Data;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -17,11 +18,11 @@ using PokeStream.Resources.Creator;
 namespace PokeStream.API.Controllers;
 
 /// <summary>
-/// Vincula la cuenta de Twitch de un streamer (OAuth Authorization Code). Solo guarda la identidad, no tokens.
+/// Vincula la cuenta de Twitch de un usuario (OAuth Authorization Code). Solo guarda la identidad, no tokens.
 /// </summary>
 [ApiController]
 [Route("api/v1/twitch")]
-[Authorize(Roles = "Streamer")]
+[Authorize] // streamers to use the overlay, viewers to keep what they captured
 [Produces("application/json")]
 public class TwitchController : ControllerBase
 {
@@ -96,17 +97,46 @@ public class TwitchController : ControllerBase
         if (twitch is null)
             return Error(StatusCodes.Status502BadGateway, CreatorResource.TwitchFailed);
 
-        if (await _dbContext.Users.AnyAsync(u => u.TwitchUserId == twitch.Id && u.Id != user.Id))
+        if (!await TryLinkAsync(user.Id, twitch))
             return Error(StatusCodes.Status409Conflict, CreatorResource.TwitchTaken);
-
-        user.TwitchUserId = twitch.Id;
-        user.TwitchUsername = twitch.Login;
-        user.UpdatedAt = DateTime.UtcNow;
-        await _dbContext.SaveChangesAsync();
 
         _logger.LogInformation("Twitch {Login} vinculado al usuario {UserId}", twitch.Login, user.Id);
         return NoContent();
     }
+
+    /// <summary>
+    /// Saves the identity. A provisional account holding it hands over its captures and disappears.
+    /// False when a real account holds it.
+    /// </summary>
+    private Task<bool> TryLinkAsync(Guid userId, TwitchUser twitch)
+        => _dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
+        {
+            _dbContext.ChangeTracker.Clear(); // a retry starts from the database again
+
+            // Serializable: a capture in chat must not land on the provisional account while it is being removed
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+            var user = await _dbContext.Users.SingleAsync(u => u.Id == userId);
+            var other = await _dbContext.Users.SingleOrDefaultAsync(u => u.TwitchUserId == twitch.Id && u.Id != userId);
+            if (other is not null)
+            {
+                // A disabled provisional account stays: linking must not undo a ban
+                if (!other.IsProvisional || !other.IsActive)
+                    return false;
+
+                await _dbContext.Pokemons.Where(p => p.TrainerId == other.Id)
+                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.TrainerId, userId));
+                _dbContext.Users.Remove(other);
+                await _dbContext.SaveChangesAsync(); // frees the unique Twitch id
+                _logger.LogInformation("Cuenta provisional {ProvisionalId} fusionada con {UserId}", other.Id, userId);
+            }
+
+            user.TwitchUserId = twitch.Id;
+            user.TwitchUsername = twitch.Login;
+            user.UpdatedAt = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return true;
+        });
 
     private string UserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
 

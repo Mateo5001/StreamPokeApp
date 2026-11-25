@@ -32,4 +32,5 @@ public static class CreatorResource
     public static string TwitchCancelled => Manager.GetString(nameof(TwitchCancelled), CultureInfo.CurrentUICulture) ?? nameof(TwitchCancelled);
     public static string OverlayRegenerate => Manager.GetString(nameof(OverlayRegenerate), CultureInfo.CurrentUICulture) ?? nameof(OverlayRegenerate);
     public static string Copied => Manager.GetString(nameof(Copied), CultureInfo.CurrentUICulture) ?? nameof(Copied);
+    public static string TwitchBackToAccount => Manager.GetString(nameof(TwitchBackToAccount), CultureInfo.CurrentUICulture) ?? nameof(TwitchBackToAccount);
 }

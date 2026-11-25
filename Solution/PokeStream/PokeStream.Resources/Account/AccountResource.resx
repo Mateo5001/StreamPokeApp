@@ -13,4 +13,5 @@
   <data name="EmptySlot" xml:space="preserve"><value>Espacio libre</value></data>
   <data name="LevelPrefix" xml:space="preserve"><value>Nv.</value></data>
   <data name="ExampleNotice" xml:space="preserve"><value>Datos de ejemplo: el equipo real aún no está conectado.</value></data>
+  <data name="TwitchHint" xml:space="preserve"><value>Conecta tu Twitch para ver en tu cuenta los Pokémon que captures en el chat.</value></data>
 </root>

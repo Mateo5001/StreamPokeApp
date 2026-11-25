@@ -1,6 +1,11 @@
 @page "/account"
 @using Microsoft.AspNetCore.Components.Authorization
+@using PokeStream.Core.Services.AuthServices
 @using PokeStream.Resources.Account
+@using PokeStream.Resources.Common
+@using PokeStream.Resources.Creator
+@using PokeStream.UI.Web.Components.Shared
+@inject AuthStateService Auth
 
 <PageTitle>@AccountResource.PageTitle</PageTitle>
 
@@ -16,6 +21,30 @@
                 <MudText Typo="Typo.h5">@_username</MudText>
                 <MudText Typo="Typo.body2" Color="Color.Secondary">@_email</MudText>
             </MudStack>
+        </MudStack>
+    </MudPaper>
+
+    @* Twitch: what was captured in chat belongs to the account linked here *@
+    <MudPaper Elevation="2" Class="pa-6">
+        <MudStack Spacing="3">
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                <MudIcon Icon="@AppIcon.Twitch" Style="color: #9146FF;" />
+                <MudText Typo="Typo.h6">@CreatorResource.TwitchTitle</MudText>
+                <MudSpacer />
+                @if (_twitchUsername is not null)
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success">@string.Format(CreatorResource.TwitchConnectedAs, _twitchUsername)</MudChip>
+                }
+            </MudStack>
+            @if (_error is not null)
+            {
+                <MudAlert Severity="Severity.Error" Dense="true">@_error</MudAlert>
+            }
+            else if (_loaded && _twitchUsername is null)
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary">@AccountResource.TwitchHint</MudText>
+                <TwitchConnectButton />
+            }
         </MudStack>
     </MudPaper>
 
@@ -77,6 +106,24 @@
         var user = (await AuthState).User;
         _username = FirstClaim(user, "unique_name", "name", System.Security.Claims.ClaimTypes.Name);
         _email = FirstClaim(user, "email", System.Security.Claims.ClaimTypes.Email);
+    }
+
+    private string? _twitchUsername;
+    private bool _loaded;
+    private string? _error;
+
+    // The session cookie is only writable once interactive, so the API is asked after the first render
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || AuthState is null || (await AuthState).User.Identity?.IsAuthenticated != true) return;
+
+        try
+        {
+            _twitchUsername = (await Auth.GetCurrentUserAsync())?.TwitchUsername;
+            _loaded = true;
+        }
+        catch (HttpRequestException) { _error = CommonResource.ServerUnreachable; }
+        StateHasChanged();
     }
 
     private static string FirstClaim(System.Security.Claims.ClaimsPrincipal user, params string[] types) =>

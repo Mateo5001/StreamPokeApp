@@ -29,4 +29,5 @@
   <data name="TwitchCancelled" xml:space="preserve"><value>Cancelaste la autorización en Twitch.</value></data>
   <data name="OverlayRegenerate" xml:space="preserve"><value>Generar otra URL (la actual dejará de funcionar)</value></data>
   <data name="Copied" xml:space="preserve"><value>URL copiada</value></data>
+  <data name="TwitchBackToAccount" xml:space="preserve"><value>Volver a mi cuenta</value></data>
 </root>
