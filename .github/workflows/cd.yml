@@ -25,8 +25,8 @@ env:
   STAGING_WEBAPP_NAME: 'pokestream-api'
   PRODUCTION_WEBAPP_NAME: 'pokestream-api-prod'
   # Web apps deployed by cd-web.yml: Twitch sends users back to them
-  STAGING_FRONTEND_NAME: 'pokestream-web'
-  PRODUCTION_FRONTEND_NAME: 'pokestream-web-prod'
+  STAGING_FRONTEND_NAME: 'pokestream'
+  PRODUCTION_FRONTEND_NAME: 'pokestream-prod'
 
 jobs:
   deploy-staging:

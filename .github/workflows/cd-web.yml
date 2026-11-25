@@ -22,8 +22,8 @@ env:
   ACR_NAME: 'pokeimgcontainers'
   ACR_LOGIN_SERVER: 'pokeimgcontainers.azurecr.io'
   IMAGE_REPOSITORY: 'pokestream/web'
-  STAGING_WEBAPP_NAME: 'pokestream-web'
-  PRODUCTION_WEBAPP_NAME: 'pokestream-web-prod'
+  STAGING_WEBAPP_NAME: 'pokestream'
+  PRODUCTION_WEBAPP_NAME: 'pokestream-prod'
   # The web calls these API apps
   STAGING_API_NAME: 'pokestream-api'
   PRODUCTION_API_NAME: 'pokestream-api-prod'
