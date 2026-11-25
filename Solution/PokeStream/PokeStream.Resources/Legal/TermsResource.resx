@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="PageTitle" xml:space="preserve"><value>Términos y condiciones</value></data>
+  <data name="LastUpdated" xml:space="preserve"><value>Última actualización: 23 de noviembre de 2026</value></data>
+  <data name="Draft" xml:space="preserve"><value>Borrador pendiente de revisión legal.</value></data>
+  <data name="BackHome" xml:space="preserve"><value>Volver al inicio</value></data>
+  <data name="Section1Title" xml:space="preserve"><value>Aceptación de los términos</value></data>
+  <data name="Section1Text" xml:space="preserve"><value>Al crear una cuenta o usar PokéStream Collector aceptas estos términos. Si no estás de acuerdo, no uses el servicio.</value></data>
+  <data name="Section2Title" xml:space="preserve"><value>El servicio</value></data>
+  <data name="Section2Text" xml:space="preserve"><value>PokéStream Collector permite capturar Pokémon durante streams mediante comandos de chat y administrar tu colección desde la aplicación web. Las funciones pueden cambiar, ampliarse o retirarse.</value></data>
+  <data name="Section3Title" xml:space="preserve"><value>Tu cuenta</value></data>
+  <data name="Section3Text" xml:space="preserve"><value>Eres responsable de la actividad de tu cuenta y de mantener tu contraseña en secreto. Debes dar información veraz y tener la edad mínima exigida por las plataformas desde las que participas.</value></data>
+  <data name="Section4Title" xml:space="preserve"><value>Uso aceptable</value></data>
+  <data name="Section4Text" xml:space="preserve"><value>No puedes usar bots, scripts ni exploits para obtener capturas, ni suplantar a otras personas, interferir con el servicio o intentar acceder a cuentas ajenas. Las capturas obtenidas de forma fraudulenta pueden ser eliminadas.</value></data>
+  <data name="Section5Title" xml:space="preserve"><value>Propiedad y marcas</value></data>
+  <data name="Section5Text" xml:space="preserve"><value>Pokémon y sus nombres e imágenes son marcas de sus respectivos titulares. PokéStream Collector es un proyecto de fans, sin afiliación ni respaldo de Nintendo, Game Freak ni The Pokémon Company.</value></data>
+  <data name="Section6Title" xml:space="preserve"><value>Plataformas de terceros</value></data>
+  <data name="Section6Text" xml:space="preserve"><value>Si vinculas tu cuenta de Twitch, YouTube o Kick, también aplican los términos de cada plataforma. No controlamos su disponibilidad ni su contenido.</value></data>
+  <data name="Section7Title" xml:space="preserve"><value>Datos personales</value></data>
+  <data name="Section7Text" xml:space="preserve"><value>Guardamos los datos necesarios para operar tu cuenta y tu Pokédex: usuario, correo, contraseña cifrada y cuentas vinculadas. No vendemos tus datos. Puedes pedir la eliminación de tu cuenta en cualquier momento.</value></data>
+  <data name="Section8Title" xml:space="preserve"><value>Suspensión y cierre</value></data>
+  <data name="Section8Text" xml:space="preserve"><value>Podemos suspender o cerrar cuentas que incumplan estos términos. Tú puedes dejar de usar el servicio cuando quieras.</value></data>
+  <data name="Section9Title" xml:space="preserve"><value>Limitación de responsabilidad</value></data>
+  <data name="Section9Text" xml:space="preserve"><value>El servicio se ofrece tal como está, sin garantía de disponibilidad continua. No respondemos por pérdidas de capturas o datos derivadas de fallos técnicos o de terceros, en la medida que la ley lo permita.</value></data>
+  <data name="Section10Title" xml:space="preserve"><value>Cambios en los términos</value></data>
+  <data name="Section10Text" xml:space="preserve"><value>Podemos actualizar estos términos. Si el cambio es importante, te avisaremos en la aplicación. Seguir usando el servicio implica aceptar la versión vigente.</value></data>
+  <data name="Section11Title" xml:space="preserve"><value>Contacto</value></data>
+  <data name="Section11Text" xml:space="preserve"><value>Si tienes dudas sobre estos términos, escríbenos al correo de soporte del proyecto.</value></data>
+</root>

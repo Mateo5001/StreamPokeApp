@@ -273,6 +273,11 @@
           "Microsoft.IdentityModel.Logging": "8.0.1"
         }
       },
+      "Microsoft.NETCore.Platforms": {
+        "type": "Transitive",
+        "resolved": "7.0.4",
+        "contentHash": "yLEHlNN7O5WiND89r42sepgVwy5W/ZoTiFEdJDV7MHR1lW02LL7Nipz2TD5qM/Kx9W3/k3NP+PAP2qUdOm+leg=="
+      },
       "Microsoft.OpenApi": {
         "type": "Transitive",
         "resolved": "1.6.14",
@@ -295,6 +300,16 @@
         "dependencies": {
           "System.CodeDom": "6.0.0"
         }
+      },
+      "MudBlazor": {
+        "type": "Transitive",
+        "resolved": "9.14.0",
+        "contentHash": "VmMM/u4upqpc0lJoXmo30Zj1d/Zq3BjdS11+q/eB/+p20pV1WXbLS0C17WbV4xqLM1i9Kpco6emt6M4s2R/BUA=="
+      },
+      "PokeApiNet": {
+        "type": "Transitive",
+        "resolved": "4.1.0",
+        "contentHash": "3eU/WIW2N00CikDATuntV8gScbVwqPSJ2rT3zQAvH5hS8yIQuSCp5Xyt4l+bonUYA4Mb0j5EZvX5c8Wdwp3FiA=="
       },
       "Swashbuckle.AspNetCore.Swagger": {
         "type": "Transitive",
@@ -395,6 +410,11 @@
           "Microsoft.Win32.SystemEvents": "6.0.0"
         }
       },
+      "System.Formats.Asn1": {
+        "type": "Transitive",
+        "resolved": "11.0.0",
+        "contentHash": "RSIrJ7D8gEHykZWTfS/r9tz/G5YpxIQAaFFXSLLHhVaRed+/26KvqaXvUtqqMJMlNjubAcMvf3UJ+E6ABT8AWw=="
+      },
       "System.IdentityModel.Tokens.Jwt": {
         "type": "Transitive",
         "resolved": "8.0.1",
@@ -417,10 +437,26 @@
           "System.Configuration.ConfigurationManager": "6.0.0"
         }
       },
+      "System.Security.Cryptography.Pkcs": {
+        "type": "Transitive",
+        "resolved": "11.0.0",
+        "contentHash": "G8mTjSWrwaPJ2bJRbKuI4ZqdKUYcANK0KtNH3s8/va3nXiF/Pk/yhv2R17rv5PBKJO5+ZXDyhTnZXh0W9v0J8w==",
+        "dependencies": {
+          "System.Formats.Asn1": "11.0.0"
+        }
+      },
       "System.Security.Cryptography.ProtectedData": {
         "type": "Transitive",
         "resolved": "6.0.0",
         "contentHash": "rp1gMNEZpvx9vP0JW0oHLxlf8oSiQgtno77Y4PLUBjSiDYoD77Y8uXHr1Ea5XG4/pIKhqAdxZ8v8OTUtqo9PeQ=="
+      },
+      "System.Security.Cryptography.Xml": {
+        "type": "Transitive",
+        "resolved": "11.0.0",
+        "contentHash": "RfXWeKcljjYZx5l/4i+6V4G8jP690jbHDhg4Wa/tNdNWvXn/c0WyyQySbpYLTuXB0fqzfttPoBCWMc8DFJNQzA==",
+        "dependencies": {
+          "System.Security.Cryptography.Pkcs": "11.0.0"
+        }
       },
       "System.Security.Permissions": {
         "type": "Transitive",
@@ -438,13 +474,42 @@
           "System.Drawing.Common": "6.0.0"
         }
       },
+      "TwitchLib.EventSub.Core": {
+        "type": "Transitive",
+        "resolved": "3.1.0",
+        "contentHash": "qVNsF0fKunkrdqst6HeB0wy+4Gee4xG6uO+XtDGPQGyVb6GzShOKC0H5agtpfSLjMOBVT/wbgSAHk1q3idrqoA==",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "7.0.4"
+        }
+      },
+      "TwitchLib.EventSub.Websockets": {
+        "type": "Transitive",
+        "resolved": "0.9.0",
+        "contentHash": "wGT0pcHxkjtOa6GxIaBQpFI8dozlzm3y61i7bp+ekfhuSvWk0apz6aGrCEjK24hDrJZUd8Ecz5GAKX6lF+0+hA==",
+        "dependencies": {
+          "TwitchLib.EventSub.Core": "3.1.0"
+        }
+      },
+      "pokestream.bot": {
+        "type": "Project",
+        "dependencies": {
+          "PokeStream.EntityData": "[1.0.0, )",
+          "PokeStream.Game": "[1.0.0, )",
+          "PokeStream.Resources": "[1.0.0, )",
+          "TwitchLib.EventSub.Websockets": "[0.9.0, )"
+        }
+      },
       "pokestream.core": {
         "type": "Project",
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[9.0.0, )",
           "Microsoft.EntityFrameworkCore": "[9.0.0, )",
+          "MudBlazor": "[9.14.0, )",
+          "PokeApiNet": "[4.1.0, )",
           "PokeStream.EntityData": "[1.0.0, )",
-          "System.IdentityModel.Tokens.Jwt": "[8.0.1, )"
+          "PokeStream.Resources": "[1.0.0, )",
+          "System.IdentityModel.Tokens.Jwt": "[8.0.1, )",
+          "System.Security.Cryptography.Xml": "[11.0.0, )"
         }
       },
       "pokestream.entitydata": {
@@ -453,6 +518,16 @@
           "Microsoft.EntityFrameworkCore": "[9.0.0, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[9.0.0, )"
         }
+      },
+      "pokestream.game": {
+        "type": "Project",
+        "dependencies": {
+          "PokeApiNet": "[4.1.0, )",
+          "PokeStream.EntityData": "[1.0.0, )"
+        }
+      },
+      "pokestream.resources": {
+        "type": "Project"
       }
     }
   }

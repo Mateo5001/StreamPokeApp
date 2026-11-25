@@ -1,0 +1,10 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using PokeStream.Resources.Layout
+
+<MudNavMenu>
+    <MudNavLink Href="/account" Icon="@AppIcon.Account">@NavMenuResource.Account</MudNavLink>
+    <MudNavLink Href="/pokedex" Icon="@AppIcon.Collection">@NavMenuResource.Pokedex</MudNavLink>
+    <AuthorizeView Roles="Streamer">
+        <MudNavLink Href="/creator" Icon="@AppIcon.Dashboard">@NavMenuResource.CreatorPanel</MudNavLink>
+    </AuthorizeView>
+</MudNavMenu>

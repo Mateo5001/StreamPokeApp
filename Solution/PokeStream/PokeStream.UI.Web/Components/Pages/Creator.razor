@@ -1,0 +1,162 @@
+@page "/creator"
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Authorization
+@using PokeStream.Core.DTOs.Overlay
+@inject IJSRuntime JS
+@using PokeStream.Core.DTOs.User
+@using PokeStream.Core.Services.AuthServices
+@using PokeStream.Resources.Common
+@using PokeStream.Resources.Creator
+@using PokeStream.UI.Web.Components.Shared
+@inject AuthStateService Auth
+@inject NavigationManager Navigation
+
+<PageTitle>@CreatorResource.PageTitle</PageTitle>
+
+@* Guarded here: Routes uses RouteView (ignores [Authorize]) and the app has no server auth scheme *@
+<AuthorizeView Roles="Streamer">
+<MudStack Spacing="4">
+    <MudStack Spacing="1">
+        <MudText Typo="Typo.h4">@CreatorResource.Title</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">@CreatorResource.Subtitle</MudText>
+    </MudStack>
+
+    @* Twitch connection (required) *@
+    <MudPaper Elevation="2" Class="pa-6">
+        <MudStack Spacing="3">
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                <MudIcon Icon="@AppIcon.Twitch" Style="color: #9146FF;" />
+                <MudText Typo="Typo.h6">@CreatorResource.TwitchTitle</MudText>
+                <MudSpacer />
+                @if (!_busy)
+                {
+                    <MudChip T="string" Size="Size.Small" Color="@(_twitchConnected ? Color.Success : Color.Warning)">
+                        @(_twitchConnected ? string.Format(CreatorResource.TwitchConnectedAs, _twitchUsername) : CreatorResource.TwitchNotConnected)
+                    </MudChip>
+                }
+            </MudStack>
+            @if (_error is not null)
+            {
+                <MudAlert Severity="Severity.Error" Dense="true">@_error</MudAlert>
+            }
+            @if (_busy)
+            {
+                <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+            }
+            else if (!_twitchConnected)
+            {
+                <MudAlert Severity="Severity.Warning" Dense="true">@CreatorResource.TwitchRequired</MudAlert>
+                <TwitchConnectButton />
+            }
+        </MudStack>
+    </MudPaper>
+
+    @* Overlay (locked until Twitch is connected) *@
+    <MudPaper Elevation="2" Class="pa-6">
+        <MudStack Spacing="3">
+            <MudText Typo="Typo.h6">@CreatorResource.OverlayTitle</MudText>
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start">
+                <MudTextField T="string" Value="@_overlayUrl" Label="@CreatorResource.OverlayUrl" Class="flex-grow-1"
+                              Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true" Disabled="@(!_twitchConnected)"
+                              HelperText="@(_twitchConnected ? CreatorResource.OverlayHint : CreatorResource.OverlayLocked)"
+                              Adornment="Adornment.End" AdornmentIcon="@AppIcon.Copy" OnAdornmentClick="CopyOverlayUrlAsync"
+                              AdornmentAriaLabel="@CreatorResource.Copy" />
+                <MudIconButton Icon="@AppIcon.Refresh" OnClick="RegenerateOverlayAsync" Disabled="@(_overlayUrl is null)"
+                               aria-label="@CreatorResource.OverlayRegenerate" title="@CreatorResource.OverlayRegenerate" />
+            </MudStack>
+            @if (_copied)
+            {
+                <MudText Typo="Typo.caption" Color="Color.Success">@CreatorResource.Copied</MudText>
+            }
+
+            <MudText Typo="Typo.subtitle1">@CreatorResource.OptionsTitle</MudText>
+            <MudSwitch T="bool" Value="_showSpawns" ValueChanged="SetSpawnsAsync" Color="Color.Primary" Disabled="@(!_twitchConnected)" Label="@CreatorResource.ShowSpawns" />
+            <MudSwitch T="bool" @bind-Value="_playSounds" Color="Color.Primary" Disabled="@(!_twitchConnected)" Label="@CreatorResource.PlaySounds" />
+            <MudText Typo="Typo.body2">@CreatorResource.SpawnRate</MudText>
+            <MudSlider T="int" @bind-Value="_spawnRate" Min="1" Max="10" Color="Color.Primary" Disabled="@(!_twitchConnected)" />
+        </MudStack>
+    </MudPaper>
+
+    <MudAlert Severity="Severity.Info" Dense="true">@CreatorResource.ExampleNotice</MudAlert>
+</MudStack>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState>? AuthState { get; set; }
+
+    private string? _twitchUsername;
+    private bool _twitchConnected => _twitchUsername is not null;
+    private bool _busy = true;
+    private string? _error;
+
+    private string? _overlayUrl;
+    private bool _copied;
+    private bool _showSpawns;
+    // Placeholders until sounds and spawn rate exist
+    private bool _playSounds = true;
+    private int _spawnRate = 5;
+
+    // After render, never during prerender: the authorization code works only once.
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || AuthState is null || !(await AuthState).User.IsInRole("Streamer")) return;
+
+        await CallApiAsync(async () =>
+        {
+            var me = await Auth.GetCurrentUserAsync();
+            _twitchUsername = me?.TwitchUsername;
+            _showSpawns = me?.SpawnsEnabled ?? false;
+            if (_twitchConnected)
+                await LoadOverlayUrlAsync(HttpMethod.Get, "api/v1/creator/overlay");
+        });
+        _busy = false;
+        StateHasChanged();
+    }
+
+    // The switch only moves once the API has saved the change
+    private async Task SetSpawnsAsync(bool enabled)
+    {
+        _error = null;
+        await CallApiAsync(async () =>
+        {
+            var response = await Auth.SendAuthorizedAsync(HttpMethod.Put, "api/v1/creator/spawns",
+                JsonContent.Create(new SpawnSettingsRequest(enabled)));
+            if (response.IsSuccessStatusCode)
+                _showSpawns = enabled;
+            else
+                _error = CommonResource.InternalServerError;
+        });
+    }
+
+    private async Task LoadOverlayUrlAsync(HttpMethod method, string url)
+    {
+        var response = await Auth.SendAuthorizedAsync(method, url);
+        if (!response.IsSuccessStatusCode)
+        {
+            _error = CommonResource.InternalServerError;
+            return;
+        }
+        var overlay = await response.Content.ReadFromJsonAsync<OverlayTokenResponse>();
+        _overlayUrl = Navigation.ToAbsoluteUri("overlay/" + overlay!.Token).ToString();
+    }
+
+    private async Task RegenerateOverlayAsync()
+    {
+        _error = null;
+        _copied = false;
+        await CallApiAsync(() => LoadOverlayUrlAsync(HttpMethod.Post, "api/v1/creator/overlay/regenerate"));
+    }
+
+    private async Task CopyOverlayUrlAsync()
+    {
+        if (_overlayUrl is null) return;
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", _overlayUrl);
+        _copied = true;
+    }
+
+    private async Task CallApiAsync(Func<Task> call)
+    {
+        try { await call(); }
+        catch (HttpRequestException) { _error = CommonResource.ServerUnreachable; }
+    }
+}

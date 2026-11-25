@@ -1,0 +1,222 @@
+name: Continuous Deployment (Web)
+
+on:
+  push:
+    branches: [Test, Production]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment (run staging from Test or production from Production)'
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: read
+
+env:
+  AZURE_RESOURCE_GROUP: 'StreamsPokeApp'
+  ACR_NAME: 'pokeimgcontainers'
+  ACR_LOGIN_SERVER: 'pokeimgcontainers.azurecr.io'
+  IMAGE_REPOSITORY: 'pokestream/web'
+  STAGING_WEBAPP_NAME: 'pokestream'
+  PRODUCTION_WEBAPP_NAME: 'pokestream-prod'
+  # The web calls these API apps
+  STAGING_API_NAME: 'pokestream-api'
+  PRODUCTION_API_NAME: 'pokestream-api-prod'
+
+jobs:
+  deploy-staging:
+    name: Deploy Web to Staging
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/Test') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging' && github.ref == 'refs/heads/Test')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # WebSockets carry the Blazor circuit; HTTPS only keeps the session cookie secure
+      - name: Configure App Service
+        shell: bash
+        run: |
+          az webapp config set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$STAGING_WEBAPP_NAME" \
+            --generic-configurations '{"acrUseManagedIdentityCreds": true}' \
+            --web-sockets-enabled true \
+            --output none
+          az webapp update \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$STAGING_WEBAPP_NAME" \
+            --https-only true \
+            --output none
+
+      - name: Configure App Service settings
+        shell: bash
+        run: |
+          api_host="$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$STAGING_API_NAME" --query defaultHostName --output tsv)"
+          test -n "$api_host"
+
+          az webapp config appsettings set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$STAGING_WEBAPP_NAME" \
+            --settings \
+              "ASPNETCORE_ENVIRONMENT=Staging" \
+              "ASPNETCORE_URLS=http://+:8080" \
+              "WEBSITES_PORT=8080" \
+              "ASPNETCORE_FORWARDEDHEADERS_ENABLED=true" \
+              "ApiBaseUrl=https://$api_host/" \
+            --output none
+
+      - name: Log in to Azure Container Registry
+        shell: bash
+        run: az acr login --name "$ACR_NAME"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Solution/PokeStream/PokeStream.UI.Web/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:staging-${{ github.sha }}
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:staging-latest
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+      - name: Deploy image to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.STAGING_WEBAPP_NAME }}
+          images: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:staging-${{ github.sha }}
+
+      - name: Verify staging deployment
+        shell: bash
+        env:
+          WEBAPP_NAME: ${{ env.STAGING_WEBAPP_NAME }}
+        run: |
+          hostname="$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$WEBAPP_NAME" --query defaultHostName --output tsv)"
+          test -n "$hostname"
+
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error --connect-timeout 10 "https://$hostname/health/live"; then
+              exit 0
+            fi
+
+            echo "Health check attempt $attempt/12 failed; retrying in 10 seconds."
+            sleep 10
+          done
+
+          exit 1
+
+  deploy-production:
+    name: Deploy Web to Production
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/Production') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'production' && github.ref == 'refs/heads/Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # WebSockets carry the Blazor circuit; HTTPS only keeps the session cookie secure
+      - name: Configure App Service
+        shell: bash
+        run: |
+          az webapp config set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$PRODUCTION_WEBAPP_NAME" \
+            --generic-configurations '{"acrUseManagedIdentityCreds": true}' \
+            --web-sockets-enabled true \
+            --output none
+          az webapp update \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$PRODUCTION_WEBAPP_NAME" \
+            --https-only true \
+            --output none
+
+      - name: Configure App Service settings
+        shell: bash
+        run: |
+          api_host="$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$PRODUCTION_API_NAME" --query defaultHostName --output tsv)"
+          test -n "$api_host"
+
+          az webapp config appsettings set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$PRODUCTION_WEBAPP_NAME" \
+            --settings \
+              "ASPNETCORE_ENVIRONMENT=Production" \
+              "ASPNETCORE_URLS=http://+:8080" \
+              "WEBSITES_PORT=8080" \
+              "ASPNETCORE_FORWARDEDHEADERS_ENABLED=true" \
+              "ApiBaseUrl=https://$api_host/" \
+            --output none
+
+      - name: Log in to Azure Container Registry
+        shell: bash
+        run: az acr login --name "$ACR_NAME"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Solution/PokeStream/PokeStream.UI.Web/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:prod-${{ github.sha }}
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:latest
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+      - name: Deploy image to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.PRODUCTION_WEBAPP_NAME }}
+          images: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_REPOSITORY }}:prod-${{ github.sha }}
+
+      - name: Verify production deployment
+        shell: bash
+        env:
+          WEBAPP_NAME: ${{ env.PRODUCTION_WEBAPP_NAME }}
+        run: |
+          hostname="$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$WEBAPP_NAME" --query defaultHostName --output tsv)"
+          test -n "$hostname"
+
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error --connect-timeout 10 "https://$hostname/health/live"; then
+              exit 0
+            fi
+
+            echo "Health check attempt $attempt/12 failed; retrying in 10 seconds."
+            sleep 10
+          done
+
+          exit 1

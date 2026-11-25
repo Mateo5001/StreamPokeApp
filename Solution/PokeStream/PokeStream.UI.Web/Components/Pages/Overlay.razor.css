@@ -1,0 +1,53 @@
+.overlay {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 24px;
+    box-sizing: border-box;
+    font-family: Roboto, sans-serif;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 240px;
+    max-width: 360px;
+    padding: 16px 24px;
+    border-radius: 16px;
+    border: 3px solid #ff7a1a;
+    background: rgba(20, 20, 30, 0.88);
+    color: #fff;
+    font-size: 20px;
+    text-align: center;
+}
+
+.card.shiny {
+    border-color: #ffd54a;
+}
+
+img {
+    width: 192px;
+    height: 192px;
+    image-rendering: pixelated;
+}
+
+.name {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.hint {
+    margin-top: 8px;
+    color: #ffd54a;
+}
+
+.pop {
+    animation: pop 0.3s ease-out;
+}
+
+@keyframes pop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}

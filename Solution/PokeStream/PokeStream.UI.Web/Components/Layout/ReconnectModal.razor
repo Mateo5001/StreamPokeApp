@@ -1,0 +1,33 @@
+﻿@using PokeStream.Resources.Layout
+
+<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
+
+<dialog id="components-reconnect-modal" data-nosnippet>
+    <div class="components-reconnect-container">
+        <div class="components-rejoining-animation" aria-hidden="true">
+            <div></div>
+            <div></div>
+        </div>
+        <p class="components-reconnect-first-attempt-visible">
+            @ReconnectResource.Rejoining
+        </p>
+        <p class="components-reconnect-repeated-attempt-visible">
+            @ReconnectResource.RepeatedAttemptPrefix<span id="components-seconds-to-next-attempt"></span>@ReconnectResource.RepeatedAttemptSuffix
+        </p>
+        <p class="components-reconnect-failed-visible">
+            @ReconnectResource.RejoinFailed<br />@ReconnectResource.RetryOrReload
+        </p>
+        <button id="components-reconnect-button" class="components-reconnect-failed-visible">
+            @ReconnectResource.Retry
+        </button>
+        <p class="components-pause-visible">
+            @ReconnectResource.Paused
+        </p>
+        <p class="components-resume-failed-visible">
+            @ReconnectResource.ResumeFailed<br />@ReconnectResource.RetryOrReload
+        </p>
+        <button id="components-resume-button" class="components-pause-visible components-resume-failed-visible">
+            @ReconnectResource.Resume
+        </button>
+    </div>
+</dialog>

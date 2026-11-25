@@ -1,0 +1,45 @@
+@page "/terms"
+@using PokeStream.Resources.Legal
+
+<PageTitle>@TermsResource.PageTitle</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="py-4">
+    <MudPaper Elevation="2" Class="pa-6 pa-sm-8">
+        <MudStack Spacing="3">
+            <MudText Typo="Typo.h4">@TermsResource.PageTitle</MudText>
+            <MudText Typo="Typo.caption" Color="Color.Secondary">@TermsResource.LastUpdated</MudText>
+            <MudAlert Severity="Severity.Info" Dense="true">@TermsResource.Draft</MudAlert>
+
+            @for (var i = 0; i < _sections.Length; i++)
+            {
+                var s = _sections[i];
+                <MudStack Spacing="1">
+                    <MudText Typo="Typo.h6">@(i + 1). @s.Title</MudText>
+                    <MudText Typo="Typo.body1">@s.Text</MudText>
+                </MudStack>
+            }
+
+            <MudDivider />
+            <MudLink Href="/">@TermsResource.BackHome</MudLink>
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private record Section(string Title, string Text);
+
+    private readonly Section[] _sections =
+    [
+        new(TermsResource.Section1Title, TermsResource.Section1Text),
+        new(TermsResource.Section2Title, TermsResource.Section2Text),
+        new(TermsResource.Section3Title, TermsResource.Section3Text),
+        new(TermsResource.Section4Title, TermsResource.Section4Text),
+        new(TermsResource.Section5Title, TermsResource.Section5Text),
+        new(TermsResource.Section6Title, TermsResource.Section6Text),
+        new(TermsResource.Section7Title, TermsResource.Section7Text),
+        new(TermsResource.Section8Title, TermsResource.Section8Text),
+        new(TermsResource.Section9Title, TermsResource.Section9Text),
+        new(TermsResource.Section10Title, TermsResource.Section10Text),
+        new(TermsResource.Section11Title, TermsResource.Section11Text),
+    ];
+}

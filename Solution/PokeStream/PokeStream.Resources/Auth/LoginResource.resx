@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>Iniciar sesión</value></data>
+  <data name="UsernameOrEmail" xml:space="preserve"><value>Usuario o email</value></data>
+  <data name="Password" xml:space="preserve"><value>Contraseña</value></data>
+  <data name="ShowHidePassword" xml:space="preserve"><value>Mostrar u ocultar contraseña</value></data>
+  <data name="RememberMe" xml:space="preserve"><value>Recordarme</value></data>
+  <data name="ForgotPassword" xml:space="preserve"><value>¿Olvidaste tu contraseña?</value></data>
+  <data name="SubmitButton" xml:space="preserve"><value>Iniciar sesión</value></data>
+  <data name="OrContinueWith" xml:space="preserve"><value>o continúa con</value></data>
+  <data name="NoAccount" xml:space="preserve"><value>¿No tienes cuenta?</value></data>
+  <data name="CreateAccount" xml:space="preserve"><value>Crear una cuenta</value></data>
+  <data name="InvalidCredentials" xml:space="preserve"><value>Usuario o contraseña incorrectos</value></data>
+  <data name="UsernameOrEmailRequired" xml:space="preserve"><value>Ingresa tu usuario o email</value></data>
+  <data name="UsernameOrEmailMaxLength" xml:space="preserve"><value>El usuario o email no puede superar los 100 caracteres</value></data>
+  <data name="PasswordRequired" xml:space="preserve"><value>Ingresa tu contraseña</value></data>
+  <data name="PasswordMaxLength" xml:space="preserve"><value>La contraseña no puede superar los 100 caracteres</value></data>
+  <data name="DeviceInfoMaxLength" xml:space="preserve"><value>La información del dispositivo no puede superar los 200 caracteres</value></data>
+  <data name="UserAgentMaxLength" xml:space="preserve"><value>El user agent no puede superar los 500 caracteres</value></data>
+  <data name="IpAddressMaxLength" xml:space="preserve"><value>La dirección IP no puede superar los 100 caracteres</value></data>
+</root>

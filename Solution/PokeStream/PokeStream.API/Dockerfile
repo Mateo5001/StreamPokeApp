@@ -7,9 +7,12 @@ COPY ["Solution/PokeStream/PokeStream.sln", "Solution/PokeStream/"]
 COPY ["Solution/PokeStream/PokeStream.Core/PokeStream.Core.csproj", "Solution/PokeStream/PokeStream.Core/"]
 COPY ["Solution/PokeStream/PokeStream.EntityData/PokeStream.EntityData.csproj", "Solution/PokeStream/PokeStream.EntityData/"]
 COPY ["Solution/PokeStream/PokeStream.API/PokeStream.API.csproj", "Solution/PokeStream/PokeStream.API/"]
+COPY ["Solution/PokeStream/PokeStream.Bot/PokeStream.Bot.csproj", "Solution/PokeStream/PokeStream.Bot/"]
+COPY ["Solution/PokeStream/PokeStream.Resources/PokeStream.Resources.csproj", "Solution/PokeStream/PokeStream.Resources/"]
+COPY ["Solution/PokeStream/PokeStream.Game/PokeStream.Game.csproj", "Solution/PokeStream/PokeStream.Game/"]
 
-# Restore dependencies with lock file for reproducible builds
-RUN dotnet restore "Solution/PokeStream/PokeStream.sln" --use-lock-file
+# Restore dependencies with lock file for reproducible builds (the API only: the web app is not part of this image)
+RUN dotnet restore "Solution/PokeStream/PokeStream.API/PokeStream.API.csproj" --use-lock-file
 
 # Copy all source code
 COPY . .

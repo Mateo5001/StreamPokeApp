@@ -24,6 +24,9 @@ env:
   IMAGE_REPOSITORY: 'pokestream/api'
   STAGING_WEBAPP_NAME: 'pokestream-api'
   PRODUCTION_WEBAPP_NAME: 'pokestream-api-prod'
+  # Web apps deployed by cd-web.yml: Twitch sends users back to them
+  STAGING_FRONTEND_NAME: 'pokestream'
+  PRODUCTION_FRONTEND_NAME: 'pokestream-prod'
 
 jobs:
   deploy-staging:
@@ -51,6 +54,7 @@ jobs:
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$STAGING_WEBAPP_NAME" \
             --generic-configurations '{"acrUseManagedIdentityCreds": true}' \
+            --web-sockets-enabled true \
             --output none
 
       - name: Configure App Service settings
@@ -60,7 +64,21 @@ jobs:
           JWT_KEY: ${{ secrets.STAGING_JWT_KEY }}
           JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
           JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
+          TWITCH_CLIENT_ID: ${{ secrets.STAGING_TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.STAGING_TWITCH_CLIENT_SECRET }}
+          BOT_ENABLED: ${{ vars.STAGING_BOT_ENABLED || 'false' }}
+          BOT_REFRESH_TOKEN: ${{ secrets.STAGING_BOT_REFRESH_TOKEN }}
         run: |
+          # Without the web app the redirect stays empty and "connect Twitch" reports it is not configured
+          web_host="$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$STAGING_FRONTEND_NAME" --query defaultHostName --output tsv || true)"
+          redirect_uri=""
+          if [ -n "$web_host" ]; then redirect_uri="https://$web_host/twitch/callback"; fi
+
+          # The bot has no incoming traffic of its own: without Always On the app is unloaded and it stops listening
+          if [ "$BOT_ENABLED" = "true" ]; then
+            az webapp config set --resource-group "$AZURE_RESOURCE_GROUP" --name "$STAGING_WEBAPP_NAME" --always-on true --output none
+          fi
+
           az webapp config appsettings set \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$STAGING_WEBAPP_NAME" \
@@ -68,10 +86,18 @@ jobs:
               "ASPNETCORE_ENVIRONMENT=Staging" \
               "ASPNETCORE_URLS=http://+:8080" \
               "WEBSITES_PORT=8080" \
+              "ASPNETCORE_FORWARDEDHEADERS_ENABLED=true" \
+              "WEBSITES_ENABLE_APP_SERVICE_STORAGE=true" \
+              "DataProtection__KeysPath=/home/dataprotection-keys" \
               "ConnectionStrings__DefaultConnection=$CONNECTION_STRING" \
               "Jwt__Key=$JWT_KEY" \
               "Jwt__Issuer=$JWT_ISSUER" \
               "Jwt__Audience=$JWT_AUDIENCE" \
+              "Twitch__ClientId=$TWITCH_CLIENT_ID" \
+              "Twitch__ClientSecret=$TWITCH_CLIENT_SECRET" \
+              "Twitch__RedirectUri=$redirect_uri" \
+              "Bot__Enabled=$BOT_ENABLED" \
+              "Bot__RefreshToken=$BOT_REFRESH_TOKEN" \
             --output none
 
       - name: Log in to Azure Container Registry
@@ -144,6 +170,7 @@ jobs:
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$PRODUCTION_WEBAPP_NAME" \
             --generic-configurations '{"acrUseManagedIdentityCreds": true}' \
+            --web-sockets-enabled true \
             --output none
 
       - name: Configure App Service settings
@@ -153,7 +180,21 @@ jobs:
           JWT_KEY: ${{ secrets.PROD_JWT_KEY }}
           JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
           JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
+          TWITCH_CLIENT_ID: ${{ secrets.PROD_TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.PROD_TWITCH_CLIENT_SECRET }}
+          BOT_ENABLED: ${{ vars.PROD_BOT_ENABLED || 'false' }}
+          BOT_REFRESH_TOKEN: ${{ secrets.PROD_BOT_REFRESH_TOKEN }}
         run: |
+          # Without the web app the redirect stays empty and "connect Twitch" reports it is not configured
+          web_host="$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$PRODUCTION_FRONTEND_NAME" --query defaultHostName --output tsv || true)"
+          redirect_uri=""
+          if [ -n "$web_host" ]; then redirect_uri="https://$web_host/twitch/callback"; fi
+
+          # The bot has no incoming traffic of its own: without Always On the app is unloaded and it stops listening
+          if [ "$BOT_ENABLED" = "true" ]; then
+            az webapp config set --resource-group "$AZURE_RESOURCE_GROUP" --name "$PRODUCTION_WEBAPP_NAME" --always-on true --output none
+          fi
+
           az webapp config appsettings set \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$PRODUCTION_WEBAPP_NAME" \
@@ -161,10 +202,18 @@ jobs:
               "ASPNETCORE_ENVIRONMENT=Production" \
               "ASPNETCORE_URLS=http://+:8080" \
               "WEBSITES_PORT=8080" \
+              "ASPNETCORE_FORWARDEDHEADERS_ENABLED=true" \
+              "WEBSITES_ENABLE_APP_SERVICE_STORAGE=true" \
+              "DataProtection__KeysPath=/home/dataprotection-keys" \
               "ConnectionStrings__DefaultConnection=$CONNECTION_STRING" \
               "Jwt__Key=$JWT_KEY" \
               "Jwt__Issuer=$JWT_ISSUER" \
               "Jwt__Audience=$JWT_AUDIENCE" \
+              "Twitch__ClientId=$TWITCH_CLIENT_ID" \
+              "Twitch__ClientSecret=$TWITCH_CLIENT_SECRET" \
+              "Twitch__RedirectUri=$redirect_uri" \
+              "Bot__Enabled=$BOT_ENABLED" \
+              "Bot__RefreshToken=$BOT_REFRESH_TOKEN" \
             --output none
 
       - name: Log in to Azure Container Registry

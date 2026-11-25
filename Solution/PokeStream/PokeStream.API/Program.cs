@@ -1,8 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PokeStream.Core.Services;
+using PokeStream.API.Hubs;
+using PokeStream.Bot;
+using PokeStream.Core.DTOs.Overlay;
+using PokeStream.Game;
+using PokeStream.Core.Services.AuthServices;
 using PokeStream.Core.Settings;
 using PokeStream.EntityData.Data;
 using System.Text;
@@ -78,6 +83,22 @@ builder.Services.AddAuthorization();
 
 // Register Auth Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Twitch account linking
+builder.Services.Configure<TwitchSettings>(builder.Configuration.GetSection(TwitchSettings.SectionName));
+builder.Services.AddHttpClient();
+var dataProtection = builder.Services.AddDataProtection();
+// Containers lose their keys on every deploy, and with them the stored bot token: keep them on persistent storage
+if (builder.Configuration["DataProtection:KeysPath"] is { Length: > 0 } keysPath)
+    dataProtection.PersistKeysToFileSystem(new DirectoryInfo(keysPath));
+
+// Twitch chat bot (Bot:Enabled). Lives in its own project so it can move to its own host.
+builder.Services.AddTwitchBot(builder.Configuration);
+
+// Game and the overlay that shows it
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IGameEvents, OverlayGameEvents>();
+builder.Services.AddPokeStreamGame();
 
 // Add Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
@@ -157,4 +178,5 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<OverlayHub>("/" + OverlayHubContract.Path);
 app.Run();

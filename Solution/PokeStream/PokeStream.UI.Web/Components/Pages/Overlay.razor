@@ -1,0 +1,155 @@
+@page "/overlay/{Token}"
+@layout OverlayLayout
+@implements IAsyncDisposable
+@using Microsoft.AspNetCore.SignalR
+@using Microsoft.AspNetCore.SignalR.Client
+@using PokeStream.Core.DTOs.Overlay
+@using PokeStream.Core.Services.Http
+@using PokeStream.Resources.Overlay
+@inject IHttpClient Api
+@inject ILogger<Overlay> Logger
+
+<PageTitle>@OverlayResource.PageTitle</PageTitle>
+
+<div class="overlay" aria-live="polite">
+    @if (_invalid)
+    {
+        <div class="card">@OverlayResource.InvalidToken</div>
+    }
+    else if (_result is not null)
+    {
+        <div class="card pop">@_result</div>
+    }
+    else if (_wild is not null)
+    {
+        <div class="card pop @(_wild.IsShiny ? "shiny" : null)">
+            @if (_wild.SpriteUrl is not null)
+            {
+                <img src="@_wild.SpriteUrl" alt="@_wild.SpeciesName" />
+            }
+            <div class="name">@_wild.SpeciesName</div>
+            <div>@string.Format(OverlayResource.Level, _wild.Level)</div>
+            @if (_wild.IsShiny)
+            {
+                <div>@OverlayResource.Shiny</div>
+            }
+            <div class="hint">@OverlayResource.CaptureHint · @_secondsLeft s</div>
+        </div>
+    }
+</div>
+
+@code {
+    private static readonly TimeSpan ResultTime = TimeSpan.FromSeconds(6);
+    private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(5);
+
+    [Parameter] public string Token { get; set; } = string.Empty;
+
+    private readonly CancellationTokenSource _disposed = new();
+    private HubConnection? _hub;
+    private OverlayWild? _wild;
+    private string? _result;
+    private int _secondsLeft;
+    private int _resultVersion;
+    private bool _invalid;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+        _ = ConnectAsync();
+        _ = CountDownAsync();
+    }
+
+    private async Task ConnectAsync()
+    {
+        _hub = new HubConnectionBuilder()
+            .WithUrl(new Uri(Api.BaseAddress, OverlayHubContract.Path))
+            .Build();
+        _hub.On<OverlayWild>(OverlayHubContract.Spawned, wild => InvokeAsync(() => Show(wild)));
+        _hub.On<string, string>(OverlayHubContract.Captured, (species, trainer) =>
+            InvokeAsync(() => ShowResult(string.Format(OverlayResource.CapturedBy, species, trainer))));
+        _hub.On<string>(OverlayHubContract.Fled, species =>
+            InvokeAsync(() => ShowResult(string.Format(OverlayResource.Fled, species))));
+        // The overlay stays open for hours: whenever the connection drops, start over
+        _hub.Closed += _ => _disposed.IsCancellationRequested ? Task.CompletedTask : StartAsync();
+
+        await StartAsync();
+    }
+
+    private async Task StartAsync()
+    {
+        while (!_disposed.IsCancellationRequested)
+        {
+            try
+            {
+                if (_hub!.State == HubConnectionState.Disconnected)
+                    await _hub.StartAsync(_disposed.Token);
+                var wild = await _hub.InvokeAsync<OverlayWild?>(OverlayHubContract.Join, Token, _disposed.Token);
+                await InvokeAsync(() => Show(wild));
+                return;
+            }
+            catch (HubException ex) when (ex.Message.Contains("invalid-token"))
+            {
+                _invalid = true;
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+            catch (Exception ex) when (!_disposed.IsCancellationRequested)
+            {
+                Logger.LogWarning(ex, "Overlay cannot reach the API, retrying");
+                try { await Task.Delay(RetryDelay, _disposed.Token); }
+                catch (OperationCanceledException) { return; }
+            }
+        }
+    }
+
+    private void Show(OverlayWild? wild)
+    {
+        _wild = wild;
+        _secondsLeft = wild?.SecondsLeft ?? 0;
+        _result = null;
+        _resultVersion++;
+        StateHasChanged();
+    }
+
+    // Not awaited by the hub handler: SignalR delivers the next message only when the handler returns
+    private void ShowResult(string result)
+    {
+        _wild = null;
+        _result = result;
+        StateHasChanged();
+        _ = ClearResultAsync(++_resultVersion);
+    }
+
+    private async Task ClearResultAsync(int version)
+    {
+        try { await Task.Delay(ResultTime, _disposed.Token); }
+        catch (OperationCanceledException) { return; }
+
+        // A newer spawn or result owns the screen now
+        if (version != _resultVersion) return;
+        _result = null;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task CountDownAsync()
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try
+        {
+            while (await timer.WaitForNextTickAsync(_disposed.Token))
+            {
+                if (_wild is null || _secondsLeft <= 0) continue;
+                _secondsLeft--;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException) { /* page closed */ }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _disposed.Cancel();
+        if (_hub is not null)
+            await _hub.DisposeAsync();
+    }
+}

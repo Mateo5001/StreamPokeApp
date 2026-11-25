@@ -1,0 +1,114 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using PokeStream.Core.Services.Themes
+@using PokeStream.UI.Web.Components.Shared
+@using PokeStream.Core.Services.Cookies
+@using PokeStream.Resources.Layout
+@inherits LayoutComponentBase
+@inject ICookieService Cookies
+@inject PokeStream.Core.Services.AuthServices.AuthStateService Auth
+@inject NavigationManager Navigation
+
+<MudThemeProvider Theme="_theme" @bind-IsDarkMode="_isDarkMode" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<RouteGuard />
+
+<MudLayout>
+    <MudAppBar Elevation="3" Dense="true">
+        <AuthorizeView>
+            <Authorized>
+                <MudIconButton Icon="@logoIcon" Style="font-size: 48px;" Color="Color.Inherit" OnClick="ToggleDrawer">@LayoutResource.Menu</MudIconButton>
+            </Authorized>
+            <NotAuthorized>
+                <MudIcon Icon="@logoIcon" Style="font-size: 48px;" />
+            </NotAuthorized>
+        </AuthorizeView>
+        <MudLink Href="/">
+            <MudImage Src="@logoName" Alt="PokéStream" Width="220" />
+        </MudLink>
+        <MudSpacer />
+        <MudToggleIconButton Toggled="_isDarkMode"
+                             ToggledChanged="OnThemeToggled"
+                             Icon="@AppIcon.DarkMode"
+                             ToggledIcon="@AppIcon.LightMode"
+                             Color="Color.Inherit"
+                             title="@LayoutResource.ToggleTheme" />
+        <MudMenu Icon="@accountIcon" Color="Color.Inherit" Dense="true">
+            <AuthorizeView>
+                <Authorized>
+                    <MudMenuItem Href="/account">@LayoutResource.MyAccount</MudMenuItem>
+                    <MudMenuItem OnClick="SignOutAsync">@LayoutResource.SignOut</MudMenuItem>
+                </Authorized>
+                <NotAuthorized>
+                    <LoginEmbedded></LoginEmbedded>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudMenu>
+    </MudAppBar>
+    <MudMainContent>
+        <AuthorizeView>
+            <Authorized>
+                <MudDrawer @bind-Open="_drawerOpen" Elevation="2" Breakpoint="@Breakpoint.Xl" Variant="@DrawerVariant.Temporary">
+                    <MudDrawerHeader>
+                        <MudImage Src="@logoName" Alt="PokéStream" Width="200" />
+                    </MudDrawerHeader>
+                    <NavMenu />
+                </MudDrawer>
+            </Authorized>
+        </AuthorizeView>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-6">
+            <CascadingValue Value="_isDarkMode" Name="IsDarkMode">@Body</CascadingValue>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+<div id="blazor-error-ui" data-nosnippet>
+    @LayoutResource.UnhandledError
+    <a href="." class="reload">@LayoutResource.Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    private readonly MudTheme _theme = new PokeStreamTheme();
+    private bool _isDarkMode;
+    private bool _drawerOpen = false;
+    
+    private string accountIcon => _isDarkMode ? AppIcon.AccountDark : AppIcon.AccountLight;
+    private string logoIcon => _isDarkMode ? AppIcon.LogoBlue : AppIcon.LogoOrange;
+    private string logoName => _isDarkMode ? AppIcon.Images.WordmarkOnBlue : AppIcon.Images.WordmarkOnOrange;
+
+    private void ToggleDrawer() { _drawerOpen = !_drawerOpen; }
+
+    private async Task SignOutAsync()
+    {
+        await Auth.LogoutAsync();
+        _drawerOpen = false;
+        Navigation.NavigateTo("/");
+    }
+
+    private const string DarkValue = "dark";
+    private const string LightValue = "light";
+    private const int ThemeCookieDays = 365;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        // Restore the saved theme (JS cookies are only available after the first render)
+        var saved = await Cookies.GetAsync(CookieKeys.Theme);
+        if (saved is not (DarkValue or LightValue)) return;
+
+        var dark = saved == DarkValue;
+        if (dark == _isDarkMode) return;
+
+        _isDarkMode = dark;
+        StateHasChanged();
+    }
+
+    private async Task OnThemeToggled(bool dark)
+    {
+        _isDarkMode = dark;
+        await Cookies.SetAsync(CookieKeys.Theme, dark ? DarkValue : LightValue, ThemeCookieDays);
+    }
+}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="PageTitle" xml:space="preserve"><value>Panel de creadores</value></data>
+  <data name="Title" xml:space="preserve"><value>Panel de control para creadores</value></data>
+  <data name="Subtitle" xml:space="preserve"><value>Conecta tu canal y configura el overlay para tu stream</value></data>
+  <data name="TwitchTitle" xml:space="preserve"><value>Cuenta de Twitch</value></data>
+  <data name="TwitchRequired" xml:space="preserve"><value>Conecta tu cuenta de Twitch para usar el overlay y leer el chat de tu canal. Es obligatorio.</value></data>
+  <data name="TwitchNotConnected" xml:space="preserve"><value>Sin conectar</value></data>
+  <data name="TwitchConnect" xml:space="preserve"><value>Conectar con Twitch</value></data>
+  <data name="OverlayTitle" xml:space="preserve"><value>Overlay para tu stream</value></data>
+  <data name="OverlayUrl" xml:space="preserve"><value>URL del overlay</value></data>
+  <data name="OverlayHint" xml:space="preserve"><value>Agrégala como fuente de navegador en OBS o Streamlabs.</value></data>
+  <data name="OverlayLocked" xml:space="preserve"><value>Disponible cuando conectes Twitch</value></data>
+  <data name="Copy" xml:space="preserve"><value>Copiar URL</value></data>
+  <data name="OptionsTitle" xml:space="preserve"><value>Opciones</value></data>
+  <data name="ShowSpawns" xml:space="preserve"><value>Activar apariciones en mi canal</value></data>
+  <data name="PlaySounds" xml:space="preserve"><value>Reproducir sonidos</value></data>
+  <data name="SpawnRate" xml:space="preserve"><value>Frecuencia de apariciones</value></data>
+  <data name="ExampleNotice" xml:space="preserve"><value>Maqueta: los sonidos y la frecuencia aún no están implementados.</value></data>
+  <data name="TwitchConnectedAs" xml:space="preserve"><value>Conectado como {0}</value></data>
+  <data name="TwitchNotConfigured" xml:space="preserve"><value>La conexión con Twitch no está configurada en el servidor.</value></data>
+  <data name="TwitchLinkExpired" xml:space="preserve"><value>La solicitud de conexión caducó o no es válida. Inténtalo de nuevo.</value></data>
+  <data name="TwitchFailed" xml:space="preserve"><value>No se pudo completar la conexión con Twitch. Inténtalo de nuevo.</value></data>
+  <data name="TwitchTaken" xml:space="preserve"><value>Esa cuenta de Twitch ya está vinculada a otro usuario.</value></data>
+  <data name="TwitchCancelled" xml:space="preserve"><value>Cancelaste la autorización en Twitch.</value></data>
+  <data name="OverlayRegenerate" xml:space="preserve"><value>Generar otra URL (la actual dejará de funcionar)</value></data>
+  <data name="Copied" xml:space="preserve"><value>URL copiada</value></data>
+  <data name="TwitchBackToAccount" xml:space="preserve"><value>Volver a mi cuenta</value></data>
+</root>

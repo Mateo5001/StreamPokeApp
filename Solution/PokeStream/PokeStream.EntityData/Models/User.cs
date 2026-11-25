@@ -30,6 +30,22 @@ public class User
 
     public bool IsActive { get; set; } = true;
 
+    /// <summary>Content creator: can use the creator panel. Emitted as role "Streamer" in the access token.</summary>
+    public bool IsStreamer { get; set; }
+
+    /// <summary>Usernames of provisional accounts start with this; registration rejects it.</summary>
+    public const string ProvisionalPrefix = "twitch:";
+
+    /// <summary>Created by capturing in chat without an account; merged when the viewer links the platform.</summary>
+    public bool IsProvisional { get; set; }
+
+    /// <summary>The streamer wants wild Pokémon to appear in their channel.</summary>
+    public bool SpawnsEnabled { get; set; }
+
+    /// <summary>Secret part of the streamer's overlay URL; null until first requested.</summary>
+    [MaxLength(64)]
+    public string? OverlayToken { get; set; }
+
     // Password hash (for local auth)
     [MaxLength(500)]
     public string? PasswordHash { get; set; }
@@ -86,4 +102,10 @@ public class User
 
     // Navigation properties
     public virtual ICollection<UserSession> Sessions { get; set; } = new List<UserSession>();
+
+    /// <summary>Pokémon captured by this trainer.</summary>
+    public virtual ICollection<Pokemon> Pokemons { get; set; } = new List<Pokemon>();
+
+    /// <summary>Main team (up to 6 slots).</summary>
+    public virtual ICollection<PartySlot> Party { get; set; } = new List<PartySlot>();
 }

@@ -39,73 +39,6 @@ Interactive overlay for streamers (Blazor + .NET MAUI) showing Pokémon on strea
 | Deploy | Docker Compose / Azure Container Apps - *planned* |
 | API Docs | Swagger/OpenAPI (Swashbuckle.AspNetCore 6.6.2) - *configured* |
 
-## Project Structure (Solution/PokeStream/)
-
-```
-Solution/PokeStream/
-├── PokeStream.sln               # Solution file (classic .sln format)
-├── PokeStream.API/              # ASP.NET Core API (EXISTS)
-│   ├── Controllers/
-│   │   ├── AuthController.cs    # Auth endpoints (register, login, refresh, logout, me)
-│   │   └── WeatherForecastController.cs   # Default controller (to remove)
-│   ├── Properties/
-│   ├── bin/ / obj/
-│   ├── Program.cs               # Minimal API with JWT Auth + Swagger
-│   ├── WeatherForecast.cs       # Default model (to remove)
-│   ├── appsettings.json
-│   ├── appsettings.Development.json
-│   └── PokeStream.API.csproj    # Target: net10.0, references Core + EntityData
-├── PokeStream.Core/             # Domain, DTOs, Interfaces, Services (EXISTS)
-│   ├── DTOs/
-│   │   └── AuthDtos.cs          # RegisterRequest, LoginRequest, AuthResponse, UserInfoDto, ErrorResponse, RefreshTokenRequest
-│   ├── Services/
-│   │   ├── IAuthService.cs      # Auth interface
-│   │   └── AuthService.cs       # JWT + Refresh Tokens + BCrypt implementation
-│   ├── Settings/
-│   │   └── JwtSettings.cs       # JWT configuration from appsettings
-│   └── PokeStream.Core.csproj   # Target: net10.0, references EntityData
-├── PokeStream.EntityData/       # EF Core, Models, DbContext, Migrations (EXISTS)
-│   ├── Models/
-│   │   ├── User.cs              # User with OAuth fields + PasswordHash
-│   │   └── UserSession.cs       # Refresh token sessions with device/IP tracking
-│   ├── Data/
-│   │   └── PokeStreamDbContext.cs  # DbContext with Auth schema config
-│   ├── Migrations/
-│   │   ├── 20261112210120_InitialAuthSchema.cs    # Initial Users + UserSessions
-│   │   └── 20261112211730_AddUpdatedAtToUserSession.cs
-│   └── PokeStream.EntityData.csproj  # Target: net10.0, EF Core + SQL Server
-
-PLANNED (not created):
-├── PokeStream.Overlay/          # .NET MAUI Desktop App (Overlay)
-├── PokeStream.Web/              # Blazor WASM PWA (Viewer App)
-├── PokeStream.Bots/             # Shared library for Twitch/YT/Kick bots
-└── PokeStream.Infrastructure/   # Additional EF Core, Repositories, Services
-```
-
-## Development Commands
-
-```bash
-# Solution root
-cd Solution/PokeStream
-
-# Build entire solution
-dotnet build PokeStream.sln
-
-# Backend API (with JWT Auth + Swagger)
-cd PokeStream.API
-dotnet restore
-dotnet run
-# Swagger UI: http://localhost:5130/swagger
-# OpenAPI JSON: http://localhost:5130/swagger/v1/swagger.json
-
-# EF Core Migrations (from API project)
-dotnet ef migrations add <Name> -o ../PokeStream.EntityData/Data/Migrations --project ../PokeStream.EntityData/PokeStream.EntityData.csproj
-dotnet ef database update --project ../PokeStream.EntityData/PokeStream.EntityData.csproj
-
-# Run tests (when added)
-dotnet test
-```
-
 ## Current Auth API Endpoints
 
 | Method | Endpoint | Description | Auth |
@@ -116,26 +49,34 @@ dotnet test
 | POST | `/api/v1/auth/logout` | Revoke refresh token | Bearer |
 | GET | `/api/v1/auth/me` | Get current user info | Bearer |
 
+## Current Health API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health/live` | Liveness probe (container orchestration) |
+| GET | `/health/ready` | Readiness probe (DB connectivity check) |
+| GET | `/health` | Detailed health check with DB info |
+
 ## Database Configuration
 
 **Production (Azure SQL Server):**
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=tcp:<server>.database.windows.net,1433;Initial Catalog=PokeStream;Persist Security Info=False;User ID=<user>;Password=<password>;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  "DefaultConnection": "Server=tcp:<YOUR_SERVER>.database.windows.net,1433;Initial Catalog=<YOUR_DB>;Persist Security Info=False;User ID=<YOUR_USER>;Password=<YOUR_PASSWORD>;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 }
 ```
 
 **Development (Azure SQL Server - separate DB):**
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=tcp:pokeconectserver.database.windows.net,1433;Initial Catalog=PokeApp_dev;Persist Security Info=False;User ID=AdminServerPoke;Password=DevTest@2026;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  "DefaultConnection": "Server=tcp:<YOUR_DEV_SERVER>.database.windows.net,1433;Initial Catalog=<YOUR_DEV_DB>;Persist Security Info=False;User ID=<YOUR_DEV_USER>;Password=<YOUR_DEV_PASSWORD>;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 }
 ```
 
 **JWT Settings (Development):**
 ```json
 "Jwt": {
-  "Key": "PokeStream-Super-Secret-Key-For-Development-Only-Change-In-Production-2026!",
+  "Key": "<YOUR_JWT_SECRET_KEY_MIN_32_CHARS>",
   "Issuer": "PokeStreamAPI",
   "Audience": "PokeStreamClient",
   "AccessTokenExpiryMinutes": 15,
@@ -159,13 +100,21 @@ dotnet test
 - Shared DTOs in `PokeStream.Core` for API contracts
 - Clean Architecture: Core (domain) → EntityData (infrastructure) → API (presentation)
 
+## Icon Guidelines
+
+- **DO NOT** use MudBlazor Material Icons directly in new components (`Icons.Material.*`, `Icons.Custom.*`)
+- **ALL** icons in `PokeStream.UI.Web` MUST come from `Solution/PokeStream/PokeStream.Core/Services/Utilidades/AppIcon.cs` (static class `AppIcon`, namespace `PokeStream.Core.Services.Utilidades`, already imported in `_Imports.razor`)
+- Usage: `<MudIcon Icon="@AppIcon.Pokeball" />` / `<MudIconButton Icon="@AppIcon.Menu" />` — any MudBlazor `Icon` parameter, never a raw SVG string or MudBlazor constant inline
+- To add an icon: add a `public const string Name = "<path d=\"...\"/>";` (PascalCase, SVG inner markup) to `AppIcon`; do not create icons anywhere else
+
 ## Important Notes
 - The MAUI overlay runs on the streamer's machine as an always-on-top transparent window
 - Bots connect to multiple platforms simultaneously via shared backend
 - Viewer collections persist across platforms (same user on Twitch/YouTube/Kick shares one Pokédex)
 - Auto-verification system uses codes/cooldowns to validate captures without manual intervention
 - Blazor WASM runs as PWA for offline-capable viewer experience
-- **Current Azure SQL**: `pokeconectserver.database.windows.net` with database `PokeApp_dev`
+- **Azure SQL**: Configure your server/database in `appsettings.json` (see Database Configuration above)
 - **Retry logic enabled** in EF Core for Azure SQL transient failures (EnableRetryOnFailure)
 - **Password hashing**: BCrypt via ASP.NET Core Identity PasswordHasher
 - **Refresh token rotation**: Old token revoked on each refresh for security
+- **Health checks**: Liveness/Readiness probes implemented for container orchestration

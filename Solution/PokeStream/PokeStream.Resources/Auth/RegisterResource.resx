@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>Crear cuenta</value></data>
+  <data name="Subtitle" xml:space="preserve"><value>Únete y empieza a atrapar Pokémon en los streams</value></data>
+  <data name="ConfirmPassword" xml:space="preserve"><value>Confirmar contraseña</value></data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve"><value>Las contraseñas no coinciden</value></data>
+  <data name="ShowHidePassword" xml:space="preserve"><value>Mostrar u ocultar contraseña</value></data>
+  <data name="SubmitButton" xml:space="preserve"><value>Crear cuenta</value></data>
+  <data name="RegisterFailed" xml:space="preserve"><value>No se pudo crear la cuenta. Revisa los datos e inténtalo de nuevo</value></data>
+  <data name="HaveAccount" xml:space="preserve"><value>¿Ya tienes cuenta?</value></data>
+  <data name="SignIn" xml:space="preserve"><value>Iniciar sesión</value></data>
+  <data name="Username" xml:space="preserve"><value>Usuario</value></data>
+  <data name="Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Password" xml:space="preserve"><value>Contraseña</value></data>
+  <data name="DisplayName" xml:space="preserve"><value>Nombre a mostrar</value></data>
+  <data name="UsernameRequired" xml:space="preserve"><value>Ingresa un nombre de usuario</value></data>
+  <data name="UsernameMinLength" xml:space="preserve"><value>El usuario debe tener al menos 3 caracteres</value></data>
+  <data name="UsernameMaxLength" xml:space="preserve"><value>El usuario no puede superar los 100 caracteres</value></data>
+  <data name="EmailRequired" xml:space="preserve"><value>Ingresa tu email</value></data>
+  <data name="EmailInvalid" xml:space="preserve"><value>Ingresa un email válido</value></data>
+  <data name="EmailMaxLength" xml:space="preserve"><value>El email no puede superar los 320 caracteres</value></data>
+  <data name="PasswordRequired" xml:space="preserve"><value>Ingresa una contraseña</value></data>
+  <data name="PasswordMinLength" xml:space="preserve"><value>La contraseña debe tener al menos 8 caracteres</value></data>
+  <data name="PasswordMaxLength" xml:space="preserve"><value>La contraseña no puede superar los 100 caracteres</value></data>
+  <data name="DisplayNameMaxLength" xml:space="preserve"><value>El nombre a mostrar no puede superar los 200 caracteres</value></data>
+  <data name="DiscordUserIdMaxLength" xml:space="preserve"><value>El ID de usuario de Discord no puede superar los 100 caracteres</value></data>
+  <data name="DiscordUsernameMaxLength" xml:space="preserve"><value>El usuario de Discord no puede superar los 100 caracteres</value></data>
+</root>

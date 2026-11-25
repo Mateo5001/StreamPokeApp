@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="PageTitle" xml:space="preserve"><value>Pokédex</value></data>
+  <data name="Title" xml:space="preserve"><value>Mi Pokédex</value></data>
+  <data name="Overall" xml:space="preserve"><value>Progreso total</value></data>
+  <data name="Caught" xml:space="preserve"><value>capturados</value></data>
+  <data name="Gen1" xml:space="preserve"><value>Generación I · Kanto</value></data>
+  <data name="Gen2" xml:space="preserve"><value>Generación II · Johto</value></data>
+  <data name="Gen3" xml:space="preserve"><value>Generación III · Hoenn</value></data>
+  <data name="Gen4" xml:space="preserve"><value>Generación IV · Sinnoh</value></data>
+  <data name="Gen5" xml:space="preserve"><value>Generación V · Teselia</value></data>
+  <data name="Gen6" xml:space="preserve"><value>Generación VI · Kalos</value></data>
+  <data name="Gen7" xml:space="preserve"><value>Generación VII · Alola</value></data>
+  <data name="Gen8" xml:space="preserve"><value>Generación VIII · Galar</value></data>
+  <data name="Gen9" xml:space="preserve"><value>Generación IX · Paldea</value></data>
+  <data name="Empty" xml:space="preserve"><value>Aún no has capturado ningún Pokémon. Escribe !capturar cuando aparezca uno en un directo.</value></data>
+</root>

@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "API",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "Solution/PokeStream/PokeStream.API/PokeStream.API.csproj", "--launch-profile", "http"],
+      "port": 5130
+    },
+    {
+      "name": "UI.Web",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "Solution/PokeStream/PokeStream.UI.Web/PokeStream.UI.Web.csproj", "--launch-profile", "http"],
+      "port": 5025
+    }
+  ]
+}

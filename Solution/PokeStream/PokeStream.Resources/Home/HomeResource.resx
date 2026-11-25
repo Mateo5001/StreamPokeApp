@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="PageTitle" xml:space="preserve"><value>Inicio</value></data>
+  <data name="Welcome" xml:space="preserve"><value>Atrapa Pokémon en los streams de tus creadores favoritos y arma tu Pokédex.</value></data>
+  <data name="SiteName" xml:space="preserve"><value>PokéStream Collector</value></data>
+  <data name="Tagline" xml:space="preserve"><value>Mira el stream, escribe en el chat y atrápalos a todos</value></data>
+  <data name="CreateAccount" xml:space="preserve"><value>Crear cuenta</value></data>
+  <data name="SeeFeatures" xml:space="preserve"><value>Ver funciones</value></data>
+  <data name="FeaturesTitle" xml:space="preserve"><value>¿Qué puedes hacer?</value></data>
+  <data name="CaptureTitle" xml:space="preserve"><value>Captura en vivo</value></data>
+  <data name="CaptureText" xml:space="preserve"><value>Cuando un Pokémon aparece en pantalla, usa el comando del chat antes de que escape.</value></data>
+  <data name="ChatTitle" xml:space="preserve"><value>Comandos de chat</value></data>
+  <data name="ChatText" xml:space="preserve"><value>Participa desde el chat de Twitch, YouTube o Kick, sin instalar nada.</value></data>
+  <data name="CollectionTitle" xml:space="preserve"><value>Tu Pokédex</value></data>
+  <data name="CollectionText" xml:space="preserve"><value>Consulta y administra tu colección desde la aplicación web.</value></data>
+  <data name="SyncTitle" xml:space="preserve"><value>Una cuenta, todas las plataformas</value></data>
+  <data name="SyncText" xml:space="preserve"><value>Tus capturas se sincronizan entre Twitch, YouTube y Kick.</value></data>
+  <data name="VerifiedTitle" xml:space="preserve"><value>Capturas verificadas</value></data>
+  <data name="VerifiedText" xml:space="preserve"><value>Verificación automática con códigos y tiempos de espera, sin intervención manual.</value></data>
+  <data name="RankingsTitle" xml:space="preserve"><value>Rankings</value></data>
+  <data name="RankingsText" xml:space="preserve"><value>Compara tu colección con la de otros entrenadores. Próximamente.</value></data>
+  <data name="Terms" xml:space="preserve"><value>Términos y condiciones</value></data>
+</root>
