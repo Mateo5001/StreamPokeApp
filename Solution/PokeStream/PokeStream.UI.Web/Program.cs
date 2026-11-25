@@ -17,6 +17,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped(_ => new HttpClient());
 builder.Services.AddScoped<IHttpClient, ApiHttpClient>();
 builder.Services.AddScoped<AuthStateService>();
+builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<AuthStateService>());
 
 // Cookies: plain ones via JS interop, session one HttpOnly via the endpoints mapped below.

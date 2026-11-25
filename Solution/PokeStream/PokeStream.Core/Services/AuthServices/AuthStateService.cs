@@ -277,7 +277,7 @@ public class AuthStateService : AuthenticationStateProvider, IDisposable
     }
 
     private static AuthenticationState BuildState(IEnumerable<System.Security.Claims.Claim> claims) =>
-        new(new System.Security.Claims.ClaimsPrincipal(new System.Security.Claims.ClaimsIdentity(claims, "jwt", System.Security.Claims.ClaimsIdentity.DefaultNameClaimType, "role")));
+        new(new System.Security.Claims.ClaimsPrincipal(new System.Security.Claims.ClaimsIdentity(claims, "jwt")));
 
     /// <summary>Parses a JWT payload. Returns false for any malformed token. expiresAt = MaxValue when there is no exp claim.</summary>
     private static bool TryParseClaims(string jwt, out List<System.Security.Claims.Claim> claims, out DateTimeOffset expiresAt)

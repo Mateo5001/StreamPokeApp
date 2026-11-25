@@ -2,8 +2,7 @@
 @using PokeStream.Core.Services.AuthServices
 @using PokeStream.Core.Services.Cookies
 @using PokeStream.Resources.Auth
-@using PokeStream.Resources.Common
-@inject AuthStateService Auth
+@inject LoginService Logins
 @inject ICookieService Cookies
 
 <MudStack Spacing="3" Class="pa-4" Style="width: 300px; max-width: 100%;">
@@ -88,8 +87,6 @@
     private bool _busy;
     private string? _error;
 
-    private const int RememberedUserDays = 30;
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
@@ -113,23 +110,7 @@
         _error = null;
         try
         {
-            var response = await Auth.LoginAsync(_request);
-            if (response is null)
-            {
-                _error = LoginResource.InvalidCredentials;
-                return;
-            }
-
-            if (_remember)
-                await Cookies.SetAsync(CookieKeys.RememberedUser, _request.UsernameOrEmail, RememberedUserDays);
-            else
-                await Cookies.RemoveAsync(CookieKeys.RememberedUser);
-
-            _request.Password = string.Empty;
-        }
-        catch (HttpRequestException)
-        {
-            _error = CommonResource.ServerUnreachable;
+            _error = await Logins.LoginAsync(_request, _remember);
         }
         finally
         {

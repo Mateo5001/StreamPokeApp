@@ -1,11 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @using PokeStream.Core.Services.Themes
-@using PokeStream.UI.Web.Components.Pages
 @using PokeStream.UI.Web.Components.Shared
 @using PokeStream.Core.Services.Cookies
 @using PokeStream.Resources.Layout
 @inherits LayoutComponentBase
 @inject ICookieService Cookies
+@inject PokeStream.Core.Services.AuthServices.AuthStateService Auth
+@inject NavigationManager Navigation
 
 <MudThemeProvider Theme="_theme" @bind-IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
@@ -37,7 +38,7 @@
             <AuthorizeView>
                 <Authorized>
                     <MudMenuItem Href="/account">@LayoutResource.MyAccount</MudMenuItem>
-                    <MudMenuItem Href="/logout">@LayoutResource.SignOut</MudMenuItem>
+                    <MudMenuItem OnClick="SignOutAsync">@LayoutResource.SignOut</MudMenuItem>
                 </Authorized>
                 <NotAuthorized>
                     <LoginEmbedded></LoginEmbedded>
@@ -78,6 +79,13 @@
     private string logoName => _isDarkMode ? AppIcon.Images.WordmarkOnBlue : AppIcon.Images.WordmarkOnOrange;
 
     private void ToggleDrawer() { _drawerOpen = !_drawerOpen; }
+
+    private async Task SignOutAsync()
+    {
+        await Auth.LogoutAsync();
+        _drawerOpen = false;
+        Navigation.NavigateTo("/");
+    }
 
     private const string DarkValue = "dark";
     private const string LightValue = "light";
