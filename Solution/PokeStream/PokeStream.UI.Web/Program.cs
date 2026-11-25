@@ -45,6 +45,9 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 
+// Liveness probe for the container and the deployment check
+app.MapGet("/health/live", () => Results.Ok());
+
 // Only the session cookie can be issued here (HttpOnly, so JS never sees the tokens).
 app.MapPost(CookieKeys.SessionEndpoint, (SessionCookieRequest body, HttpContext ctx) =>
 {

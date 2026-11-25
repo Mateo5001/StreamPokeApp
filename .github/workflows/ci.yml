@@ -99,6 +99,29 @@ jobs:
           path: 'reports/'
           retention-days: 30
 
+  docker-build-web:
+    name: Docker Build (Web)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: build-and-test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/Test' || github.ref == 'refs/heads/Production')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Solution/PokeStream/PokeStream.UI.Web/Dockerfile
+          push: false
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
   docker-build:
     name: Docker Build (API)
     runs-on: ubuntu-latest

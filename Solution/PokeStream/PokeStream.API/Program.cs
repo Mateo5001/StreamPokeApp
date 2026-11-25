@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -86,7 +87,10 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // Twitch account linking
 builder.Services.Configure<TwitchSettings>(builder.Configuration.GetSection(TwitchSettings.SectionName));
 builder.Services.AddHttpClient();
-builder.Services.AddDataProtection();
+var dataProtection = builder.Services.AddDataProtection();
+// Containers lose their keys on every deploy, and with them the stored bot token: keep them on persistent storage
+if (builder.Configuration["DataProtection:KeysPath"] is { Length: > 0 } keysPath)
+    dataProtection.PersistKeysToFileSystem(new DirectoryInfo(keysPath));
 
 // Twitch chat bot (Bot:Enabled). Lives in its own project so it can move to its own host.
 builder.Services.AddTwitchBot(builder.Configuration);
