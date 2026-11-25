@@ -55,7 +55,8 @@ app.MapPost(CookieKeys.SessionEndpoint, (SessionCookieRequest body, HttpContext 
 	{
 		HttpOnly = true,
 		Secure = ctx.Request.IsHttps,
-		SameSite = SameSiteMode.Strict,
+		// Lax, not Strict: the cookie must arrive when an OAuth provider redirects back here.
+		SameSite = SameSiteMode.Lax,
 		Path = "/",
 		Expires = body.Days is > 0 ? DateTimeOffset.UtcNow.AddDays(body.Days.Value) : null
 	});

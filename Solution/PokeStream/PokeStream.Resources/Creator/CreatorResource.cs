@@ -24,4 +24,10 @@ public static class CreatorResource
     public static string PlaySounds => Manager.GetString(nameof(PlaySounds), CultureInfo.CurrentUICulture) ?? nameof(PlaySounds);
     public static string SpawnRate => Manager.GetString(nameof(SpawnRate), CultureInfo.CurrentUICulture) ?? nameof(SpawnRate);
     public static string ExampleNotice => Manager.GetString(nameof(ExampleNotice), CultureInfo.CurrentUICulture) ?? nameof(ExampleNotice);
+    public static string TwitchConnectedAs => Manager.GetString(nameof(TwitchConnectedAs), CultureInfo.CurrentUICulture) ?? nameof(TwitchConnectedAs);
+    public static string TwitchNotConfigured => Manager.GetString(nameof(TwitchNotConfigured), CultureInfo.CurrentUICulture) ?? nameof(TwitchNotConfigured);
+    public static string TwitchLinkExpired => Manager.GetString(nameof(TwitchLinkExpired), CultureInfo.CurrentUICulture) ?? nameof(TwitchLinkExpired);
+    public static string TwitchFailed => Manager.GetString(nameof(TwitchFailed), CultureInfo.CurrentUICulture) ?? nameof(TwitchFailed);
+    public static string TwitchTaken => Manager.GetString(nameof(TwitchTaken), CultureInfo.CurrentUICulture) ?? nameof(TwitchTaken);
+    public static string TwitchCancelled => Manager.GetString(nameof(TwitchCancelled), CultureInfo.CurrentUICulture) ?? nameof(TwitchCancelled);
 }

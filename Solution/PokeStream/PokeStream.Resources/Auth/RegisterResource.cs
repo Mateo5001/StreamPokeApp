@@ -12,11 +12,6 @@ public static class RegisterResource
     public static string ConfirmPassword => Manager.GetString(nameof(ConfirmPassword), CultureInfo.CurrentUICulture) ?? nameof(ConfirmPassword);
     public static string PasswordsDoNotMatch => Manager.GetString(nameof(PasswordsDoNotMatch), CultureInfo.CurrentUICulture) ?? nameof(PasswordsDoNotMatch);
     public static string ShowHidePassword => Manager.GetString(nameof(ShowHidePassword), CultureInfo.CurrentUICulture) ?? nameof(ShowHidePassword);
-    public static string PlatformsTitle => Manager.GetString(nameof(PlatformsTitle), CultureInfo.CurrentUICulture) ?? nameof(PlatformsTitle);
-    public static string PlatformsHint => Manager.GetString(nameof(PlatformsHint), CultureInfo.CurrentUICulture) ?? nameof(PlatformsHint);
-    public static string TwitchUsername => Manager.GetString(nameof(TwitchUsername), CultureInfo.CurrentUICulture) ?? nameof(TwitchUsername);
-    public static string YouTubeUsername => Manager.GetString(nameof(YouTubeUsername), CultureInfo.CurrentUICulture) ?? nameof(YouTubeUsername);
-    public static string KickUsername => Manager.GetString(nameof(KickUsername), CultureInfo.CurrentUICulture) ?? nameof(KickUsername);
     public static string SubmitButton => Manager.GetString(nameof(SubmitButton), CultureInfo.CurrentUICulture) ?? nameof(SubmitButton);
     public static string RegisterFailed => Manager.GetString(nameof(RegisterFailed), CultureInfo.CurrentUICulture) ?? nameof(RegisterFailed);
     public static string HaveAccount => Manager.GetString(nameof(HaveAccount), CultureInfo.CurrentUICulture) ?? nameof(HaveAccount);
@@ -35,12 +30,6 @@ public static class RegisterResource
     public static string PasswordMinLength => Manager.GetString(nameof(PasswordMinLength), CultureInfo.CurrentUICulture) ?? nameof(PasswordMinLength);
     public static string PasswordMaxLength => Manager.GetString(nameof(PasswordMaxLength), CultureInfo.CurrentUICulture) ?? nameof(PasswordMaxLength);
     public static string DisplayNameMaxLength => Manager.GetString(nameof(DisplayNameMaxLength), CultureInfo.CurrentUICulture) ?? nameof(DisplayNameMaxLength);
-    public static string TwitchUserIdMaxLength => Manager.GetString(nameof(TwitchUserIdMaxLength), CultureInfo.CurrentUICulture) ?? nameof(TwitchUserIdMaxLength);
-    public static string TwitchUsernameMaxLength => Manager.GetString(nameof(TwitchUsernameMaxLength), CultureInfo.CurrentUICulture) ?? nameof(TwitchUsernameMaxLength);
-    public static string YouTubeChannelIdMaxLength => Manager.GetString(nameof(YouTubeChannelIdMaxLength), CultureInfo.CurrentUICulture) ?? nameof(YouTubeChannelIdMaxLength);
-    public static string YouTubeUsernameMaxLength => Manager.GetString(nameof(YouTubeUsernameMaxLength), CultureInfo.CurrentUICulture) ?? nameof(YouTubeUsernameMaxLength);
-    public static string KickUserIdMaxLength => Manager.GetString(nameof(KickUserIdMaxLength), CultureInfo.CurrentUICulture) ?? nameof(KickUserIdMaxLength);
-    public static string KickUsernameMaxLength => Manager.GetString(nameof(KickUsernameMaxLength), CultureInfo.CurrentUICulture) ?? nameof(KickUsernameMaxLength);
     public static string DiscordUserIdMaxLength => Manager.GetString(nameof(DiscordUserIdMaxLength), CultureInfo.CurrentUICulture) ?? nameof(DiscordUserIdMaxLength);
     public static string DiscordUsernameMaxLength => Manager.GetString(nameof(DiscordUsernameMaxLength), CultureInfo.CurrentUICulture) ?? nameof(DiscordUsernameMaxLength);
 }

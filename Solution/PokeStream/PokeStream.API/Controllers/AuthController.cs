@@ -230,6 +230,7 @@ public class AuthController : ControllerBase
             CreatedAt = user.CreatedAt,
             HasPassword = !string.IsNullOrEmpty(user.PasswordHash),
             HasTwitchLinked = !string.IsNullOrEmpty(user.TwitchUserId),
+            TwitchUsername = user.TwitchUsername,
             HasYouTubeLinked = !string.IsNullOrEmpty(user.YouTubeChannelId),
             HasKickLinked = !string.IsNullOrEmpty(user.KickUserId)
         });

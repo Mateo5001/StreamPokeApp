@@ -1,9 +1,19 @@
 @page "/creator"
-@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Streamer")]
+@using System.Net.Http.Json
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Authorization
+@using PokeStream.Core.DTOs.Common
+@using PokeStream.Core.DTOs.Twitch
+@using PokeStream.Core.Services.AuthServices
+@using PokeStream.Resources.Common
 @using PokeStream.Resources.Creator
+@inject AuthStateService Auth
+@inject NavigationManager Navigation
 
 <PageTitle>@CreatorResource.PageTitle</PageTitle>
 
+@* Guarded here: Routes uses RouteView (ignores [Authorize]) and the app has no server auth scheme *@
+<AuthorizeView Roles="Streamer">
 <MudStack Spacing="4">
     <MudStack Spacing="1">
         <MudText Typo="Typo.h4">@CreatorResource.Title</MudText>
@@ -17,14 +27,25 @@
                 <MudIcon Icon="@AppIcon.Twitch" Style="color: #9146FF;" />
                 <MudText Typo="Typo.h6">@CreatorResource.TwitchTitle</MudText>
                 <MudSpacer />
-                <MudChip T="string" Size="Size.Small" Color="@(_twitchConnected ? Color.Success : Color.Warning)">
-                    @(_twitchConnected ? "Twitch" : CreatorResource.TwitchNotConnected)
-                </MudChip>
+                @if (!_busy)
+                {
+                    <MudChip T="string" Size="Size.Small" Color="@(_twitchConnected ? Color.Success : Color.Warning)">
+                        @(_twitchConnected ? string.Format(CreatorResource.TwitchConnectedAs, _twitchUsername) : CreatorResource.TwitchNotConnected)
+                    </MudChip>
+                }
             </MudStack>
-            @if (!_twitchConnected)
+            @if (_error is not null)
+            {
+                <MudAlert Severity="Severity.Error" Dense="true">@_error</MudAlert>
+            }
+            @if (_busy)
+            {
+                <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+            }
+            else if (!_twitchConnected)
             {
                 <MudAlert Severity="Severity.Warning" Dense="true">@CreatorResource.TwitchRequired</MudAlert>
-                <MudButton Variant="Variant.Filled" StartIcon="@AppIcon.Twitch"
+                <MudButton Variant="Variant.Filled" StartIcon="@AppIcon.Twitch" OnClick="ConnectTwitchAsync"
                            Style="background-color: #9146FF; color: #FFFFFF; align-self: flex-start;">
                     @CreatorResource.TwitchConnect
                 </MudButton>
@@ -52,12 +73,93 @@
 
     <MudAlert Severity="Severity.Info" Dense="true">@CreatorResource.ExampleNotice</MudAlert>
 </MudStack>
+</AuthorizeView>
 
 @code {
-    // Placeholder state until the Twitch connection and the overlay token exist
-    private readonly bool _twitchConnected = false;
+    // Appended by Twitch when it redirects back here
+    [SupplyParameterFromQuery(Name = "code")] public string? Code { get; set; }
+    [SupplyParameterFromQuery(Name = "state")] public string? State { get; set; }
+    [SupplyParameterFromQuery(Name = "error")] public string? TwitchError { get; set; }
+
+    [CascadingParameter] private Task<AuthenticationState>? AuthState { get; set; }
+
+    private string? _twitchUsername;
+    private bool _twitchConnected => _twitchUsername is not null;
+    private bool _busy = true;
+    private string? _error;
+
+    // Placeholder state until the overlay token exists
     private readonly string _overlayUrl = "https://…/overlay/{token}";
     private bool _showSpawns = true;
     private bool _playSounds = true;
     private int _spawnRate = 5;
+
+    // After render, never during prerender: the authorization code works only once.
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || AuthState is null || !(await AuthState).User.IsInRole("Streamer")) return;
+
+        await CallApiAsync(async () =>
+        {
+            if (TwitchError is not null)
+            {
+                _error = CreatorResource.TwitchCancelled;
+            }
+            else if (Code is not null && State is not null)
+            {
+                var response = await Auth.SendAuthorizedAsync(HttpMethod.Post, "api/v1/twitch/link",
+                    JsonContent.Create(new TwitchLinkRequest(Code, State)));
+                if (!response.IsSuccessStatusCode)
+                    _error = await ReadErrorAsync(response);
+            }
+
+            // Drop code/state so a reload does not send them again
+            if (Code is not null || TwitchError is not null)
+                Navigation.NavigateTo("/creator", replace: true);
+
+            _twitchUsername = (await Auth.GetCurrentUserAsync())?.TwitchUsername;
+        });
+        _busy = false;
+        StateHasChanged();
+    }
+
+    private async Task ConnectTwitchAsync()
+    {
+        _busy = true;
+        _error = null;
+
+        await CallApiAsync(async () =>
+        {
+            // Fresh access token before leaving, so it is still valid when Twitch sends the streamer back
+            if (!await Auth.RefreshTokenAsync())
+            {
+                _error = CreatorResource.TwitchFailed;
+                return;
+            }
+
+            var response = await Auth.SendAuthorizedAsync(HttpMethod.Post, "api/v1/twitch/connect");
+            if (!response.IsSuccessStatusCode)
+            {
+                _error = await ReadErrorAsync(response);
+                return;
+            }
+
+            var connect = await response.Content.ReadFromJsonAsync<TwitchConnectResponse>();
+            Navigation.NavigateTo(connect!.Url, forceLoad: true);
+        });
+        _busy = false;
+    }
+
+    private async Task CallApiAsync(Func<Task> call)
+    {
+        try { await call(); }
+        catch (HttpRequestException) { _error = CommonResource.ServerUnreachable; }
+    }
+
+    private static async Task<string> ReadErrorAsync(HttpResponseMessage response)
+    {
+        // 401/403 come with an empty body
+        try { return (await response.Content.ReadFromJsonAsync<ErrorResponse>())?.Message ?? CreatorResource.TwitchFailed; }
+        catch (JsonException) { return CreatorResource.TwitchFailed; }
+    }
 }

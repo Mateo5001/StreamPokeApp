@@ -28,6 +28,7 @@ public class AuthStateService : AuthenticationStateProvider, IDisposable
     private readonly NavigationManager _navigation;
     private readonly PersistingComponentStateSubscription _persisting;
     private AuthenticationState? _cachedState;
+    private Task<bool>? _refreshing;
 
     private StoredSession? _session;
     private bool _sessionLoaded;
@@ -81,10 +82,13 @@ public class AuthStateService : AuthenticationStateProvider, IDisposable
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        if (_cachedState != null)
+        var token = LoadSession()?.AccessToken;
+
+        // The cache is only good while the access token it came from is.
+        if (_cachedState != null &&
+            (string.IsNullOrEmpty(token) || !TryParseClaims(token, out _, out var cachedExpiry) || cachedExpiry > DateTimeOffset.UtcNow))
             return _cachedState;
 
-        var token = LoadSession()?.AccessToken;
         if (string.IsNullOrEmpty(token))
             return _cachedState = Anonymous();
 
@@ -144,6 +148,8 @@ public class AuthStateService : AuthenticationStateProvider, IDisposable
 
     public async Task<bool> LogoutAsync()
     {
+        // The logout endpoint needs a valid access token; renewing also rotates the refresh token, so read it afterwards.
+        await GetAuthenticationStateAsync();
         var refreshToken = await GetRefreshTokenAsync();
         if (!string.IsNullOrEmpty(refreshToken))
         {
@@ -178,7 +184,16 @@ public class AuthStateService : AuthenticationStateProvider, IDisposable
     /// Rejected by the API: clears tokens and caches the anonymous state.
     /// Network error: changes nothing (can be retried).
     /// </summary>
+    // Concurrent callers share one request: the API rotates the token, so a second one would be rejected and sign us out.
+    // shortcut: only per circuit; two tabs on the same session can still sign each other out, fix when it bites.
     private async Task<bool> RefreshCoreAsync()
+    {
+        var refreshing = _refreshing ??= SendRefreshAsync();
+        try { return await refreshing; }
+        finally { _refreshing = null; }
+    }
+
+    private async Task<bool> SendRefreshAsync()
     {
         var refreshToken = await GetRefreshTokenAsync();
         if (string.IsNullOrEmpty(refreshToken))
@@ -216,13 +231,20 @@ public class AuthStateService : AuthenticationStateProvider, IDisposable
         return true;
     }
 
-    public async Task<UserInfoDto?> GetCurrentUserAsync()
+    /// <summary>Calls the API as the signed-in user.</summary>
+    public async Task<HttpResponseMessage> SendAuthorizedAsync(HttpMethod method, string url, HttpContent? content = null)
     {
         // Makes sure the access token is valid (renews it if expired) before using it
         await GetAuthenticationStateAsync();
 
-        using var request = await CreateAuthorizedRequestAsync(HttpMethod.Get, "api/v1/auth/me");
-        var response = await _httpClient.SendAsync(request);
+        using var request = await CreateAuthorizedRequestAsync(method, url);
+        request.Content = content;
+        return await _httpClient.SendAsync(request);
+    }
+
+    public async Task<UserInfoDto?> GetCurrentUserAsync()
+    {
+        var response = await SendAuthorizedAsync(HttpMethod.Get, "api/v1/auth/me");
 
         if (!response.IsSuccessStatusCode)
             return null;

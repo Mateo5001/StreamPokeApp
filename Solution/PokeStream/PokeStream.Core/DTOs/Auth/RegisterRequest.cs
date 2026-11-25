@@ -29,23 +29,4 @@ public class RegisterRequest
     [Display(ResourceType = typeof(RegisterResource), Name = nameof(RegisterResource.DisplayName))]
     [MaxLength(200, ErrorMessageResourceType = typeof(RegisterResource), ErrorMessageResourceName = nameof(RegisterResource.DisplayNameMaxLength))]
     public string? DisplayName { get; set; }
-
-    // Opcional: vincular cuenta de plataforma al registrar
-    [MaxLength(100, ErrorMessageResourceType = typeof(RegisterResource), ErrorMessageResourceName = nameof(RegisterResource.TwitchUserIdMaxLength))]
-    public string? TwitchUserId { get; set; }
-
-    [MaxLength(100, ErrorMessageResourceType = typeof(RegisterResource), ErrorMessageResourceName = nameof(RegisterResource.TwitchUsernameMaxLength))]
-    public string? TwitchUsername { get; set; }
-
-    [MaxLength(100, ErrorMessageResourceType = typeof(RegisterResource), ErrorMessageResourceName = nameof(RegisterResource.YouTubeChannelIdMaxLength))]
-    public string? YouTubeChannelId { get; set; }
-
-    [MaxLength(100, ErrorMessageResourceType = typeof(RegisterResource), ErrorMessageResourceName = nameof(RegisterResource.YouTubeUsernameMaxLength))]
-    public string? YouTubeUsername { get; set; }
-
-    [MaxLength(100, ErrorMessageResourceType = typeof(RegisterResource), ErrorMessageResourceName = nameof(RegisterResource.KickUserIdMaxLength))]
-    public string? KickUserId { get; set; }
-
-    [MaxLength(100, ErrorMessageResourceType = typeof(RegisterResource), ErrorMessageResourceName = nameof(RegisterResource.KickUsernameMaxLength))]
-    public string? KickUsername { get; set; }
 }

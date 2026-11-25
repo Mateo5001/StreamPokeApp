@@ -20,5 +20,11 @@
   <data name="ShowSpawns" xml:space="preserve"><value>Mostrar apariciones en pantalla</value></data>
   <data name="PlaySounds" xml:space="preserve"><value>Reproducir sonidos</value></data>
   <data name="SpawnRate" xml:space="preserve"><value>Frecuencia de apariciones</value></data>
-  <data name="ExampleNotice" xml:space="preserve"><value>Maqueta: la conexión con Twitch y la URL real aún no están implementadas.</value></data>
+  <data name="ExampleNotice" xml:space="preserve"><value>Maqueta: la URL real del overlay y sus opciones aún no están implementadas.</value></data>
+  <data name="TwitchConnectedAs" xml:space="preserve"><value>Conectado como {0}</value></data>
+  <data name="TwitchNotConfigured" xml:space="preserve"><value>La conexión con Twitch no está configurada en el servidor.</value></data>
+  <data name="TwitchLinkExpired" xml:space="preserve"><value>La solicitud de conexión caducó o no es válida. Inténtalo de nuevo.</value></data>
+  <data name="TwitchFailed" xml:space="preserve"><value>No se pudo completar la conexión con Twitch. Inténtalo de nuevo.</value></data>
+  <data name="TwitchTaken" xml:space="preserve"><value>Esa cuenta de Twitch ya está vinculada a otro usuario.</value></data>
+  <data name="TwitchCancelled" xml:space="preserve"><value>Cancelaste la autorización en Twitch.</value></data>
 </root>

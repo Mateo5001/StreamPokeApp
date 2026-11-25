@@ -9,11 +9,6 @@
   <data name="ConfirmPassword" xml:space="preserve"><value>Confirmar contraseña</value></data>
   <data name="PasswordsDoNotMatch" xml:space="preserve"><value>Las contraseñas no coinciden</value></data>
   <data name="ShowHidePassword" xml:space="preserve"><value>Mostrar u ocultar contraseña</value></data>
-  <data name="PlatformsTitle" xml:space="preserve"><value>Vincular plataformas (opcional)</value></data>
-  <data name="PlatformsHint" xml:space="preserve"><value>Conecta tus cuentas para compartir un solo Pokédex entre plataformas</value></data>
-  <data name="TwitchUsername" xml:space="preserve"><value>Usuario de Twitch</value></data>
-  <data name="YouTubeUsername" xml:space="preserve"><value>Usuario de YouTube</value></data>
-  <data name="KickUsername" xml:space="preserve"><value>Usuario de Kick</value></data>
   <data name="SubmitButton" xml:space="preserve"><value>Crear cuenta</value></data>
   <data name="RegisterFailed" xml:space="preserve"><value>No se pudo crear la cuenta. Revisa los datos e inténtalo de nuevo</value></data>
   <data name="HaveAccount" xml:space="preserve"><value>¿Ya tienes cuenta?</value></data>
@@ -32,12 +27,6 @@
   <data name="PasswordMinLength" xml:space="preserve"><value>La contraseña debe tener al menos 8 caracteres</value></data>
   <data name="PasswordMaxLength" xml:space="preserve"><value>La contraseña no puede superar los 100 caracteres</value></data>
   <data name="DisplayNameMaxLength" xml:space="preserve"><value>El nombre a mostrar no puede superar los 200 caracteres</value></data>
-  <data name="TwitchUserIdMaxLength" xml:space="preserve"><value>El ID de usuario de Twitch no puede superar los 100 caracteres</value></data>
-  <data name="TwitchUsernameMaxLength" xml:space="preserve"><value>El usuario de Twitch no puede superar los 100 caracteres</value></data>
-  <data name="YouTubeChannelIdMaxLength" xml:space="preserve"><value>El ID de canal de YouTube no puede superar los 100 caracteres</value></data>
-  <data name="YouTubeUsernameMaxLength" xml:space="preserve"><value>El usuario de YouTube no puede superar los 100 caracteres</value></data>
-  <data name="KickUserIdMaxLength" xml:space="preserve"><value>El ID de usuario de Kick no puede superar los 100 caracteres</value></data>
-  <data name="KickUsernameMaxLength" xml:space="preserve"><value>El usuario de Kick no puede superar los 100 caracteres</value></data>
   <data name="DiscordUserIdMaxLength" xml:space="preserve"><value>El ID de usuario de Discord no puede superar los 100 caracteres</value></data>
   <data name="DiscordUsernameMaxLength" xml:space="preserve"><value>El usuario de Discord no puede superar los 100 caracteres</value></data>
 </root>

@@ -54,12 +54,6 @@ public class AuthService : IAuthService
             Email = request.Email,
             DisplayName = request.DisplayName ?? request.Username,
             PasswordHash = HashPassword(request.Password),
-            TwitchUserId = request.TwitchUserId,
-            TwitchUsername = request.TwitchUsername,
-            YouTubeChannelId = request.YouTubeChannelId,
-            YouTubeUsername = request.YouTubeUsername,
-            KickUserId = request.KickUserId,
-            KickUsername = request.KickUsername,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             IsActive = true
@@ -101,16 +95,18 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponse> RefreshTokenAsync(RefreshTokenRequest request, string ipAddress, string? userAgent)
     {
+        var tokenHash = HashRefreshToken(request.RefreshToken);
         var session = await _dbContext.UserSessions
             .Include(s => s.User)
-            .FirstOrDefaultAsync(s => s.RefreshToken == request.RefreshToken);
+            .FirstOrDefaultAsync(s => s.RefreshToken == tokenHash);
 
-        if (session == null || !session.IsActive || session.ExpiresAt < DateTime.UtcNow)
+        if (session == null || !session.IsActive || !session.User.IsActive || session.ExpiresAt < DateTime.UtcNow)
         {
             throw new UnauthorizedAccessException(AuthErrorResource.RefreshTokenInvalidOrExpired);
         }
 
         // Revocar el token actual (rotación de refresh tokens)
+        session.IsActive = false;
         session.RevokedAt = DateTime.UtcNow;
         session.RevokedReason = "Rotado por nuevo token";
         session.UpdatedAt = DateTime.UtcNow;
@@ -127,12 +123,14 @@ public class AuthService : IAuthService
 
     public async Task<bool> RevokeTokenAsync(string refreshToken, string ipAddress, string? userAgent)
     {
+        var tokenHash = HashRefreshToken(refreshToken);
         var session = await _dbContext.UserSessions
-            .FirstOrDefaultAsync(s => s.RefreshToken == refreshToken);
+            .FirstOrDefaultAsync(s => s.RefreshToken == tokenHash);
 
         if (session == null)
             return false;
 
+        session.IsActive = false;
         session.RevokedAt = DateTime.UtcNow;
         session.RevokedReason = "Revocado por usuario (logout)";
         session.UpdatedAt = DateTime.UtcNow;
@@ -209,6 +207,7 @@ public class AuthService : IAuthService
                 CreatedAt = user.CreatedAt,
                 HasPassword = !string.IsNullOrEmpty(user.PasswordHash),
                 HasTwitchLinked = !string.IsNullOrEmpty(user.TwitchUserId),
+                TwitchUsername = user.TwitchUsername,
                 HasYouTubeLinked = !string.IsNullOrEmpty(user.YouTubeChannelId),
                 HasKickLinked = !string.IsNullOrEmpty(user.KickUserId)
             }

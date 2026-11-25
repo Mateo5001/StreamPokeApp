@@ -68,40 +68,6 @@
                                               Validation="@((string? value) => value == _request.Password ? null : RegisterResource.PasswordsDoNotMatch)" />
                             </MudItem>
                         </MudGrid>
-
-                        <MudDivider Class="my-3" />
-
-                        <MudStack Spacing="0">
-                            <MudText Typo="Typo.subtitle1">@RegisterResource.PlatformsTitle</MudText>
-                            <MudText Typo="Typo.caption" Color="Color.Secondary">@RegisterResource.PlatformsHint</MudText>
-                        </MudStack>
-
-                        <MudTextField @bind-Value="_request.TwitchUsername"
-                                      For="@(() => _request.TwitchUsername)"
-                                      Label="@RegisterResource.TwitchUsername"
-                                      Variant="Variant.Outlined"
-                                      Margin="Margin.Dense"
-                                      Adornment="Adornment.Start"
-                                      AdornmentIcon="@AppIcon.Twitch"
-                                      AdornmentColor="Color.Primary" />
-
-                        <MudTextField @bind-Value="_request.YouTubeUsername"
-                                      For="@(() => _request.YouTubeUsername)"
-                                      Label="@RegisterResource.YouTubeUsername"
-                                      Variant="Variant.Outlined"
-                                      Margin="Margin.Dense"
-                                      Adornment="Adornment.Start"
-                                      AdornmentIcon="@AppIcon.YouTube"
-                                      AdornmentColor="Color.Error" />
-
-                        <MudTextField @bind-Value="_request.KickUsername"
-                                      For="@(() => _request.KickUsername)"
-                                      Label="@RegisterResource.KickUsername"
-                                      Variant="Variant.Outlined"
-                                      Margin="Margin.Dense"
-                                      Adornment="Adornment.Start"
-                                      AdornmentIcon="@AppIcon.Kick"
-                                      AdornmentColor="Color.Success" />
                     </MudStack>
                 </EditForm>
             </MudForm>
@@ -154,9 +120,6 @@
         {
             // Optional fields: send null instead of empty strings
             _request.DisplayName = NullIfEmpty(_request.DisplayName);
-            _request.TwitchUsername = NullIfEmpty(_request.TwitchUsername);
-            _request.YouTubeUsername = NullIfEmpty(_request.YouTubeUsername);
-            _request.KickUsername = NullIfEmpty(_request.KickUsername);
 
             var response = await Auth.RegisterAsync(_request);
             if (response is null)

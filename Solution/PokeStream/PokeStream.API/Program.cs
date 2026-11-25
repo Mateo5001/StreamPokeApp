@@ -79,6 +79,11 @@ builder.Services.AddAuthorization();
 // Register Auth Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Twitch account linking
+builder.Services.Configure<TwitchSettings>(builder.Configuration.GetSection(TwitchSettings.SectionName));
+builder.Services.AddHttpClient();
+builder.Services.AddDataProtection();
+
 // Add Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
