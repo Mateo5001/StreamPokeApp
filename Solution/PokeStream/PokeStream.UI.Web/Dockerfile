@@ -26,7 +26,8 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# -m: ASP.NET Core writes its encryption keys under the home folder
+RUN groupadd -r appuser && useradd -r -m -g appuser appuser
 USER appuser
 
 # Copy published app
