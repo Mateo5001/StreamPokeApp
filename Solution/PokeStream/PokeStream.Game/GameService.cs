@@ -12,11 +12,17 @@ public record Departed(Guid StreamerId, string SpeciesName);
 /// <summary>Who typed the capture command, as the platform knows them.</summary>
 public record Viewer(string PlatformUserId, string Login, string DisplayName);
 
+public record TeamPokemon(string Name, int Level, bool IsShiny, string? SpriteUrl);
+
+/// <summary>What a trainer owns.</summary>
+public record Collection(IReadOnlyList<int> SpeciesIds, IReadOnlyList<TeamPokemon> Team);
+
 /// <summary>Spawn, capture and flee rules. Knows nothing about chat.</summary>
 public class GameService
 {
     public static readonly TimeSpan CaptureWindow = TimeSpan.FromSeconds(90);
 
+    private const int TeamSize = 6;
     private const int FirstGeneration = 151;
     private const int MaxSpawnLevel = 30;
     private const int ShinyOdds = 4096;
@@ -155,9 +161,30 @@ public class GameService
         return Describe(wild, pokemon, await _pokeApi.GetResourceAsync(pokemon.Species, cancellationToken));
     }
 
+    /// <summary>Species the trainer owns, and their team.</summary>
+    public async Task<Collection> GetCollectionAsync(Guid trainerId, CancellationToken cancellationToken = default)
+    {
+        var owned = _db.Pokemons.AsNoTracking().Where(p => p.TrainerId == trainerId);
+        var species = await owned.Select(p => p.SpeciesId).Distinct().OrderBy(id => id).ToListAsync(cancellationToken);
+
+        // Nobody edits teams yet, so the team is the first Pokémon captured
+        var first = await owned.OrderBy(p => p.CapturedAt).ThenBy(p => p.Id).Take(TeamSize).ToListAsync(cancellationToken);
+        var team = new List<TeamPokemon>();
+        foreach (var member in first)
+        {
+            var pokemon = await _pokeApi.GetResourceAsync<PokeApiNet.Pokemon>(member.SpeciesId, cancellationToken);
+            var name = member.Nickname ?? await SpeciesNameAsync(member.SpeciesId, cancellationToken);
+            team.Add(new TeamPokemon(name, member.Level, member.IsShiny, Sprite(pokemon, member.IsShiny)));
+        }
+        return new Collection(species, team);
+    }
+
+    private static string? Sprite(PokeApiNet.Pokemon pokemon, bool shiny)
+        => shiny ? pokemon.Sprites?.FrontShiny : pokemon.Sprites?.FrontDefault;
+
     private static WildPokemon Describe(EntityData.Models.Pokemon wild, PokeApiNet.Pokemon pokemon, PokemonSpecies species)
         => new(DisplayName(species), wild.Level, wild.IsShiny,
-            wild.IsShiny ? pokemon.Sprites?.FrontShiny : pokemon.Sprites?.FrontDefault,
+            Sprite(pokemon, wild.IsShiny),
             DateTime.SpecifyKind(wild.ExpiresAt!.Value, DateTimeKind.Utc));
 
     private IQueryable<EntityData.Models.Pokemon> Wild(Guid streamerId)

@@ -15,6 +15,5 @@ public static class AccountResource
     public static string TeamHint => Manager.GetString(nameof(TeamHint), CultureInfo.CurrentUICulture) ?? nameof(TeamHint);
     public static string EmptySlot => Manager.GetString(nameof(EmptySlot), CultureInfo.CurrentUICulture) ?? nameof(EmptySlot);
     public static string LevelPrefix => Manager.GetString(nameof(LevelPrefix), CultureInfo.CurrentUICulture) ?? nameof(LevelPrefix);
-    public static string ExampleNotice => Manager.GetString(nameof(ExampleNotice), CultureInfo.CurrentUICulture) ?? nameof(ExampleNotice);
     public static string TwitchHint => Manager.GetString(nameof(TwitchHint), CultureInfo.CurrentUICulture) ?? nameof(TwitchHint);
 }

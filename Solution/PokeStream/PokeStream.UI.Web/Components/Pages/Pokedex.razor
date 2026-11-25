@@ -1,59 +1,102 @@
 @page "/pokedex"
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Authorization
+@using PokeStream.Core.DTOs.User
+@using PokeStream.Core.Services.AuthServices
+@using PokeStream.Resources.Common
 @using PokeStream.Resources.Pokedex
+@inject AuthStateService Auth
 
 <PageTitle>@PokedexResource.PageTitle</PageTitle>
 
 <MudStack Spacing="4">
     <MudText Typo="Typo.h4">@PokedexResource.Title</MudText>
 
-    @* Overall progress *@
-    <MudPaper Elevation="2" Class="pa-6">
-        <MudStack Spacing="2">
-            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Baseline">
-                <MudText Typo="Typo.h6">@PokedexResource.Overall</MudText>
-                <MudText Typo="Typo.h6">@_gens.Sum(g => g.Caught) / @_gens.Sum(g => g.Total)</MudText>
-            </MudStack>
-            <MudProgressLinear Value="@Percent(_gens.Sum(g => g.Caught), _gens.Sum(g => g.Total))" Color="Color.Primary" Size="Size.Large" Rounded="true" />
-        </MudStack>
-    </MudPaper>
-
-    @* By generation *@
-    <MudGrid Spacing="3">
-        @foreach (var g in _gens)
+    @if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+    else if (_species is null)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else
+    {
+        @if (_species.Count == 0)
         {
-            <MudItem xs="12" sm="6" md="4">
-                <MudCard Elevation="2" Class="mud-height-full">
-                    <MudCardContent>
-                        <MudStack Spacing="2">
-                            <MudText Typo="Typo.subtitle1">@g.Name</MudText>
-                            <MudProgressLinear Value="@Percent(g.Caught, g.Total)" Color="Color.Secondary" Rounded="true" />
-                            <MudText Typo="Typo.caption" Color="Color.Secondary">@g.Caught / @g.Total @PokedexResource.Caught</MudText>
-                        </MudStack>
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
+            <MudAlert Severity="Severity.Info" Dense="true">@PokedexResource.Empty</MudAlert>
         }
-    </MudGrid>
 
-    <MudAlert Severity="Severity.Info" Dense="true">@PokedexResource.ExampleNotice</MudAlert>
+        @* Overall progress *@
+        <MudPaper Elevation="2" Class="pa-6">
+            <MudStack Spacing="2">
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Baseline">
+                    <MudText Typo="Typo.h6">@PokedexResource.Overall</MudText>
+                    <MudText Typo="Typo.h6">@_species.Count / @_gens.Sum(g => g.Total)</MudText>
+                </MudStack>
+                <MudProgressLinear Value="@Percent(_species.Count, _gens.Sum(g => g.Total))" Color="Color.Primary" Size="Size.Large" Rounded="true" />
+            </MudStack>
+        </MudPaper>
+
+        @* By generation *@
+        <MudGrid Spacing="3">
+            @foreach (var g in _gens)
+            {
+                var caught = _species.Count(id => id >= g.First && id < g.First + g.Total);
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="2" Class="mud-height-full">
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                <MudText Typo="Typo.subtitle1">@g.Name</MudText>
+                                <MudProgressLinear Value="@Percent(caught, g.Total)" Color="Color.Secondary" Rounded="true" />
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">@caught / @g.Total @PokedexResource.Caught</MudText>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
 </MudStack>
 
 @code {
-    private record Gen(string Name, int Total, int Caught);
+    private record Gen(string Name, int First, int Total);
 
-    // Totals per generation; "Caught" is sample data until the real collection endpoint exists
+    [CascadingParameter] private Task<AuthenticationState>? AuthState { get; set; }
+
+    // National Pokédex ranges
     private readonly Gen[] _gens =
     [
-        new(PokedexResource.Gen1, 151, 87),
-        new(PokedexResource.Gen2, 100, 34),
-        new(PokedexResource.Gen3, 135, 21),
-        new(PokedexResource.Gen4, 107, 12),
-        new(PokedexResource.Gen5, 156, 5),
-        new(PokedexResource.Gen6, 72, 0),
-        new(PokedexResource.Gen7, 88, 0),
-        new(PokedexResource.Gen8, 96, 0),
-        new(PokedexResource.Gen9, 120, 0),
+        new(PokedexResource.Gen1, 1, 151),
+        new(PokedexResource.Gen2, 152, 100),
+        new(PokedexResource.Gen3, 252, 135),
+        new(PokedexResource.Gen4, 387, 107),
+        new(PokedexResource.Gen5, 494, 156),
+        new(PokedexResource.Gen6, 650, 72),
+        new(PokedexResource.Gen7, 722, 88),
+        new(PokedexResource.Gen8, 810, 96),
+        new(PokedexResource.Gen9, 906, 120),
     ];
+
+    private IReadOnlyList<int>? _species;
+    private string? _error;
+
+    // The session cookie is only writable once interactive, so the API is asked after the first render
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || AuthState is null || (await AuthState).User.Identity?.IsAuthenticated != true) return;
+
+        try
+        {
+            var response = await Auth.SendAuthorizedAsync(HttpMethod.Get, "api/v1/collection");
+            if (response.IsSuccessStatusCode)
+                _species = (await response.Content.ReadFromJsonAsync<CollectionDto>())!.SpeciesIds;
+            else
+                _error = CommonResource.InternalServerError;
+        }
+        catch (HttpRequestException) { _error = CommonResource.ServerUnreachable; }
+        StateHasChanged();
+    }
 
     private static double Percent(int part, int total) => total == 0 ? 0 : part * 100.0 / total;
 }
