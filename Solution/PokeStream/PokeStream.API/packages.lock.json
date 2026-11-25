@@ -273,6 +273,11 @@
           "Microsoft.IdentityModel.Logging": "8.0.1"
         }
       },
+      "Microsoft.NETCore.Platforms": {
+        "type": "Transitive",
+        "resolved": "7.0.4",
+        "contentHash": "yLEHlNN7O5WiND89r42sepgVwy5W/ZoTiFEdJDV7MHR1lW02LL7Nipz2TD5qM/Kx9W3/k3NP+PAP2qUdOm+leg=="
+      },
       "Microsoft.OpenApi": {
         "type": "Transitive",
         "resolved": "1.6.14",
@@ -467,6 +472,30 @@
         "contentHash": "IXoJOXIqc39AIe+CIR7koBtRGMiCt/LPM3lI+PELtDIy9XdyeSrwXFdWV9dzJ2Awl0paLWUaknLxFQ5HpHZUog==",
         "dependencies": {
           "System.Drawing.Common": "6.0.0"
+        }
+      },
+      "TwitchLib.EventSub.Core": {
+        "type": "Transitive",
+        "resolved": "3.1.0",
+        "contentHash": "qVNsF0fKunkrdqst6HeB0wy+4Gee4xG6uO+XtDGPQGyVb6GzShOKC0H5agtpfSLjMOBVT/wbgSAHk1q3idrqoA==",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "7.0.4"
+        }
+      },
+      "TwitchLib.EventSub.Websockets": {
+        "type": "Transitive",
+        "resolved": "0.9.0",
+        "contentHash": "wGT0pcHxkjtOa6GxIaBQpFI8dozlzm3y61i7bp+ekfhuSvWk0apz6aGrCEjK24hDrJZUd8Ecz5GAKX6lF+0+hA==",
+        "dependencies": {
+          "TwitchLib.EventSub.Core": "3.1.0"
+        }
+      },
+      "pokestream.bot": {
+        "type": "Project",
+        "dependencies": {
+          "PokeStream.EntityData": "[1.0.0, )",
+          "PokeStream.Resources": "[1.0.0, )",
+          "TwitchLib.EventSub.Websockets": "[0.9.0, )"
         }
       },
       "pokestream.core": {

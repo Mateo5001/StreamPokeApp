@@ -22,6 +22,30 @@ namespace PokeStream.EntityData.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("PokeStream.EntityData.Models.BotCredential", b =>
+                {
+                    b.Property<string>("Platform")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("SeedHash")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Platform");
+
+                    b.ToTable("BotCredentials");
+                });
+
             modelBuilder.Entity("PokeStream.EntityData.Models.PartySlot", b =>
                 {
                     b.Property<int>("Id")

@@ -16,6 +16,9 @@ public class PokeStreamDbContext : DbContext
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<UserSession> UserSessions { get; set; } = null!;
 
+    // Chat bots
+    public DbSet<BotCredential> BotCredentials { get; set; } = null!;
+
     // Pokémon module
     public DbSet<Pokemon> Pokemons { get; set; } = null!;
     public DbSet<PokemonMove> PokemonMoves { get; set; } = null!;

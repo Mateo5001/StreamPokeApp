@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PokeStream.Bot;
 using PokeStream.Core.Services.AuthServices;
 using PokeStream.Core.Settings;
 using PokeStream.EntityData.Data;
@@ -83,6 +84,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.Configure<TwitchSettings>(builder.Configuration.GetSection(TwitchSettings.SectionName));
 builder.Services.AddHttpClient();
 builder.Services.AddDataProtection();
+
+// Twitch chat bot (Bot:Enabled). Lives in its own project so it can move to its own host.
+builder.Services.AddTwitchBot(builder.Configuration);
 
 // Add Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
