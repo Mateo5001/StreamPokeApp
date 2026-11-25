@@ -36,6 +36,10 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, string ipAddress, string? userAgent)
     {
+        // Reservado para las cuentas provisionales que crea la captura desde el chat
+        if (request.Username.StartsWith(User.ProvisionalPrefix, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(AuthErrorResource.UsernameInUse);
+
         // Verificar si username o email ya existen
         var existingUser = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.Username == request.Username || u.Email == request.Email);
@@ -208,6 +212,7 @@ public class AuthService : IAuthService
                 HasPassword = !string.IsNullOrEmpty(user.PasswordHash),
                 HasTwitchLinked = !string.IsNullOrEmpty(user.TwitchUserId),
                 TwitchUsername = user.TwitchUsername,
+                SpawnsEnabled = user.SpawnsEnabled,
                 HasYouTubeLinked = !string.IsNullOrEmpty(user.YouTubeChannelId),
                 HasKickLinked = !string.IsNullOrEmpty(user.KickUserId)
             }

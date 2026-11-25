@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PokeStream.EntityData\PokeStream.EntityData.csproj" />
+    <ProjectReference Include="..\PokeStream.Game\PokeStream.Game.csproj" />
     <ProjectReference Include="..\PokeStream.Resources\PokeStream.Resources.csproj" />
   </ItemGroup>
 

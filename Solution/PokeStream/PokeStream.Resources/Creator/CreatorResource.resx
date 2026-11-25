@@ -17,10 +17,10 @@
   <data name="OverlayLocked" xml:space="preserve"><value>Disponible cuando conectes Twitch</value></data>
   <data name="Copy" xml:space="preserve"><value>Copiar URL</value></data>
   <data name="OptionsTitle" xml:space="preserve"><value>Opciones</value></data>
-  <data name="ShowSpawns" xml:space="preserve"><value>Mostrar apariciones en pantalla</value></data>
+  <data name="ShowSpawns" xml:space="preserve"><value>Activar apariciones en mi canal</value></data>
   <data name="PlaySounds" xml:space="preserve"><value>Reproducir sonidos</value></data>
   <data name="SpawnRate" xml:space="preserve"><value>Frecuencia de apariciones</value></data>
-  <data name="ExampleNotice" xml:space="preserve"><value>Maqueta: la URL real del overlay y sus opciones aún no están implementadas.</value></data>
+  <data name="ExampleNotice" xml:space="preserve"><value>Maqueta: la URL del overlay, los sonidos y la frecuencia aún no están implementados.</value></data>
   <data name="TwitchConnectedAs" xml:space="preserve"><value>Conectado como {0}</value></data>
   <data name="TwitchNotConfigured" xml:space="preserve"><value>La conexión con Twitch no está configurada en el servidor.</value></data>
   <data name="TwitchLinkExpired" xml:space="preserve"><value>La solicitud de conexión caducó o no es válida. Inténtalo de nuevo.</value></data>

@@ -14,6 +14,7 @@ public class UserInfoDto
     public bool HasPassword { get; set; }
     public bool HasTwitchLinked { get; set; }
     public string? TwitchUsername { get; set; }
+    public bool SpawnsEnabled { get; set; }
     public bool HasYouTubeLinked { get; set; }
     public bool HasKickLinked { get; set; }
 }

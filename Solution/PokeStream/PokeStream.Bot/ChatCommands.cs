@@ -1,19 +1,21 @@
-using PokeStream.Resources.Bot;
-
 namespace PokeStream.Bot;
 
-/// <summary>What the bot answers to a chat line.</summary>
+public enum ChatCommand { None, PokeStream, Capture, Spawn }
+
+/// <summary>Which command a chat line is.</summary>
 public static class ChatCommands
 {
-    /// <summary>Reply for <paramref name="text"/>, or null when the bot should stay quiet.</summary>
-    public static string? Reply(string text, string chatterId, string botId)
+    public static ChatCommand Parse(string text, string chatterId, string botId, string broadcasterId)
     {
         if (chatterId == botId)
-            return null;
+            return ChatCommand.None;
 
-        var command = text.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        return string.Equals(command, "!pokestream", StringComparison.OrdinalIgnoreCase)
-            ? BotResource.PokeStreamReply
-            : null;
+        return text.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.ToLowerInvariant() switch
+        {
+            "!pokestream" => ChatCommand.PokeStream,
+            "!capturar" => ChatCommand.Capture,
+            "!aparecer" when chatterId == broadcasterId => ChatCommand.Spawn, // streamer only, for testing
+            _ => ChatCommand.None
+        };
     }
 }

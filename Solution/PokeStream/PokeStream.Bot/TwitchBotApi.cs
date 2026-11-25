@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,7 +69,7 @@ public class TwitchBotApi
             transport = new { method = "websocket", session_id = sessionId }
         }, cancellationToken);
 
-    public Task<HttpResponseMessage> SendMessageAsync(string broadcasterId, string message, string replyToId, CancellationToken cancellationToken = default)
+    public Task<HttpResponseMessage> SendMessageAsync(string broadcasterId, string message, string? replyToId, CancellationToken cancellationToken = default)
         => PostAsync("chat/messages", () => new
         {
             broadcaster_id = broadcasterId,
@@ -77,15 +78,39 @@ public class TwitchBotApi
             reply_parent_message_id = replyToId
         }, cancellationToken);
 
-    private async Task<HttpResponseMessage> PostAsync(string path, Func<object> body, CancellationToken cancellationToken)
+    private record StreamsResponse([property: JsonPropertyName("data")] LiveStream[] Data);
+    private record LiveStream([property: JsonPropertyName("user_id")] string UserId);
+
+    /// <summary>Which of these channels are streaming right now.</summary>
+    public async Task<HashSet<string>> GetLiveChannelsAsync(IReadOnlyList<string> broadcasterIds, CancellationToken cancellationToken = default)
+    {
+        var live = new HashSet<string>();
+        foreach (var batch in broadcasterIds.Chunk(100)) // Helix maximum per request
+        {
+            var query = "streams?first=100&" + string.Join('&', batch.Select(id => "user_id=" + Uri.EscapeDataString(id)));
+            using var response = await SendAsync(HttpMethod.Get, query, null, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var streams = await response.Content.ReadFromJsonAsync<StreamsResponse>(cancellationToken);
+            live.UnionWith(streams!.Data.Select(s => s.UserId));
+        }
+        return live;
+    }
+
+    private Task<HttpResponseMessage> PostAsync(string path, Func<object> body, CancellationToken cancellationToken)
+        => SendAsync(HttpMethod.Post, path, body, cancellationToken);
+
+    private static readonly JsonSerializerOptions SkipNulls = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+
+    private async Task<HttpResponseMessage> SendAsync(HttpMethod method, string path, Func<object>? body, CancellationToken cancellationToken)
     {
         for (var attempt = 1; ; attempt++)
         {
             var token = await GetAccessTokenAsync(cancellationToken);
-            using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.twitch.tv/helix/" + path);
+            using var request = new HttpRequestMessage(method, "https://api.twitch.tv/helix/" + path);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             request.Headers.Add("Client-Id", _settings.ClientId);
-            request.Content = JsonContent.Create(body());
+            if (body is not null) // built after the token request: BotUserId comes from it
+                request.Content = JsonContent.Create(body(), options: SkipNulls);
 
             var response = await _httpClients.CreateClient().SendAsync(request, cancellationToken);
             if (response.StatusCode != HttpStatusCode.Unauthorized || attempt > 1)

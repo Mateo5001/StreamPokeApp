@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PokeStream.Game;
 
 namespace PokeStream.Bot;
 
@@ -15,7 +16,11 @@ public static class TwitchBotExtensions
         services.Configure<TwitchBotSettings>(configuration.GetSection("Bot"));
         services.AddHttpClient();
         services.AddDataProtection();
+        services.AddPokeStreamGame();
         services.AddSingleton<TwitchBotApi>();
+        services.AddSingleton<ChatSender>();
+        services.AddSingleton<ChannelGame>();
+        services.AddHostedService(provider => provider.GetRequiredService<ChannelGame>());
         services.AddHostedService<TwitchBotService>();
         return services;
     }

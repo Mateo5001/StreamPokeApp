@@ -494,6 +494,7 @@
         "type": "Project",
         "dependencies": {
           "PokeStream.EntityData": "[1.0.0, )",
+          "PokeStream.Game": "[1.0.0, )",
           "PokeStream.Resources": "[1.0.0, )",
           "TwitchLib.EventSub.Websockets": "[0.9.0, )"
         }
@@ -516,6 +517,13 @@
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "[9.0.0, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[9.0.0, )"
+        }
+      },
+      "pokestream.game": {
+        "type": "Project",
+        "dependencies": {
+          "PokeApiNet": "[4.1.0, )",
+          "PokeStream.EntityData": "[1.0.0, )"
         }
       },
       "pokestream.resources": {

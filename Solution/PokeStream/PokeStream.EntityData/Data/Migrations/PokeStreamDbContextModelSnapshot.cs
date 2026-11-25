@@ -263,6 +263,9 @@ namespace PokeStream.EntityData.Data.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsProvisional")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsStreamer")
                         .HasColumnType("bit");
 
@@ -291,6 +294,9 @@ namespace PokeStream.EntityData.Data.Migrations
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("SpawnsEnabled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("TwitchAccessToken")
                         .HasMaxLength(1000)

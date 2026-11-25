@@ -33,6 +33,15 @@ public class User
     /// <summary>Content creator: can use the creator panel. Emitted as role "Streamer" in the access token.</summary>
     public bool IsStreamer { get; set; }
 
+    /// <summary>Usernames of provisional accounts start with this; registration rejects it.</summary>
+    public const string ProvisionalPrefix = "twitch:";
+
+    /// <summary>Created by capturing in chat without an account; merged when the viewer links the platform.</summary>
+    public bool IsProvisional { get; set; }
+
+    /// <summary>The streamer wants wild Pokémon to appear in their channel.</summary>
+    public bool SpawnsEnabled { get; set; }
+
     // Password hash (for local auth)
     [MaxLength(500)]
     public string? PasswordHash { get; set; }

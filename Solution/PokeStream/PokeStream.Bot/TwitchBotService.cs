@@ -1,11 +1,12 @@
 using System.Collections.Concurrent;
 using System.Net;
-using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PokeStream.EntityData.Data;
+using PokeStream.Game;
+using PokeStream.Resources.Bot;
 using TwitchLib.EventSub.Core.EventArgs.Channel;
 using TwitchLib.EventSub.Websockets;
 
@@ -26,19 +27,17 @@ public class TwitchBotService : BackgroundService
     private readonly ConcurrentDictionary<string, bool> _subscribed = new();
     private readonly ConcurrentDictionary<string, DateTime> _lastReply = new();
 
-    // shortcut: Twitch's limit for a regular account across all channels; moderators get 100, raise it when that matters.
-    private readonly SlidingWindowRateLimiter _sendLimit = new(new SlidingWindowRateLimiterOptions
-    {
-        PermitLimit = 20, Window = TimeSpan.FromSeconds(30), SegmentsPerWindow = 6, QueueLimit = 0
-    });
-
+    private readonly ChatSender _chat;
+    private readonly ChannelGame _game;
     private readonly Uri? _eventSubUrl = null; // null = Twitch; only replaced by tests
     private EventSubWebsocketClient? _client;
     private volatile bool _welcomed;
     private volatile bool _dropped;
 
-    public TwitchBotService(TwitchBotApi api, IServiceScopeFactory scopes, ILoggerFactory loggers)
+    public TwitchBotService(TwitchBotApi api, ChatSender chat, ChannelGame game, IServiceScopeFactory scopes, ILoggerFactory loggers)
     {
+        _chat = chat;
+        _game = game;
         _api = api;
         _scopes = scopes;
         _loggers = loggers;
@@ -195,25 +194,23 @@ public class TwitchBotService : BackgroundService
             if (message.SourceBroadcasterUserId is { Length: > 0 } source && source != message.BroadcasterUserId)
                 return;
 
-            var reply = ChatCommands.Reply(message.Message.Text, message.ChatterUserId, _api.BotUserId);
-            if (reply is null)
+            var command = ChatCommands.Parse(message.Message.Text, message.ChatterUserId, _api.BotUserId, message.BroadcasterUserId);
+            if (command == ChatCommand.None)
                 return;
+
+            if (command != ChatCommand.PokeStream)
+            {
+                var viewer = new Viewer(message.ChatterUserId, message.ChatterUserLogin, message.ChatterUserName);
+                await _game.HandleAsync(command, message.BroadcasterUserId, viewer, message.MessageId, cancellationToken);
+                return;
+            }
 
             var now = DateTime.UtcNow;
             if (_lastReply.TryGetValue(message.BroadcasterUserId, out var last) && now - last < ChannelCooldown)
                 return;
-
-            using var lease = _sendLimit.AttemptAcquire();
-            if (!lease.IsAcquired)
-                return;
             _lastReply[message.BroadcasterUserId] = now;
 
-            using var response = await _api.SendMessageAsync(message.BroadcasterUserId, reply, message.MessageId, cancellationToken);
-            if (!response.IsSuccessStatusCode)
-            {
-                var body = await response.Content.ReadAsStringAsync(cancellationToken);
-                _logger.LogWarning("Twitch did not accept the reply: {Status} {Body}", (int)response.StatusCode, body);
-            }
+            await _chat.SendAsync(message.BroadcasterUserId, BotResource.PokeStreamReply, message.MessageId, cancellationToken);
         }
         catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
         {
@@ -223,7 +220,6 @@ public class TwitchBotService : BackgroundService
 
     public override void Dispose()
     {
-        _sendLimit.Dispose();
         _wake.Dispose();
         base.Dispose();
     }

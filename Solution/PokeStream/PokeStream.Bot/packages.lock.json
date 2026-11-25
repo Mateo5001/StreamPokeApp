@@ -172,6 +172,11 @@
         "resolved": "6.0.0",
         "contentHash": "hqTM5628jSsQiv+HGpiq3WKBl2c8v1KZfby2J6Pr7pEPlK9waPdgEO6b8A/+/xn/yZ9ulv8HuqK71ONy2tg67A=="
       },
+      "PokeApiNet": {
+        "type": "Transitive",
+        "resolved": "4.1.0",
+        "contentHash": "3eU/WIW2N00CikDATuntV8gScbVwqPSJ2rT3zQAvH5hS8yIQuSCp5Xyt4l+bonUYA4Mb0j5EZvX5c8Wdwp3FiA=="
+      },
       "System.ClientModel": {
         "type": "Transitive",
         "resolved": "1.0.0",
@@ -253,6 +258,13 @@
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "[9.0.0, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[9.0.0, )"
+        }
+      },
+      "pokestream.game": {
+        "type": "Project",
+        "dependencies": {
+          "PokeApiNet": "[4.1.0, )",
+          "PokeStream.EntityData": "[1.0.0, )"
         }
       },
       "pokestream.resources": {

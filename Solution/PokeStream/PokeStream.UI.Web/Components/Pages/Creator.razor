@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using PokeStream.Core.DTOs.Common
 @using PokeStream.Core.DTOs.Twitch
+@using PokeStream.Core.DTOs.User
 @using PokeStream.Core.Services.AuthServices
 @using PokeStream.Resources.Common
 @using PokeStream.Resources.Creator
@@ -64,7 +65,7 @@
                           AdornmentAriaLabel="@CreatorResource.Copy" />
 
             <MudText Typo="Typo.subtitle1">@CreatorResource.OptionsTitle</MudText>
-            <MudSwitch T="bool" @bind-Value="_showSpawns" Color="Color.Primary" Disabled="@(!_twitchConnected)" Label="@CreatorResource.ShowSpawns" />
+            <MudSwitch T="bool" Value="_showSpawns" ValueChanged="SetSpawnsAsync" Color="Color.Primary" Disabled="@(!_twitchConnected)" Label="@CreatorResource.ShowSpawns" />
             <MudSwitch T="bool" @bind-Value="_playSounds" Color="Color.Primary" Disabled="@(!_twitchConnected)" Label="@CreatorResource.PlaySounds" />
             <MudText Typo="Typo.body2">@CreatorResource.SpawnRate</MudText>
             <MudSlider T="int" @bind-Value="_spawnRate" Min="1" Max="10" Color="Color.Primary" Disabled="@(!_twitchConnected)" />
@@ -90,7 +91,7 @@
 
     // Placeholder state until the overlay token exists
     private readonly string _overlayUrl = "https://…/overlay/{token}";
-    private bool _showSpawns = true;
+    private bool _showSpawns;
     private bool _playSounds = true;
     private int _spawnRate = 5;
 
@@ -117,7 +118,9 @@
             if (Code is not null || TwitchError is not null)
                 Navigation.NavigateTo("/creator", replace: true);
 
-            _twitchUsername = (await Auth.GetCurrentUserAsync())?.TwitchUsername;
+            var me = await Auth.GetCurrentUserAsync();
+            _twitchUsername = me?.TwitchUsername;
+            _showSpawns = me?.SpawnsEnabled ?? false;
         });
         _busy = false;
         StateHasChanged();
@@ -148,6 +151,21 @@
             Navigation.NavigateTo(connect!.Url, forceLoad: true);
         });
         _busy = false;
+    }
+
+    // The switch only moves once the API has saved the change
+    private async Task SetSpawnsAsync(bool enabled)
+    {
+        _error = null;
+        await CallApiAsync(async () =>
+        {
+            var response = await Auth.SendAuthorizedAsync(HttpMethod.Put, "api/v1/creator/spawns",
+                JsonContent.Create(new SpawnSettingsRequest(enabled)));
+            if (response.IsSuccessStatusCode)
+                _showSpawns = enabled;
+            else
+                _error = CommonResource.InternalServerError;
+        });
     }
 
     private async Task CallApiAsync(Func<Task> call)
