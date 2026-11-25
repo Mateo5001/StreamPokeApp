@@ -116,7 +116,7 @@ public class ChannelGame : BackgroundService
 
     private async Task SpawnAsync(Channel channel, CancellationToken cancellationToken)
     {
-        Spawned? spawned;
+        WildPokemon? spawned;
         await _spawnLock.WaitAsync(cancellationToken);
         try
         {

@@ -30,4 +30,6 @@ public static class CreatorResource
     public static string TwitchFailed => Manager.GetString(nameof(TwitchFailed), CultureInfo.CurrentUICulture) ?? nameof(TwitchFailed);
     public static string TwitchTaken => Manager.GetString(nameof(TwitchTaken), CultureInfo.CurrentUICulture) ?? nameof(TwitchTaken);
     public static string TwitchCancelled => Manager.GetString(nameof(TwitchCancelled), CultureInfo.CurrentUICulture) ?? nameof(TwitchCancelled);
+    public static string OverlayRegenerate => Manager.GetString(nameof(OverlayRegenerate), CultureInfo.CurrentUICulture) ?? nameof(OverlayRegenerate);
+    public static string Copied => Manager.GetString(nameof(Copied), CultureInfo.CurrentUICulture) ?? nameof(Copied);
 }

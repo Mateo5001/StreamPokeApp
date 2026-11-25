@@ -3,6 +3,8 @@
 @using System.Text.Json
 @using Microsoft.AspNetCore.Components.Authorization
 @using PokeStream.Core.DTOs.Common
+@using PokeStream.Core.DTOs.Overlay
+@inject IJSRuntime JS
 @using PokeStream.Core.DTOs.Twitch
 @using PokeStream.Core.DTOs.User
 @using PokeStream.Core.Services.AuthServices
@@ -58,11 +60,19 @@
     <MudPaper Elevation="2" Class="pa-6">
         <MudStack Spacing="3">
             <MudText Typo="Typo.h6">@CreatorResource.OverlayTitle</MudText>
-            <MudTextField T="string" Value="@_overlayUrl" Label="@CreatorResource.OverlayUrl"
-                          Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true" Disabled="@(!_twitchConnected)"
-                          HelperText="@(_twitchConnected ? CreatorResource.OverlayHint : CreatorResource.OverlayLocked)"
-                          Adornment="Adornment.End" AdornmentIcon="@AppIcon.Copy"
-                          AdornmentAriaLabel="@CreatorResource.Copy" />
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start">
+                <MudTextField T="string" Value="@_overlayUrl" Label="@CreatorResource.OverlayUrl" Class="flex-grow-1"
+                              Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true" Disabled="@(!_twitchConnected)"
+                              HelperText="@(_twitchConnected ? CreatorResource.OverlayHint : CreatorResource.OverlayLocked)"
+                              Adornment="Adornment.End" AdornmentIcon="@AppIcon.Copy" OnAdornmentClick="CopyOverlayUrlAsync"
+                              AdornmentAriaLabel="@CreatorResource.Copy" />
+                <MudIconButton Icon="@AppIcon.Refresh" OnClick="RegenerateOverlayAsync" Disabled="@(_overlayUrl is null)"
+                               aria-label="@CreatorResource.OverlayRegenerate" title="@CreatorResource.OverlayRegenerate" />
+            </MudStack>
+            @if (_copied)
+            {
+                <MudText Typo="Typo.caption" Color="Color.Success">@CreatorResource.Copied</MudText>
+            }
 
             <MudText Typo="Typo.subtitle1">@CreatorResource.OptionsTitle</MudText>
             <MudSwitch T="bool" Value="_showSpawns" ValueChanged="SetSpawnsAsync" Color="Color.Primary" Disabled="@(!_twitchConnected)" Label="@CreatorResource.ShowSpawns" />
@@ -89,9 +99,10 @@
     private bool _busy = true;
     private string? _error;
 
-    // Placeholder state until the overlay token exists
-    private readonly string _overlayUrl = "https://…/overlay/{token}";
+    private string? _overlayUrl;
+    private bool _copied;
     private bool _showSpawns;
+    // Placeholders until sounds and spawn rate exist
     private bool _playSounds = true;
     private int _spawnRate = 5;
 
@@ -121,6 +132,8 @@
             var me = await Auth.GetCurrentUserAsync();
             _twitchUsername = me?.TwitchUsername;
             _showSpawns = me?.SpawnsEnabled ?? false;
+            if (_twitchConnected)
+                await LoadOverlayUrlAsync(HttpMethod.Get, "api/v1/creator/overlay");
         });
         _busy = false;
         StateHasChanged();
@@ -166,6 +179,32 @@
             else
                 _error = CommonResource.InternalServerError;
         });
+    }
+
+    private async Task LoadOverlayUrlAsync(HttpMethod method, string url)
+    {
+        var response = await Auth.SendAuthorizedAsync(method, url);
+        if (!response.IsSuccessStatusCode)
+        {
+            _error = CommonResource.InternalServerError;
+            return;
+        }
+        var overlay = await response.Content.ReadFromJsonAsync<OverlayTokenResponse>();
+        _overlayUrl = Navigation.ToAbsoluteUri("overlay/" + overlay!.Token).ToString();
+    }
+
+    private async Task RegenerateOverlayAsync()
+    {
+        _error = null;
+        _copied = false;
+        await CallApiAsync(() => LoadOverlayUrlAsync(HttpMethod.Post, "api/v1/creator/overlay/regenerate"));
+    }
+
+    private async Task CopyOverlayUrlAsync()
+    {
+        if (_overlayUrl is null) return;
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", _overlayUrl);
+        _copied = true;
     }
 
     private async Task CallApiAsync(Func<Task> call)

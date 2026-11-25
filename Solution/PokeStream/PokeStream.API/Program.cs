@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PokeStream.API.Hubs;
 using PokeStream.Bot;
+using PokeStream.Core.DTOs.Overlay;
+using PokeStream.Game;
 using PokeStream.Core.Services.AuthServices;
 using PokeStream.Core.Settings;
 using PokeStream.EntityData.Data;
@@ -88,6 +91,11 @@ builder.Services.AddDataProtection();
 // Twitch chat bot (Bot:Enabled). Lives in its own project so it can move to its own host.
 builder.Services.AddTwitchBot(builder.Configuration);
 
+// Game and the overlay that shows it
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IGameEvents, OverlayGameEvents>();
+builder.Services.AddPokeStreamGame();
+
 // Add Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -166,4 +174,5 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<OverlayHub>("/" + OverlayHubContract.Path);
 app.Run();

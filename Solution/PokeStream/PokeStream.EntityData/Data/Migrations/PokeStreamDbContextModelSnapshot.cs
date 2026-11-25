@@ -291,6 +291,10 @@ namespace PokeStream.EntityData.Data.Migrations
                     b.Property<DateTime?>("LastActiveAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("OverlayToken")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -359,6 +363,10 @@ namespace PokeStream.EntityData.Data.Migrations
                     b.HasIndex("KickUserId")
                         .IsUnique()
                         .HasFilter("[KickUserId] IS NOT NULL");
+
+                    b.HasIndex("OverlayToken")
+                        .IsUnique()
+                        .HasFilter("[OverlayToken] IS NOT NULL");
 
                     b.HasIndex("TwitchUserId")
                         .IsUnique()

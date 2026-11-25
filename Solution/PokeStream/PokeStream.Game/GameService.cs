@@ -6,9 +6,6 @@ using Nature = PokeStream.EntityData.Models.Nature;
 
 namespace PokeStream.Game;
 
-/// <summary>A wild Pokémon that just appeared.</summary>
-public record Spawned(string SpeciesName, int Level, bool IsShiny);
-
 /// <summary>A Pokémon that left the wild: captured or fled.</summary>
 public record Departed(Guid StreamerId, string SpeciesName);
 
@@ -26,18 +23,20 @@ public class GameService
 
     private readonly PokeStreamDbContext _db;
     private readonly PokeApiClient _pokeApi;
+    private readonly IGameEvents _events;
 
-    public GameService(PokeStreamDbContext db, PokeApiClient pokeApi)
+    public GameService(PokeStreamDbContext db, PokeApiClient pokeApi, IGameEvents events)
     {
         _db = db;
         _pokeApi = pokeApi;
+        _events = events;
     }
 
     /// <summary>
     /// Makes a wild Pokémon appear in the channel. Null when one is already there.
     /// Callers must not run two spawns of the same channel at once.
     /// </summary>
-    public async Task<Spawned?> SpawnAsync(Guid streamerId, CancellationToken cancellationToken = default)
+    public async Task<WildPokemon?> SpawnAsync(Guid streamerId, CancellationToken cancellationToken = default)
     {
         if (await Wild(streamerId).AnyAsync(cancellationToken))
             return null;
@@ -67,7 +66,9 @@ public class GameService
         _db.Pokemons.Add(wild);
         await _db.SaveChangesAsync(cancellationToken);
 
-        return new Spawned(DisplayName(species), wild.Level, wild.IsShiny);
+        var appeared = Describe(wild, pokemon, species);
+        await _events.SpawnedAsync(streamerId, appeared);
+        return appeared;
     }
 
     /// <summary>
@@ -114,6 +115,7 @@ public class GameService
             _db.ChangeTracker.Clear();
             return null;
         }
+        await _events.CapturedAsync(streamerId, name, viewer.DisplayName);
         return new Departed(streamerId, name);
     }
 
@@ -136,10 +138,27 @@ public class GameService
                 _db.ChangeTracker.Clear();
                 continue;
             }
+            await _events.FledAsync(pokemon.OriginStreamerId!.Value, name);
             fled.Add(new Departed(pokemon.OriginStreamerId!.Value, name));
         }
         return fled;
     }
+
+    /// <summary>The wild Pokémon in the channel right now, or null.</summary>
+    public async Task<WildPokemon?> GetActiveAsync(Guid streamerId, CancellationToken cancellationToken = default)
+    {
+        var wild = await Wild(streamerId).AsNoTracking().FirstOrDefaultAsync(cancellationToken);
+        if (wild is null)
+            return null;
+
+        var pokemon = await _pokeApi.GetResourceAsync<PokeApiNet.Pokemon>(wild.SpeciesId, cancellationToken);
+        return Describe(wild, pokemon, await _pokeApi.GetResourceAsync(pokemon.Species, cancellationToken));
+    }
+
+    private static WildPokemon Describe(EntityData.Models.Pokemon wild, PokeApiNet.Pokemon pokemon, PokemonSpecies species)
+        => new(DisplayName(species), wild.Level, wild.IsShiny,
+            wild.IsShiny ? pokemon.Sprites?.FrontShiny : pokemon.Sprites?.FrontDefault,
+            DateTime.SpecifyKind(wild.ExpiresAt!.Value, DateTimeKind.Utc));
 
     private IQueryable<EntityData.Models.Pokemon> Wild(Guid streamerId)
     {

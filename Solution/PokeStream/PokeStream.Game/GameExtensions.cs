@@ -10,6 +10,7 @@ public static class GameExtensions
     public static IServiceCollection AddPokeStreamGame(this IServiceCollection services)
     {
         services.TryAddSingleton(_ => new PokeApiClient()); // one instance: it caches responses
+        services.TryAddSingleton<IGameEvents, NoGameEvents>();
         services.AddScoped<GameService>();
         return services;
     }

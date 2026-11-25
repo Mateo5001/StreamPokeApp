@@ -42,6 +42,10 @@ public class User
     /// <summary>The streamer wants wild Pokémon to appear in their channel.</summary>
     public bool SpawnsEnabled { get; set; }
 
+    /// <summary>Secret part of the streamer's overlay URL; null until first requested.</summary>
+    [MaxLength(64)]
+    public string? OverlayToken { get; set; }
+
     // Password hash (for local auth)
     [MaxLength(500)]
     public string? PasswordHash { get; set; }

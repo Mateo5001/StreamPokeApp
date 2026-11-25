@@ -67,6 +67,7 @@ public class PokeStreamDbContext : DbContext
         entity.HasIndex(u => u.YouTubeChannelId).IsUnique();
         entity.HasIndex(u => u.KickUserId).IsUnique();
         entity.HasIndex(u => u.DiscordUserId).IsUnique();
+        entity.HasIndex(u => u.OverlayToken).IsUnique();
         entity.HasIndex(u => u.IsActive);
 
         // Relationships

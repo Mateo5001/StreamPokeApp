@@ -8,8 +8,13 @@ retryButton.addEventListener("click", retry);
 const resumeButton = document.getElementById("components-resume-button");
 resumeButton.addEventListener("click", resume);
 
+// Overlays are composited over a stream with nobody to click: never show the dialog, just keep trying.
+const isOverlay = location.pathname.startsWith("/overlay/");
+
 function handleReconnectStateChanged(event) {
-    if (event.detail.state === "show") {
+    if (isOverlay && event.detail.state !== "rejected") {
+        if (event.detail.state === "failed") setTimeout(retry, 5000);
+    } else if (event.detail.state === "show") {
         reconnectModal.showModal();
     } else if (event.detail.state === "hide") {
         reconnectModal.close();
@@ -41,7 +46,8 @@ async function retry() {
         }
     } catch (err) {
         // We got an exception, server is currently unavailable
-        document.addEventListener("visibilitychange", retryWhenDocumentBecomesVisible);
+        if (isOverlay) setTimeout(retry, 5000);
+        else document.addEventListener("visibilitychange", retryWhenDocumentBecomesVisible);
     }
 }
 

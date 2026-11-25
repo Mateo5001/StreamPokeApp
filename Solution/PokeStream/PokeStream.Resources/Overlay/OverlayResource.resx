@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="PageTitle" xml:space="preserve"><value>Overlay de PokéStream</value></data>
+  <data name="Level" xml:space="preserve"><value>Nv. {0}</value></data>
+  <data name="CaptureHint" xml:space="preserve"><value>Escribe !capturar</value></data>
+  <data name="Shiny" xml:space="preserve"><value>✨ Variocolor</value></data>
+  <data name="CapturedBy" xml:space="preserve"><value>¡{1} capturó a {0}!</value></data>
+  <data name="Fled" xml:space="preserve"><value>{0} huyó</value></data>
+  <data name="InvalidToken" xml:space="preserve"><value>URL del overlay no válida. Cópiala de nuevo desde tu panel.</value></data>
+</root>

@@ -34,7 +34,9 @@
     private bool IsPublic(string relativePath)
     {
         var path = relativePath.Split('?', '#')[0].Trim('/');
-        return PublicRoutes.Contains(path, StringComparer.OrdinalIgnoreCase);
+        // Overlays run inside OBS without a login: their token is checked by the API
+        return PublicRoutes.Contains(path, StringComparer.OrdinalIgnoreCase)
+            || path.StartsWith("overlay/", StringComparison.OrdinalIgnoreCase);
     }
 
     public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
